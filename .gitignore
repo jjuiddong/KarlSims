@@ -44,6 +44,8 @@ local.properties
 # Build results
 
 [Dd]ebug/
+[Cc]hecked/
+[Pp]rofile/
 [Rr]elease/
 x64/
 build/
