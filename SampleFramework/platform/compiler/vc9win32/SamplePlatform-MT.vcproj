@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+ProjectType="Visual C++"
+Version="9.00"
+Name="SamplePlatform-MT"
+>
+<Platforms>
+	<Platform Name="Win32"/>
+</Platforms>
+<Configurations>
+  <Configuration
+    Name="debug|Win32"
+    OutputDirectory="./../../lib/win32"
+    IntermediateDirectory="./Win32/SamplePlatform-MT/debug"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;$(DXSDK_DIR)/Include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      BasicRuntimeChecks="2"
+      EnableEnhancedInstructionSet="2"
+      DebugInformationFormat="3"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="0"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="1"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)DEBUG.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)DEBUG.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X86"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="release|Win32"
+    OutputDirectory="./../../lib/win32"
+    IntermediateDirectory="./Win32/SamplePlatform-MT/release"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;$(DXSDK_DIR)/Include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      EnableEnhancedInstructionSet="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName).lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName).lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X86"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="checked|Win32"
+    OutputDirectory="./../../lib/win32"
+    IntermediateDirectory="./Win32/SamplePlatform-MT/checked"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;$(DXSDK_DIR)/Include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      EnableEnhancedInstructionSet="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)CHECKED.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)CHECKED.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X86"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="profile|Win32"
+    OutputDirectory="./../../lib/win32"
+    IntermediateDirectory="./Win32/SamplePlatform-MT/profile"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;$(DXSDK_DIR)/Include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_PROFILE;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      EnableEnhancedInstructionSet="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)PROFILE.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)PROFILE.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X86"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+</Configurations>
+<References></References>
+<Files>
+  <Filter Name="include" Filter=""> <!--  -->
+    <Filter Name="windows" Filter=""> <!--  -->
+      <File RelativePath="..\..\include\windows\WindowsSamplePlatform.h">
+      </File>
+      <File RelativePath="..\..\include\windows\WindowsSampleUserInput.h">
+      </File>
+      <File RelativePath="..\..\include\windows\WindowsSampleUserInputIds.h">
+      </File>
+    </Filter>
+    <File RelativePath="..\..\include\SamplePlatform.h">
+    </File>
+    <File RelativePath="..\..\include\SampleUserInput.h">
+    </File>
+    <File RelativePath="..\..\include\SampleUserInputIds.h">
+    </File>
+  </Filter>
+  <Filter Name="src" Filter=""> <!--  -->
+    <Filter Name="windows" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\windows\WindowsSamplePlatform.cpp">
+      </File>
+      <File RelativePath="..\..\src\windows\WindowsSampleUserInput.cpp">
+      </File>
+    </Filter>
+    <File RelativePath="..\..\src\SamplePlatform.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleUserInput.cpp">
+    </File>
+  </Filter>
+</Files>
+<Globals></Globals>
+</VisualStudioProject>

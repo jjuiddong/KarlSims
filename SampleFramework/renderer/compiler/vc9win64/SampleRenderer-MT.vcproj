@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+ProjectType="Visual C++"
+Version="9.00"
+Name="SampleRenderer-MT"
+>
+<Platforms>
+	<Platform Name="x64"/>
+</Platforms>
+<Configurations>
+  <Configuration
+    Name="debug|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleRenderer-MT/debug"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;$(DXSDK_DIR)/Include&quot;;&quot;./../../../../../externals/CUDA/5.0.35/include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      BasicRuntimeChecks="2"
+      DebugInformationFormat="3"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="0"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="1"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)DEBUG.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)DEBUG.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X64"
+      AdditionalDependencies="&quot;cuda.lib&quot; "
+      AdditionalLibraryDirectories="&quot;./../../../../../externals/CUDA/5.0.35/lib/x64&quot;;"
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="release|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleRenderer-MT/release"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;$(DXSDK_DIR)/Include&quot;;&quot;./../../../../../externals/CUDA/5.0.35/include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName).lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName).lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X64"
+      AdditionalDependencies="&quot;cuda.lib&quot; "
+      AdditionalLibraryDirectories="&quot;./../../../../../externals/CUDA/5.0.35/lib/x64&quot;;"
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="checked|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleRenderer-MT/checked"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;$(DXSDK_DIR)/Include&quot;;&quot;./../../../../../externals/CUDA/5.0.35/include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)CHECKED.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)CHECKED.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X64"
+      AdditionalDependencies="&quot;cuda.lib&quot; "
+      AdditionalLibraryDirectories="&quot;./../../../../../externals/CUDA/5.0.35/lib/x64&quot;;"
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="profile|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleRenderer-MT/profile"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../framework/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Source/foundation/include/windows&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;$(DXSDK_DIR)/Include&quot;;&quot;./../../../../../externals/CUDA/5.0.35/include&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_PROFILE;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)PROFILE.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)PROFILE.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X64"
+      AdditionalDependencies="&quot;cuda.lib&quot; "
+      AdditionalLibraryDirectories="&quot;./../../../../../externals/CUDA/5.0.35/lib/x64&quot;;"
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+</Configurations>
+<References></References>
+<Files>
+  <Filter Name="include" Filter=""> <!--  -->
+    <Filter Name="windows" Filter=""> <!--  -->
+      <File RelativePath="..\..\include\windows\WindowsGLIncludes.h">
+      </File>
+    </Filter>
+    <File RelativePath="..\..\include\GLIncludes.h">
+    </File>
+    <File RelativePath="..\..\include\Renderer.h">
+    </File>
+    <File RelativePath="..\..\include\RendererBoxShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererCapsuleShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererClothShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererColor.h">
+    </File>
+    <File RelativePath="..\..\include\RendererConfig.h">
+    </File>
+    <File RelativePath="..\..\include\RendererDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererDirectionalLight.h">
+    </File>
+    <File RelativePath="..\..\include\RendererDirectionalLightDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererFoundation.h">
+    </File>
+    <File RelativePath="..\..\include\RendererGridShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererIndexBuffer.h">
+    </File>
+    <File RelativePath="..\..\include\RendererIndexBufferDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererInstanceBuffer.h">
+    </File>
+    <File RelativePath="..\..\include\RendererInstanceBufferDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererInteropableBuffer.h">
+    </File>
+    <File RelativePath="..\..\include\RendererLight.h">
+    </File>
+    <File RelativePath="..\..\include\RendererLightDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMaterial.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMaterialDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMaterialInstance.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMemoryMacros.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMesh.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMeshContext.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMeshDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererMeshShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererParticleSystemShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererProjection.h">
+    </File>
+    <File RelativePath="..\..\include\RendererShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererSpotLight.h">
+    </File>
+    <File RelativePath="..\..\include\RendererSpotLightDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTarget.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTargetDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTerrainShape.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTexture.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTexture2D.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTexture2DDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererTextureDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererUtils.h">
+    </File>
+    <File RelativePath="..\..\include\RendererVertexBuffer.h">
+    </File>
+    <File RelativePath="..\..\include\RendererVertexBufferDesc.h">
+    </File>
+    <File RelativePath="..\..\include\RendererWindow.h">
+    </File>
+  </Filter>
+  <Filter Name="src" Filter=""> <!--  -->
+    <Filter Name="ogl" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\ogl\OGLRenderer.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererDirectionalLight.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererIndexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererInstanceBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererMaterial.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererMesh.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererSpotLight.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererTexture2D.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererVertexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRenderer.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererDirectionalLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererIndexBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererInstanceBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererMaterial.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererMesh.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererSpotLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererTexture2D.cpp">
+      </File>
+      <File RelativePath="..\..\src\ogl\OGLRendererVertexBuffer.cpp">
+      </File>
+    </Filter>
+    <Filter Name="d3d9" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\d3d9\D3D9Renderer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererDirectionalLight.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererIndexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererInstanceBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererMaterial.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererMesh.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererSpotLight.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererTarget.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererTexture2D.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererVertexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9WPFRenderer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9Renderer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererDirectionalLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererIndexBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererInstanceBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererMaterial.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererMesh.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererSpotLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererTarget.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererTexture2D.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9RendererVertexBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d9\D3D9WPFRenderer.cpp">
+      </File>
+    </Filter>
+    <Filter Name="d3d11" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\d3d11\D3D11Renderer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererDirectionalLight.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererIndexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererInstanceBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererMaterial.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererMemoryMacros.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererMesh.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererResourceManager.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererSpotLight.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTarget.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTexture2D.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTexture3D.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTextureCommon.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTraits.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererUtils.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererVariableManager.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererVertexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11Renderer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererDirectionalLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererIndexBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererInstanceBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererMaterial.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererMesh.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererSpotLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTarget.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTexture2D.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererTexture3D.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererUtils.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererVariableManager.cpp">
+      </File>
+      <File RelativePath="..\..\src\d3d11\D3D11RendererVertexBuffer.cpp">
+      </File>
+    </Filter>
+    <Filter Name="null" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\null\NULLRenderer.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererDirectionalLight.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererIndexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererInstanceBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererMaterial.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererMesh.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererSpotLight.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererTexture2D.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererVertexBuffer.h">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRenderer.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererDirectionalLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererIndexBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererInstanceBuffer.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererMaterial.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererMesh.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererSpotLight.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererTexture2D.cpp">
+      </File>
+      <File RelativePath="..\..\src\null\NULLRendererVertexBuffer.cpp">
+      </File>
+    </Filter>
+    <File RelativePath="..\..\src\Renderer.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererBoxShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererCapsuleShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererClothShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererColor.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererDirectionalLight.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererDirectionalLightDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererGridShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererIndexBuffer.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererIndexBufferDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererInstanceBuffer.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererInstanceBufferDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererLight.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererLightDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMaterial.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMaterialDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMaterialInstance.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMesh.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMeshContext.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMeshDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererMeshShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererParticleSystemShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererProjection.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererSpotLight.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererSpotLightDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTarget.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTargetDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTerrainShape.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTexture.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTexture2D.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTexture2DDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererTextureDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererVertexBuffer.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererVertexBufferDesc.cpp">
+    </File>
+    <File RelativePath="..\..\src\RendererWindow.cpp">
+    </File>
+  </Filter>
+</Files>
+<Globals></Globals>
+</VisualStudioProject>

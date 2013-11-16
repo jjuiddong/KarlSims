@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+ProjectType="Visual C++"
+Version="9.00"
+Name="SampleFramework-MT"
+>
+<Platforms>
+	<Platform Name="x64"/>
+</Platforms>
+<Configurations>
+  <Configuration
+    Name="debug|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleFramework-MT/debug"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../../PxToolkit/include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;./../../../../../externals/OpenAutomate/inc&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/string_parsing/include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include/physxprofilesdk&quot;;&quot;./../../../../../Include/physxvisualdebuggersdk&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      BasicRuntimeChecks="2"
+      DebugInformationFormat="3"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="0"
+      AdditionalOptions="/EHsc /D MEDIA_FROM_BIN= /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="1"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)DEBUG.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)DEBUG.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X64"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="release|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleFramework-MT/release"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../../PxToolkit/include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;./../../../../../externals/OpenAutomate/inc&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/string_parsing/include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include/physxprofilesdk&quot;;&quot;./../../../../../Include/physxvisualdebuggersdk&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /D MEDIA_FROM_BIN= /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName).lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName).lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X64"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="checked|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleFramework-MT/checked"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../../PxToolkit/include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;./../../../../../externals/OpenAutomate/inc&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/string_parsing/include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include/physxprofilesdk&quot;;&quot;./../../../../../Include/physxvisualdebuggersdk&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /D MEDIA_FROM_BIN= /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)CHECKED.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)CHECKED.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/MACHINE:X64"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+  <Configuration
+    Name="profile|x64"
+    OutputDirectory="./../../lib/win64"
+    IntermediateDirectory="./x64/SampleFramework-MT/profile"
+    ConfigurationType="4"
+    InheritedPropertySheets=""
+    CharacterSet="2"
+    >
+    <Tool
+      Name="VCCLCompilerTool"
+      AdditionalIncludeDirectories="&quot;./../../include&quot;;&quot;./../../../renderer/include&quot;;&quot;./../../../platform/include&quot;;&quot;./../../../../PxToolkit/include&quot;;&quot;./../../../../../externals/targa/1&quot;;&quot;./../../../../../externals/OpenAutomate/inc&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/include&quot;;&quot;./../../../../../Source/shared/general/PxIOStream/public&quot;;&quot;./../../../../../Source/shared/general/string_parsing/include&quot;;&quot;./../../../../../Source/shared/general/shared&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Include&quot;;&quot;./../../../../../Source/foundation/include&quot;;&quot;./../../../../../Include/foundation&quot;;&quot;./../../../../../Include/physxprofilesdk&quot;;&quot;./../../../../../Include/physxvisualdebuggersdk&quot;;"
+      PreprocessorDefinitions="PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_PROFILE;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;"
+      WarningLevel="3"
+      FloatingPointModel="2"
+      StringPooling="true"
+      RuntimeTypeInfo="false"
+      WarnAsError="true"
+      BufferSecurityCheck="false"
+      Optimization="3"
+      AdditionalOptions="/EHsc /D MEDIA_FROM_BIN= /MP"
+      ExceptionHandling="0"
+      RuntimeLibrary="0"
+      UsePrecompiledHeader="0"
+      PrecompiledHeaderThrough=""
+      />
+    <Tool Name="VCCustomBuildTool"/>
+    <Tool 
+      Name="VCLibrarianTool" 
+      OutputFile="$(OutDir)/$(ProjectName)PROFILE.lib" 
+      ProgramDatabaseFile="$(OutDir)/$(ProjectName)PROFILE.lib.pdb" 
+      LinkLibraryDependencies="true"
+      AdditionalOptions="/INCREMENTAL:NO /MACHINE:X64"
+      AdditionalDependencies=""
+      AdditionalLibraryDirectories=""
+      />
+    <Tool Name="VCMIDLTool"/>
+    <Tool Name="VCPreBuildEventTool"/>
+    <Tool Name="VCPostBuildEventTool"/>
+    <Tool Name="VCPreLinkEventTool"/>
+    <Tool Name="VCResourceCompilerTool"/>
+    <Tool Name="VCWebServiceProxyGeneratorTool"/>
+    <Tool Name="VCXMLDataGeneratorTool"/>
+    <Tool Name="VCWebDeploymentTool"/>
+    <Tool Name="VCManagedWrapperGeneratorTool"/>
+    <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+  </Configuration>
+</Configurations>
+<References></References>
+<Files>
+  <Filter Name="include" Filter=""> <!--  -->
+    <File RelativePath="..\..\include\AgPerfMonEventDefs.h">
+    </File>
+    <File RelativePath="..\..\include\FrameworkFoundation.h">
+    </File>
+    <File RelativePath="..\..\include\ODBlock.h">
+    </File>
+    <File RelativePath="..\..\include\SampleActor.h">
+    </File>
+    <File RelativePath="..\..\include\SampleApplication.h">
+    </File>
+    <File RelativePath="..\..\include\SampleArray.h">
+    </File>
+    <File RelativePath="..\..\include\SampleAsset.h">
+    </File>
+    <File RelativePath="..\..\include\SampleAssetManager.h">
+    </File>
+    <File RelativePath="..\..\include\SampleCommandLine.h">
+    </File>
+    <File RelativePath="..\..\include\SampleDirManager.h">
+    </File>
+    <File RelativePath="..\..\include\SampleFilesystem.h">
+    </File>
+    <File RelativePath="..\..\include\SampleFrameworkInputEventIds.h">
+    </File>
+    <File RelativePath="..\..\include\SampleInputAsset.h">
+    </File>
+    <File RelativePath="..\..\include\SampleLineDebugRender.h">
+    </File>
+    <File RelativePath="..\..\include\SampleMaterialAsset.h">
+    </File>
+    <File RelativePath="..\..\include\SamplePointDebugRender.h">
+    </File>
+    <File RelativePath="..\..\include\SampleProfileDeclareAgPerfmonEventInfo.h">
+    </File>
+    <File RelativePath="..\..\include\SampleProfileDefineAgPerfmonEventInfo.h">
+    </File>
+    <File RelativePath="..\..\include\SamplePxProfileZone.h">
+    </File>
+    <File RelativePath="..\..\include\SampleTextureAsset.h">
+    </File>
+    <File RelativePath="..\..\include\SampleTree.h">
+    </File>
+    <File RelativePath="..\..\include\SampleTriangleDebugRender.h">
+    </File>
+    <File RelativePath="..\..\include\SampleXml.h">
+    </File>
+  </Filter>
+  <Filter Name="src" Filter=""> <!--  -->
+    <Filter Name="windows" Filter=""> <!--  -->
+      <File RelativePath="..\..\src\windows\WindowsSampleAssetManager.cpp">
+      </File>
+    </Filter>
+    <File RelativePath="..\..\src\nv_dds.h">
+    </File>
+    <File RelativePath="..\..\src\nv_dds.cpp">
+    </File>
+    <File RelativePath="..\..\src\ODBlock.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleApplication.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleAsset.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleAssetManager.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleCommandLine.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleDirManager.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleInputAsset.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleLineDebugRender.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleMaterialAsset.cpp">
+    </File>
+    <File RelativePath="..\..\src\SamplePointDebugRender.cpp">
+    </File>
+    <File RelativePath="..\..\src\SamplePxProfileZone.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleTextureAsset.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleTree.cpp">
+    </File>
+    <File RelativePath="..\..\src\SampleTriangleDebugRender.cpp">
+    </File>
+    <File RelativePath="..\..\..\..\..\externals\targa\1\targa.h">
+    </File>
+    <File RelativePath="..\..\..\..\..\externals\targa\1\targa.cpp">
+    </File>
+  </Filter>
+</Files>
+<Globals></Globals>
+</VisualStudioProject>
