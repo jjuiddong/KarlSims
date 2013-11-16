@@ -3,6 +3,8 @@
 #include "PhysXSample.h"
 
 
+// Evc
+// Evolved Virtual Creatures
 class CEvc : public PhysXSample
 {
 public:
@@ -24,6 +26,4 @@ public:
 public:
 	PxRigidDynamic*	createJointSphere(const PxVec3& pos, PxReal radius, const PxVec3* linVel=NULL, 
 		RenderMaterial* material=NULL, PxReal density=1.0f);
-
-
 };

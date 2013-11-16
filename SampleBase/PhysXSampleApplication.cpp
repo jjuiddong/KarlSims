@@ -172,9 +172,10 @@ PhysXSampleApplication::PhysXSampleApplication(const SampleCommandLine& cmdline)
 	mRunning							(NULL),
 	mSelected							(NULL),
 	mSample								(NULL),
-	mDefaultSamplePath					(NULL)
+	mDefaultSamplePath					(NULL),
+	mConsole(NULL)
 {
-	mConsole = SAMPLE_NEW(Console)(getPlatform());
+	//mConsole = SAMPLE_NEW(Console)(getPlatform());
 	mInputEventBuffer = SAMPLE_NEW(InputEventBuffer)(*this);
 	if(mConsole)
 	{
@@ -788,7 +789,6 @@ void PhysXSampleApplication::onRender()
 		char strbuf[512] = "";
 		if (mMenuExpand)
 		{
-
 			const RendererColor textColor(255, 255, 255, 255);
 			const RendererColor highlightTextColor(255, 255, 0, 255);
 			
@@ -831,104 +831,103 @@ void PhysXSampleApplication::onRender()
 			}
 
 			//print minimal information
-			{
-				y += yInc;
+			//{
+			//	y += yInc;
 
-				const RendererColor textColor(255, 255, 255, 255);
-				const char* msg;
+			//	const RendererColor textColor(255, 255, 255, 255);
+			//	const char* msg;
 
-				msg = inputInfoMsg("Press "," for help", SHOW_HELP, -1);
-				if(msg)
-					renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//	msg = inputInfoMsg("Press "," for help", SHOW_HELP, -1);
+			//	if(msg)
+			//		renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 
-				y+=yInc;
-			}
+			//	y+=yInc;
+			//}
 
-			if (mTextAlphaHelp != 0.0f)
-			{
-				const RendererColor textColor(255, 255, 255, PxU32(mTextAlphaHelp*255.0f));
-				const char* msg;
+			//if (mTextAlphaHelp != 0.0f)
+			//{
+			//	const RendererColor textColor(255, 255, 255, PxU32(mTextAlphaHelp*255.0f));
+			//	const char* msg;
 
-				if(m_platform->getSampleUserInput()->keyboardSupported() && m_platform->getSampleUserInput()->gamepadSupported()) 
-					renderer->print(x, y += yInc, "Use arrow keys or D-Pad to navigate between the items", scale, shadowOffset, textColor);
-				else
-				{
-					if(m_platform->getSampleUserInput()->keyboardSupported())
-					{
-						renderer->print(x, y += yInc, "Use arrow keys to navigate between the items", scale, shadowOffset, textColor);
-					}
-					else
-					{
-						if(m_platform->getSampleUserInput()->gamepadSupported())
-						{
-							renderer->print(x, y += yInc, "Use D-Pad to navigate between the items", scale, shadowOffset, textColor);
-						}
-					}
-				}
-				msg = inputInfoMsg("Press "," to run the selected sample", MENU_SELECT, -1);
-				if(msg)
-					renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
-				msg = inputInfoMsg("Press "," to exit sample selector", MENU_ESCAPE, -1);
-				if(msg)
-					renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
-			}
+			//	if(m_platform->getSampleUserInput()->keyboardSupported() && m_platform->getSampleUserInput()->gamepadSupported()) 
+			//		renderer->print(x, y += yInc, "Use arrow keys or D-Pad to navigate between the items", scale, shadowOffset, textColor);
+			//	else
+			//	{
+			//		if(m_platform->getSampleUserInput()->keyboardSupported())
+			//		{
+			//			renderer->print(x, y += yInc, "Use arrow keys to navigate between the items", scale, shadowOffset, textColor);
+			//		}
+			//		else
+			//		{
+			//			if(m_platform->getSampleUserInput()->gamepadSupported())
+			//			{
+			//				renderer->print(x, y += yInc, "Use D-Pad to navigate between the items", scale, shadowOffset, textColor);
+			//			}
+			//		}
+			//	}
+			//	msg = inputInfoMsg("Press "," to run the selected sample", MENU_SELECT, -1);
+			//	if(msg)
+			//		renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//	msg = inputInfoMsg("Press "," to exit sample selector", MENU_ESCAPE, -1);
+			//	if(msg)
+			//		renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//}
 		}
 		else
 		{
-			if (mShowExtendedHelp)
-			{
-				if (mSample)
-					mSample->showExtendedInputEventHelp(x,y);
-			}
-			else
-			{
-				//print minimal information
-				if (mRunning)
-				{
-					const RendererColor highlightTextColor(255, 255, 0, 255);
-					mRunning->getPathName(strbuf, sizeof strbuf - 1, true);
-					if (mPause) strncat(strbuf, "  <PAUSED>", 10);
-					renderer->print(x, y += yInc, strbuf, scale, shadowOffset, highlightTextColor);
-					y += yInc;
+			//if (mShowExtendedHelp)
+			//{
+			//	if (mSample)
+			//		mSample->showExtendedInputEventHelp(x,y);
+			//}
+			//else
+			//{
+			//	//print minimal information
+			//	if (mRunning)
+			//	{
+			//		const RendererColor highlightTextColor(255, 255, 0, 255);
+			//		mRunning->getPathName(strbuf, sizeof strbuf - 1, true);
+			//		if (mPause) strncat(strbuf, "  <PAUSED>", 10);
+			//		renderer->print(x, y += yInc, strbuf, scale, shadowOffset, highlightTextColor);
+			//		y += yInc;
 
-					const RendererColor textColor(255, 255, 255, 255);
-					const char* msg;
+			//		const RendererColor textColor(255, 255, 255, 255);
+			//		const char* msg;
 
-					msg = inputInfoMsg("Press "," for description", SHOW_DESCRIPTION, -1);
-					if(msg)
-						renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//		msg = inputInfoMsg("Press "," for description", SHOW_DESCRIPTION, -1);
+			//		if(msg)
+			//			renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 
-					msg = inputInfoMsg("Press "," for help", SHOW_HELP, -1);
-					if(msg)
-						renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//		msg = inputInfoMsg("Press "," for help", SHOW_HELP, -1);
+			//		if(msg)
+			//			renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 
-					y+=yInc;
-				}
+			//		y+=yInc;
+			//	}
 
-				if (mSample)
-					mSample->descriptionRender(x, y+=yInc, PxU8(mTextAlphaDesc*255.0f));
-				
-				//print help
-				if (mTextAlphaHelp != 0.0f)
-				{
-		
-					//print common help
-					const RendererColor textColor(255, 255, 255, PxU8(mTextAlphaHelp*255.0f));
-					const char* msg;
+			//	if (mSample)
+			//		mSample->descriptionRender(x, y+=yInc, PxU8(mTextAlphaDesc*255.0f));
+			//	
+			//	//print help
+			//	if (mTextAlphaHelp != 0.0f)
+			//	{		
+			//		//print common help
+			//		const RendererColor textColor(255, 255, 255, PxU8(mTextAlphaHelp*255.0f));
+			//		const char* msg;
 
-					msg = inputInfoMsg("Press "," to enter sample selector", MENU_SAMPLES, -1);
-					if(msg)
-						renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//		msg = inputInfoMsg("Press "," to enter sample selector", MENU_SAMPLES, -1);
+			//		if(msg)
+			//			renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 
-					msg = inputInfoMsg("Press "," to quit", QUIT,-1);
-					if(msg)
-						renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+			//		msg = inputInfoMsg("Press "," to quit", QUIT,-1);
+			//		if(msg)
+			//			renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 
-					//print sample specific help
-					if (mSample)
-						mSample->helpRender(x, y += yInc, PxU8(mTextAlphaHelp*255.0f));
-				}
-			}
+			//		//print sample specific help
+			//		if (mSample)
+			//			mSample->helpRender(x, y += yInc, PxU8(mTextAlphaHelp*255.0f));
+			//	}
+			//}
 		}
 
 		// PT: "customizeRender" is NOT just for text render, it's a generic render callback that should be called all the time,
@@ -953,8 +952,8 @@ void PhysXSampleApplication::onRender()
 	if (mSample)
 		mSample->displayFPS();
 
-	if(isConsoleActive())
-		mConsole->render(getRenderer());
+	//if(isConsoleActive())
+	//	mConsole->render(getRenderer());
 	}
 }
 /*

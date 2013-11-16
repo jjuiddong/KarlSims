@@ -23,7 +23,7 @@
 using namespace SampleRenderer;
 using namespace SampleFramework;
 
-REGISTER_SAMPLE(CEvc, "EvolvedVirtualCreatures")
+REGISTER_SAMPLE(CEvc, "Evolved Virtual Creatures")
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -148,53 +148,53 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 
 void CEvc::helpRender(PxU32 x, PxU32 y, PxU8 textAlpha)
 {
-	Renderer* renderer = getRenderer();
-	const PxU32 yInc = 18;
-	const PxReal scale = 0.5f;
-	const PxReal shadowOffset = 6.0f;
-	const RendererColor textColor(255, 255, 255, textAlpha);
-	const bool isMouseSupported = getApplication().getPlatform()->getSampleUserInput()->mouseSupported();
-	const bool isPadSupported = getApplication().getPlatform()->getSampleUserInput()->gamepadSupported();
-	const char* msg;
+	//Renderer* renderer = getRenderer();
+	//const PxU32 yInc = 18;
+	//const PxReal scale = 0.5f;
+	//const PxReal shadowOffset = 6.0f;
+	//const RendererColor textColor(255, 255, 255, textAlpha);
+	//const bool isMouseSupported = getApplication().getPlatform()->getSampleUserInput()->mouseSupported();
+	//const bool isPadSupported = getApplication().getPlatform()->getSampleUserInput()->gamepadSupported();
+	//const char* msg;
 
-	if (isMouseSupported && isPadSupported)
-		renderer->print(x, y += yInc, "Use mouse or right stick to rotate", scale, shadowOffset, textColor);
-	else if (isMouseSupported)
-		renderer->print(x, y += yInc, "Use mouse to rotate", scale, shadowOffset, textColor);
-	else if (isPadSupported)
-		renderer->print(x, y += yInc, "Use right stick to rotate", scale, shadowOffset, textColor);
-	if (isPadSupported)
-		renderer->print(x, y += yInc, "Use left stick to move",scale, shadowOffset, textColor);
-	msg = mApplication.inputMoveInfoMsg("Press "," to move", CAMERA_MOVE_FORWARD,CAMERA_MOVE_BACKWARD, CAMERA_MOVE_LEFT, CAMERA_MOVE_RIGHT);
-	if(msg)
-		renderer->print(x, y += yInc, msg,scale, shadowOffset, textColor);
-	msg = mApplication.inputInfoMsg("Press "," to move fast", CAMERA_SHIFT_SPEED, -1);
-	if(msg)
-		renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
-	msg = mApplication.inputInfoMsg("Press "," to throw an object", SPAWN_DEBUG_OBJECT, -1);
-	if(msg)
-		renderer->print(x, y += yInc, msg,scale, shadowOffset, textColor);
+	//if (isMouseSupported && isPadSupported)
+	//	renderer->print(x, y += yInc, "Use mouse or right stick to rotate", scale, shadowOffset, textColor);
+	//else if (isMouseSupported)
+	//	renderer->print(x, y += yInc, "Use mouse to rotate", scale, shadowOffset, textColor);
+	//else if (isPadSupported)
+	//	renderer->print(x, y += yInc, "Use right stick to rotate", scale, shadowOffset, textColor);
+	//if (isPadSupported)
+	//	renderer->print(x, y += yInc, "Use left stick to move",scale, shadowOffset, textColor);
+	//msg = mApplication.inputMoveInfoMsg("Press "," to move", CAMERA_MOVE_FORWARD,CAMERA_MOVE_BACKWARD, CAMERA_MOVE_LEFT, CAMERA_MOVE_RIGHT);
+	//if(msg)
+	//	renderer->print(x, y += yInc, msg,scale, shadowOffset, textColor);
+	//msg = mApplication.inputInfoMsg("Press "," to move fast", CAMERA_SHIFT_SPEED, -1);
+	//if(msg)
+	//	renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+	//msg = mApplication.inputInfoMsg("Press "," to throw an object", SPAWN_DEBUG_OBJECT, -1);
+	//if(msg)
+	//	renderer->print(x, y += yInc, msg,scale, shadowOffset, textColor);
 }
 
 void CEvc::descriptionRender(PxU32 x, PxU32 y, PxU8 textAlpha)
 {
-	bool print=(textAlpha!=0.0f);
+	//bool print=(textAlpha!=0.0f);
 
-	if(print)
-	{
-		Renderer* renderer = getRenderer();
-		const PxU32 yInc = 18;
-		const PxReal scale = 0.5f;
-		const PxReal shadowOffset = 6.0f;
-		const RendererColor textColor(255, 255, 255, textAlpha);
+	//if(print)
+	//{
+	//	Renderer* renderer = getRenderer();
+	//	const PxU32 yInc = 18;
+	//	const PxReal scale = 0.5f;
+	//	const PxReal shadowOffset = 6.0f;
+	//	const RendererColor textColor(255, 255, 255, textAlpha);
 
-		char line1[256]="This sample demonstrates how to set up and simulate a PhysX";
-		char line2[256]="scene.  Further, it illustrates the creation, simulation and";
-		char line3[256]="collision of simple dynamic objects.";
-		renderer->print(x, y+=yInc, line1, scale, shadowOffset, textColor);
-		renderer->print(x, y+=yInc, line2, scale, shadowOffset, textColor);
-		renderer->print(x, y+=yInc, line3, scale, shadowOffset, textColor);
-	}
+	//	char line1[256]="This sample demonstrates how to set up and simulate a PhysX";
+	//	char line2[256]="scene.  Further, it illustrates the creation, simulation and";
+	//	char line3[256]="collision of simple dynamic objects.";
+	//	renderer->print(x, y+=yInc, line1, scale, shadowOffset, textColor);
+	//	renderer->print(x, y+=yInc, line2, scale, shadowOffset, textColor);
+	//	renderer->print(x, y+=yInc, line3, scale, shadowOffset, textColor);
+	//}
 }
 
 PxU32 CEvc::getDebugObjectTypes() const
