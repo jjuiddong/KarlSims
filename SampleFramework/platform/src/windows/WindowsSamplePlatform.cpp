@@ -285,20 +285,20 @@ static ATOM registerWindowClass(HINSTANCE hInstance)
 	static ATOM atom = 0;
 	if(!atom)
 	{
-		WNDCLASSEX wcex;
+		WNDCLASSEXA wcex;
 		wcex.cbSize         = sizeof(WNDCLASSEX); 
 		wcex.style          = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc    = (WNDPROC)windowProc;
 		wcex.cbClsExtra     = 0;
 		wcex.cbWndExtra     = sizeof(void*);
 		wcex.hInstance      = hInstance;
-		wcex.hIcon          = ::LoadIcon(hInstance, "SampleApplicationIcon");
+		wcex.hIcon          = ::LoadIconA(hInstance, "SampleApplicationIcon");
 		wcex.hCursor        = ::LoadCursor(NULL, IDC_ARROW);
 		wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
 		wcex.lpszMenuName   = 0;
 		wcex.lpszClassName  = g_windowClassName;
-		wcex.hIconSm        = ::LoadIcon(wcex.hInstance, "SampleApplicationIcon");
-		atom = ::RegisterClassEx(&wcex);
+		wcex.hIconSm        = ::LoadIconA(wcex.hInstance, "SampleApplicationIcon");
+		atom = ::RegisterClassExA(&wcex);
 	}
 	return atom;
 }
@@ -510,7 +510,7 @@ bool WindowsPlatform::saveBitmap(const char* pFileName, physx::PxU32 width, phys
 	{
 		CImage image;
 		image.Attach(bitmap, CImage::DIBOR_TOPDOWN);
-		bSuccess = SUCCEEDED(image.Save(pFileName, Gdiplus::ImageFormatBMP));
+		bSuccess = SUCCEEDED(image.Save((LPCTSTR)pFileName, Gdiplus::ImageFormatBMP));
 		DeleteObject(bitmap);
 	}
 	return bSuccess;
@@ -655,6 +655,7 @@ bool WindowsPlatform::openWindow(physx::PxU32& width,
 		                         winRect.right - winRect.left, winRect.bottom - winRect.top,
 		                         0, 0, 0, 0);
 		RENDERER_ASSERT(m_hwnd, "CreateWindow failed");
+
 		if(m_hwnd)
 		{
 			ok = true;
@@ -709,7 +710,7 @@ bool WindowsPlatform::closeWindow()
 
 size_t WindowsPlatform::getCWD(char* path, size_t len)
 {
-	return ::GetCurrentDirectory((DWORD)len, path);
+	return ::GetCurrentDirectoryA((DWORD)len, path);
 }
 void WindowsPlatform::setCWDToEXE(void) 
 {
@@ -1161,9 +1162,9 @@ bool WindowsPlatform::makeSureDirectoryPathExists(const char* dirPath)
 	// [Kai] Currently create the final folder only if the dirPath doesn't exist.
 	// To create all the directories in the specified dirPath, use API
 	// MakeSureDirectoryPathExists() declared in dbghelp.h
-	bool ok = GetFileAttributes(dirPath) != -1;
+	bool ok = GetFileAttributesA(dirPath) != -1;
 	if (!ok)
-		ok = CreateDirectory(dirPath, NULL) != 0;
+		ok = CreateDirectoryA(dirPath, NULL) != 0;
 	return ok;
 }
 

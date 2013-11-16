@@ -52,42 +52,42 @@ D3DX11::D3DX11(void)
 	m_pD3DReflect(NULL)
 {
 #if defined(RENDERER_WINDOWS)
-	m_library = LoadLibraryA(D3DX11_DLL);
+	m_library = LoadLibrary(D3DX11_DLL);
 	if (!m_library)
 	{
 		// This version should be present on all valid DX11 machines
 		m_library = LoadLibraryA("d3dx11_42.dll");
 		if (!m_library)
 		{
-			MessageBoxA(0, "Unable to load " D3DX11_DLL ". Please install the latest DirectX End User Runtime available at www.microsoft.com/directx.", "Renderer Error.", MB_OK);
+			MessageBox(0, L"Unable to load " D3DX11_DLL L". Please install the latest DirectX End User Runtime available at www.microsoft.com/directx.", L"Renderer Error.", MB_OK);
 		}
 	}
 	if (m_library)
 	{
 		m_pD3DX11CompileFromFile = (D3DX11COMPILEFROMFILE)GetProcAddress(m_library, "D3DX11CompileFromFileA");
-		RENDERER_ASSERT(m_pD3DX11CompileFromFile, "Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL ".");
+		RENDERER_ASSERTW(m_pD3DX11CompileFromFile, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
 		m_pD3DX11CompileFromMemory = (D3DX11COMPILEFROMMEMORY)GetProcAddress(m_library, "D3DX11CompileFromMemory");
-		RENDERER_ASSERT(m_pD3DX11CompileFromMemory, "Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL ".");
+		RENDERER_ASSERTW(m_pD3DX11CompileFromMemory, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
 		m_pD3DX11SaveTextureToMemory = (D3DX11SAVETEXTURETOMEMORY)GetProcAddress(m_library, "D3DX11SaveTextureToMemory");
-		RENDERER_ASSERT(m_pD3DX11SaveTextureToMemory, "Unable to find D3DX11 Function D3DX11SaveTextureToMemory in " D3DX11_DLL ".");
+		RENDERER_ASSERTW(m_pD3DX11SaveTextureToMemory, L"Unable to find D3DX11 Function D3DX11SaveTextureToMemory in " D3DX11_DLL L".");
 	}
 
-	m_compiler_library = LoadLibraryA(D3DCOMPILER_DLL);
+	m_compiler_library = LoadLibrary(D3DCOMPILER_DLL);
 	if (!m_compiler_library)
 	{
 		// This version should be present on all valid DX11 machines
 		m_library = LoadLibraryA("D3DCompiler_42.dll");
 		if (!m_compiler_library)
 		{
-			MessageBoxA(0, "Unable to load " D3DCOMPILER_DLL ". Please install the latest DirectX End User Runtime available at www.microsoft.com/directx.", "Renderer Error.", MB_OK);
+			MessageBox(0, L"Unable to load " D3DCOMPILER_DLL L". Please install the latest DirectX End User Runtime available at www.microsoft.com/directx.", L"Renderer Error.", MB_OK);
 		}
 	}
 	if (m_compiler_library)
 	{
 		m_pD3DReflect = (D3DREFLECT)GetProcAddress(m_compiler_library, "D3DReflect");
-		RENDERER_ASSERT(m_pD3DReflect, "Unable to find D3D Function D3DReflect in " D3DCOMPILER_DLL ".");
+		RENDERER_ASSERTW(m_pD3DReflect, L"Unable to find D3D Function D3DReflect in " D3DCOMPILER_DLL L".");
 		m_pD3DCreateBlob = (D3DCREATEBLOB)GetProcAddress(m_compiler_library, "D3DCreateBlob");
-		RENDERER_ASSERT(m_pD3DCreateBlob, "Unable to find D3D Function D3DCreateBlob in " D3DCOMPILER_DLL ".");
+		RENDERER_ASSERTW(m_pD3DCreateBlob, L"Unable to find D3D Function D3DCreateBlob in " D3DCOMPILER_DLL L".");
 	}
 #endif
 }

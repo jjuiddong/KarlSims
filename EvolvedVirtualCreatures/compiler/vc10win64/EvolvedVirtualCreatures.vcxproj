@@ -33,7 +33,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -176,6 +176,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\SampleBase\compiler\vc10win64\SampleBase.vcxproj">
       <Project>{ba90589c-6cea-670c-950c-7bcf10e4792f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\wxMemMonitorLib\wxMemMonitorLib.vcxproj">
+      <Project>{937b4bdb-2bc4-43de-9e32-ba36aee888eb}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

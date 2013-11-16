@@ -11,6 +11,8 @@
 #include "PhysXSampleApplication.h"
 #include "PsFile.h"
 
+#include "../../../wxMemMonitorLib/wxMemMonitor.h"
+
 
 using namespace SampleFramework;
 
@@ -28,7 +30,7 @@ void mainInitialize()
 	gApp = SAMPLE_NEW(PhysXSampleApplication)(cmdline);
 
 	gApp->customizeSample(gSettings);
-	gSettings.mName	= "Evolved Virtual Creature";
+	gSettings.mName = "Evolved Virtual Creature";
 
 	if (gApp->isOpen())
 		gApp->close();
@@ -40,6 +42,16 @@ void mainInitialize()
 #else
 	if(gApp->isOpen()) gApp->onOpen();
 #endif
+
+	// init memmonitor
+	//if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
+	//if (!memmonitor::Init(memmonitor::INNER_PROCESS, NULL,"config_evc.json" ))
+	//{
+	//	//MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
+	//	assert(0);
+	//}
+
+
 }
 
 void mainTerminate()

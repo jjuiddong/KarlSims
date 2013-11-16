@@ -881,7 +881,7 @@ HRESULT D3D9RendererMaterial::loadCacheShader(LPCSTR shaderFilePath, const char*
 	D3D9Renderer::D3DXInterface &d3dx      = m_renderer.getD3DX();
 	char fullpath[1024];
 	FILE* file = NULL;
-	WIN32_FIND_DATA FindFileData; 
+	WIN32_FIND_DATAA FindFileData; 
 
 	if(cacheDir)
 	{
@@ -891,7 +891,7 @@ HRESULT D3D9RendererMaterial::loadCacheShader(LPCSTR shaderFilePath, const char*
 		physx::string::strcat_s(originpath, 1024, "shaders/");
 		physx::string::strcat_s(originpath, 1024, shaderFilePath);
 		  
-		HANDLE hFind = FindFirstFile(originpath, &FindFileData);
+		HANDLE hFind = FindFirstFileA(originpath, &FindFileData);
 		if (hFind == INVALID_HANDLE_VALUE) 
 			return D3DERR_NOTAVAILABLE;
 		FindClose(hFind);

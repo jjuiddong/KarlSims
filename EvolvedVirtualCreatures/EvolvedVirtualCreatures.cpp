@@ -20,6 +20,10 @@
 #include <SampleUserInputIds.h>
 #include <SampleUserInputDefines.h>
 
+
+#include "../../../wxMemMonitorLib/wxMemMonitor.h"
+
+
 using namespace SampleRenderer;
 using namespace SampleFramework;
 

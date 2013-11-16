@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Src">
+      <UniqueIdentifier>{14736298-c1b9-4d62-8ef6-c209c3d96a45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\common">
+      <UniqueIdentifier>{55c35274-e5f3-4737-94bb-0b14b315785c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\control">
+      <UniqueIdentifier>{6de73243-1303-4577-b94f-b369e8a25bf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\dia">
+      <UniqueIdentifier>{c32d6871-a4b8-4397-a4b6-b0b9c3eaa42c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\memory">
+      <UniqueIdentifier>{39df270b-74fc-452a-881d-7a69ecff3363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\ui">
+      <UniqueIdentifier>{f335fe2e-893f-4768-95ac-791a1967696c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\visualizer">
+      <UniqueIdentifier>{da41b6ed-cb53-4551-89c1-19d65d1d49f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\Log.h">
+      <Filter>Src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Reference.h">
+      <Filter>Src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Singleton.h">
+      <Filter>Src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\String.h">
+      <Filter>Src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Time.h">
+      <Filter>Src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\Global.h">
+      <Filter>Src\control</Filter>
+    </ClInclude>
+    <ClInclude Include="dia\DiaWrapper.h">
+      <Filter>Src\dia</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\SharedMemoryMng.h">
+      <Filter>Src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\SharedMemoryString.h">
+      <Filter>Src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\SharedMemory.h">
+      <Filter>Src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\SharedMemoryContainer.h">
+      <Filter>Src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\SharedMemoryList.h">
+      <Filter>Src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\MemoryTree.h">
+      <Filter>Src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\PropertyItemAdapter.h">
+      <Filter>Src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\PropertyWindow.h">
+      <Filter>Src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Frame.h">
+      <Filter>Src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\LogWindow.h">
+      <Filter>Src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\VisualizerGlobal.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\VisualizerParser.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\VisualizerScanner.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\DefaultPropertyMaker.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\PropertyMaker.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\Variant.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="visualizer\VisualizerDefine.h">
+      <Filter>Src\visualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="wxMemMonitor.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\Log.cpp">
+      <Filter>Src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\String.cpp">
+      <Filter>Src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\Global.cpp">
+      <Filter>Src\control</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\wxMemMonitor.cpp">
+      <Filter>Src\control</Filter>
+    </ClCompile>
+    <ClCompile Include="dia\DiaWrapper.cpp">
+      <Filter>Src\dia</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\SharedMemoryMng.cpp">
+      <Filter>Src\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\SharedMemoryString.cpp">
+      <Filter>Src\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\allocmemory.cpp">
+      <Filter>Src\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\MemoryTree.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\PropertyItemAdapter.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\PropertyWindow.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\App.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Frame.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\LogWindow.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\VisualizerGlobal.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\VisualizerParser.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\VisualizerScanner.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\DefaultPropertyMaker.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\PropertyMaker.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\Variant.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="visualizer\VisualizerDefine.cpp">
+      <Filter>Src\visualizer</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

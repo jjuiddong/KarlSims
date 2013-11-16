@@ -36,7 +36,7 @@ bool SampleFramework::searchForPath(const char* path, char* buffer, int bufferSi
 	strcpy_s(buffer, bufferSize, path);
 	for(int i = 0; i < maxRecursion; i++)
 	{
-		if(GetFileAttributes(buffer) == INVALID_FILE_ATTRIBUTES)
+		if(GetFileAttributesA(buffer) == INVALID_FILE_ATTRIBUTES)
 		{
 			sprintf_s(tmpBuffer, bufferSize, "../%s", buffer);
 			strcpy_s(buffer, bufferSize, tmpBuffer);

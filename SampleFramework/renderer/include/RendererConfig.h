@@ -203,6 +203,14 @@
 		        MessageBoxA(0, _msg, "Renderer Assert", MB_OK); \
 		        __debugbreak();                                 \
 		    }
+
+	#define RENDERER_ASSERTW(_exp, _msg)                     \
+			if(!(_exp))                                         \
+			{                                                   \
+				MessageBoxW(0, _msg, L"Renderer Assert", MB_OK); \
+				__debugbreak();                                 \
+			}
+
 	#elif defined(RENDERER_ANDROID)
 	#include <android/log.h>
 	#define RENDERER_ASSERT(_exp, _msg)													\
