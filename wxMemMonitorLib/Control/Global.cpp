@@ -366,9 +366,12 @@ void memmonitor::WriteWindowPosition()
 		wxRect mainW = GetFrame()->GetRect();
 		props.add( "main window", 
 			format("%d %d %d %d", mainW.x, mainW.y, mainW.width, mainW.height) );
-		wxRect memW = GetMemoryTree()->GetRect();
-		props.add( "memory tree", 
-			format("%d %d %d %d", memW.x, memW.y, memW.width, memW.height) );
+		if (GetMemoryTree())
+		{
+			wxRect memW = GetMemoryTree()->GetRect();
+			props.add( "memory tree", 
+				format("%d %d %d %d", memW.x, memW.y, memW.width, memW.height) );
+		}
 
 		const CFrame::PropertyFrames &frames = GetFrame()->GetPropFrames();
 		BOOST_FOREACH(auto &frame, frames)
@@ -401,6 +404,10 @@ void	memmonitor::Clear()
 		}
 		SAFE_DELETE(g_pMemMap);
 	}
+
+	dia::Cleanup();
+	sharedmemory::Release();
+	visualizer::Release();
 }
 MapType& memmonitor::GetMemoryMap()
 {

@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PxToolkit", "..\..\PxToolki
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EvolvedVirtualCreatures", "..\..\EvolvedVirtualCreatures\compiler\vc10win32\EvolvedVirtualCreatures.vcxproj", "{B1ED425F-885E-4287-94D3-C55D6FC2FE81}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxMemMonitorLib", "..\..\wxMemMonitorLib\wxMemMonitorLib.vcxproj", "{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		checked|Win32 = checked|Win32
@@ -97,6 +99,18 @@ Global
 		{B1ED425F-885E-4287-94D3-C55D6FC2FE81}.release|Win32.ActiveCfg = Release|Win32
 		{B1ED425F-885E-4287-94D3-C55D6FC2FE81}.release|Win32.Build.0 = Release|Win32
 		{B1ED425F-885E-4287-94D3-C55D6FC2FE81}.release|x64.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.checked|Win32.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.checked|Win32.Build.0 = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.checked|x64.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.debug|Win32.ActiveCfg = Debug|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.debug|Win32.Build.0 = Debug|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.debug|x64.ActiveCfg = Debug|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.profile|Win32.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.profile|Win32.Build.0 = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.profile|x64.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.release|Win32.ActiveCfg = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.release|Win32.Build.0 = Release|Win32
+		{937B4BDB-2BC4-43DE-9E32-BA36AEE888EB}.release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

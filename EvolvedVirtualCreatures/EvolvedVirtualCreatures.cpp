@@ -21,8 +21,6 @@
 #include <SampleUserInputDefines.h>
 
 
-#include "../../../wxMemMonitorLib/wxMemMonitor.h"
-
 
 using namespace SampleRenderer;
 using namespace SampleFramework;
@@ -106,27 +104,27 @@ void CEvc::onInit()
 	mCameraController.setMouseSensitivity(0.5f);
 
 
-	PxRigidDynamic* actor1 = NULL;
-	const PxVec3 pos = getCamera().getPos();
-	const PxVec3 vel = getCamera().getViewDir() * getDebugObjectsVelocity();
-	actor1 = createSphere(pos, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
+	//PxRigidDynamic* actor1 = NULL;
+	//const PxVec3 pos = getCamera().getPos();
+	//const PxVec3 vel = getCamera().getViewDir() * getDebugObjectsVelocity();
+	//actor1 = createSphere(pos, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
 
-	PxRigidDynamic* actor2 = NULL;
-	PxVec3 pos2 = getCamera().getPos();
-	pos2.x += 1.f;
-	actor2 = createSphere(pos2, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
+	//PxRigidDynamic* actor2 = NULL;
+	//PxVec3 pos2 = getCamera().getPos();
+	//pos2.x += 1.f;
+	//actor2 = createSphere(pos2, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
 
 
 	// Joint Test
-	const float scale = 1.f;
-	const float plankDepth = 2.f;
-	//PxRevoluteJoint* j = PxRevoluteJointCreate(getPhysics(), 
-	//PxFixedJoint* j = PxFixedJointCreate(getPhysics(), 
-	PxSphericalJoint* j = PxSphericalJointCreate(getPhysics(), 
-		actor1, PxTransform(PxVec3(0,0, plankDepth)*scale),
-		actor2, PxTransform(PxVec3(0,0,-plankDepth)*scale));
-	if(j)
-		j->setProjectionLinearTolerance(.5f);
+	//const float scale = 1.f;
+	//const float plankDepth = 2.f;
+	////PxRevoluteJoint* j = PxRevoluteJointCreate(getPhysics(), 
+	////PxFixedJoint* j = PxFixedJointCreate(getPhysics(), 
+	//PxSphericalJoint* j = PxSphericalJointCreate(getPhysics(), 
+	//	actor1, PxTransform(PxVec3(0,0, plankDepth)*scale),
+	//	actor2, PxTransform(PxVec3(0,0,-plankDepth)*scale));
+	//if(j)
+	//	j->setProjectionLinearTolerance(.5f);
 
 }
 

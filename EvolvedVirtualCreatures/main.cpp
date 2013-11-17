@@ -1,5 +1,3 @@
-// EvolvedVirtualCreatures.cpp : 콘솔 응용 프로그램에 대한 진입점을 정의합니다.
-//
 
 #include "stdafx.h"
 
@@ -12,6 +10,7 @@
 #include "PsFile.h"
 
 #include "../../../wxMemMonitorLib/wxMemMonitor.h"
+//MEMORYMONITOR_INNER_PROCESS();
 
 
 using namespace SampleFramework;
@@ -47,7 +46,7 @@ void mainInitialize()
 	//if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
 	//if (!memmonitor::Init(memmonitor::INNER_PROCESS, NULL,"config_evc.json" ))
 	//{
-	//	//MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
+	//	MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
 	//	assert(0);
 	//}
 
@@ -58,7 +57,8 @@ void mainTerminate()
 {
 	DELETESINGLE(gApp);
 	DELETESINGLE(gSampleCommandLine);
-	releaseSampleAllocator();
+	releaseSampleAllocator();	
+	memmonitor::Cleanup();
 }
 
 
@@ -105,3 +105,4 @@ int main()
 	return 0;
 }
 
+/**/

@@ -24,13 +24,13 @@
 // using memory monitor inner process
 #define MEMORYMONITOR_INNER_PROCESS()			\
 	DECLARE_APP(memmonitor::CApp)							\
-	IMPLEMENT_APP_NO_MAIN(memmonitor::CApp)		\
+	IMPLEMENT_APP_NO_MAIN(memmonitor::CApp)	
 
 
 // generate memory monitor execute file
 #define MEMORYMONITOR_OUTER_PROCESS()		\
 	DECLARE_APP(memmonitor::CApp)						\
-	IMPLEMENT_APP(memmonitor::CApp)					\
+	IMPLEMENT_APP(memmonitor::CApp)
 
 
 namespace memmonitor

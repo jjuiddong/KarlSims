@@ -1,3 +1,4 @@
+
 KarlSims
 ========
 
@@ -8,16 +9,34 @@ Evolved Virtual Creatures of Karl Sims Project 1994 with DX3D, PhysX, GA Algorit
 - PhysX - PhysX 3.3.0 Beta
 
 
-#### NVIDIAL PhysX 3.3.0 Beta configure setting
+NVIDIA PhysX 3.3.0 Beta configure setting
+---------
 - Configure Variable
  - PHYSX_DIR - NVIDIA PhysX Library Directory
 - No NVidia Graphic Card Computer
  - define RENDERER_PVD  in SampleBase, Sample Rederer project
 
 
+wxMemMonitor (with wxWidgets 3.0.0)
+---------
+
+#### Usage:
+```sh
+#include "../wxMemMonitorLib/wxMemMonitor.h"
+if (!memmonitor::Init(memmonitor::INNER_PROCESS,hInstance,"config_target.json" ))
+{
+    MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
+}
+~~
+~~
+memmonitor::Cleanup();
+```
+
+* ambigious funciton 'floor' 
+    - modify -> floor to ::floor (in wxWidgets/geometry.h)
+
 
 License
 ----
 
 MIT
-

@@ -81,7 +81,7 @@ bool sharedmemory::Init( const std::string &name, SHARED_TYPE type, const size_t
 //------------------------------------------------------------------------
 void sharedmemory::Release()
 {
-	if (SHARED_SERVER == n_Type) // ServerType일때만 지울수있다.
+	if (!n_Name.empty() && (SHARED_SERVER == n_Type)) // ServerType일때만 지울수있다.
 	{
 		shared_memory_object::remove(n_Name.c_str());
 	}

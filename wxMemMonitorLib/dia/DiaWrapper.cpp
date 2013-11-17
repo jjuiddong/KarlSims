@@ -19,11 +19,14 @@ using namespace dia;
 
 void	dia::Cleanup()
 {
+	const bool IsInitialize = (m_pDiaDataSource)? true : false;
+
 	SAFE_RELEASE(m_pGlobalSymbol);
 	SAFE_RELEASE(m_pDiaSession);
 	SAFE_RELEASE(m_pDiaDataSource);
 
-	CoUninitialize();
+	if (IsInitialize)
+		CoUninitialize();
 }
 
 
