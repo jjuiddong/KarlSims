@@ -85,46 +85,55 @@ namespace memmonitor
 	class Monitor
 	{
 	public:
-		void* operator new (size_t size)
+		__forceinline void* operator new (size_t size)
 		{
 			return Allocate(size);
 		}
 		//attachTypeName : typeName에 추가적으로 붙게되는 이름
 		// 호출 방법: Type *p = new ("attachTypeName") Type();
-		void* operator new (size_t size, char *attachTypeName)
+		__forceinline void* operator new (size_t size, char *attachTypeName)
 		{
 			// Name = typeName + # + attachTypeName + m_Count
 			return Allocate(size, attachTypeName);
 		}
-		void* operator new[] (size_t size)
+		__forceinline void* operator new[] (size_t size)
 		{
 			return Allocate(size);
 		}
 
 		// Debug new
-		void* operator new (size_t size, char* lpszFileName, int nLine)
+		__forceinline void* operator new (size_t size, char* lpszFileName, int nLine)
 		{
 			return Allocate(size);
 		}
 		// Debug new
-		void* operator new[] (size_t size, char* lpszFileName, int nLine)
+		__forceinline void* operator new[] (size_t size, char* lpszFileName, int nLine)
 		{
 			return Allocate(size);
 		}
 
-		void operator delete (void *ptr)
+		__forceinline void* operator new(size_t size, const char* handle, const char * filename, int line)	
+		{ 
+			return Allocate(size);
+		}
+
+		__forceinline void operator delete (void *ptr)
 		{
 			DeAllocateMem(ptr);
 		}
-		void operator delete (void *ptr, char* lpszFileName, int nLine)
+		__forceinline void operator delete (void *ptr, char* lpszFileName, int nLine)
 		{
 			DeAllocateMem(ptr);
 		}
-		void operator delete (void *ptr, char *attachTypeName)
+		__forceinline void operator delete (void *ptr, char *attachTypeName)
 		{
 			DeAllocateMem(ptr);
 		}
-		void operator delete[] (void *ptr)
+		__forceinline void operator delete[] (void *ptr)
+		{
+			DeAllocateMem(ptr);
+		}
+		__forceinline void	operator delete (void* p, const char*, const char *, int)
 		{
 			DeAllocateMem(ptr);
 		}

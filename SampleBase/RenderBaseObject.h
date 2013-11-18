@@ -31,8 +31,11 @@
 #define RENDER_BASE_OBJECT_H
 
 #include "SampleAllocator.h"
+#include "../wxMemMonitorLib/wxMemMonitor.h"
 
-	class RenderBaseObject : public SampleAllocateable
+	//DECLARE_TYPE_NAME(RenderBaseObject)
+	class RenderBaseObject //: //public SampleAllocateable
+												//virtual public memmonitor::Monitor<RenderBaseObject, TYPE_NAME(RenderBaseObject)>
 	{
 		public:
 						RenderBaseObject();

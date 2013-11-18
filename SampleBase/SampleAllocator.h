@@ -83,5 +83,6 @@ using namespace physx;
 	#define SAMPLE_ALLOC(x)	getSampleAllocator()->allocate(x, 0, __FILE__, __LINE__)
 	#define	SAMPLE_FREE(x)	if(x)	{ getSampleAllocator()->deallocate(x); x = NULL;	}
 	#define SAMPLE_NEW(x)	new(#x, __FILE__, __LINE__) x
+	#define SAMPLE_NEW2(x)	new x
 
 #endif

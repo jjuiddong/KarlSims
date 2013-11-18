@@ -490,7 +490,7 @@ void RenderClothActor::update(float deltaTime)
 		// create capsule actors
 		for (PxU32 i=0; i < numCapsules; i++)
 		{
-			RenderCapsuleActor* capsule = SAMPLE_NEW(RenderCapsuleActor)(mClothRenderShape->getRenderer(), 1.0f, 1.0f);
+			RenderCapsuleActor* capsule = SAMPLE_NEW2(RenderCapsuleActor)(mClothRenderShape->getRenderer(), 1.0f, 1.0f);
 			mCapsuleActors.pushBack(capsule);
 		}
 	}
@@ -542,7 +542,7 @@ void RenderClothActor::update(float deltaTime)
 	SAMPLE_FREE(mMeshActor);
 	if(mNumTriangles)
 	{
-		mMeshActor = SAMPLE_NEW(RenderMeshActor)(mRenderer, reinterpret_cast<const PxVec3*>(
+		mMeshActor = SAMPLE_NEW2(RenderMeshActor)(mRenderer, reinterpret_cast<const PxVec3*>(
 			mTriangles), mNumTriangles*3, 0, 0, mMeshIndices.begin(), NULL, mNumTriangles, true);
 		mMeshActor->setTransform(clothPose);
 	}
@@ -557,7 +557,7 @@ void RenderClothActor::update(float deltaTime)
 		mConvexIndices = builder.mIndices;
 		if(!mConvexIndices.empty())
 		{
-			mConvexActor = SAMPLE_NEW(RenderMeshActor)(mRenderer, mConvexVertices.begin(), 
+			mConvexActor = SAMPLE_NEW2(RenderMeshActor)(mRenderer, mConvexVertices.begin(), 
 				mConvexVertices.size(), 0, 0, mConvexIndices.begin(), NULL, mConvexIndices.size()/3, true);
 			mConvexActor->setTransform(clothPose);
 		}

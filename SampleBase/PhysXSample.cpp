@@ -330,7 +330,7 @@ RenderMeshActor* PhysXSample::createRenderMeshFromRawMesh(const RAWMesh& data, P
 			indices[i*3+2] = src[i*3+1];
 	}
 
-	RenderMeshActor* meshActor = SAMPLE_NEW(RenderMeshActor)(*getRenderer(), data.mVerts, data.mNbVerts, data.mVertexNormals, data.mUVs, indices, NULL, nbTris);
+	RenderMeshActor* meshActor = SAMPLE_NEW2(RenderMeshActor)(*getRenderer(), data.mVerts, data.mNbVerts, data.mVertexNormals, data.mUVs, indices, NULL, nbTris);
 	SAMPLE_FREE(indices);
 
 	if(data.mMaterialID!=0xffffffff)
@@ -368,13 +368,13 @@ RenderTexture* PhysXSample::createRenderTextureFromRawTexture(const RAWTexture& 
 		mManagedAssets.push_back(t);
 
 		SampleTextureAsset* textureAsset = static_cast<SampleTextureAsset*>(t);
-		texture = SAMPLE_NEW(RenderTexture)(*getRenderer(), data.mID, textureAsset->getTexture());
+		texture = SAMPLE_NEW2(RenderTexture)(*getRenderer(), data.mID, textureAsset->getTexture());
 
 	}
 	else
 	{
 		// PT: the pixel data is directly included in the RAW file
-		texture = SAMPLE_NEW(RenderTexture)(*getRenderer(), data.mID, data.mWidth, data.mHeight, data.mPixels);
+		texture = SAMPLE_NEW2(RenderTexture)(*getRenderer(), data.mID, data.mWidth, data.mHeight, data.mPixels);
 	}
 	if(data.mName)
 		strcpy(texture->mName, data.mName);
@@ -400,7 +400,7 @@ void PhysXSample::newMaterial(const RAWMaterial& data)
 		}
 	}
 
-	RenderMaterial* newRM = SAMPLE_NEW(RenderMaterial)(*getRenderer(), data.mDiffuseColor, data.mOpacity, data.mDoubleSided, data.mID, diffuse);
+	RenderMaterial* newRM = SAMPLE_NEW2(RenderMaterial)(*getRenderer(), data.mDiffuseColor, data.mOpacity, data.mDoubleSided, data.mID, diffuse);
 //	strcpy(newRM->mName, data.mName);
 	mRenderMaterials.push_back(newRM);
 }
@@ -478,7 +478,7 @@ void PhysXSample::newMesh(const RAWMesh& data)
 					indices[i*3+2] = src[i*3+1];
 				}
 
-				RenderMeshActor* meshActor = SAMPLE_NEW(RenderMeshActor)(*getRenderer(), verts, nbVerts, verts, NULL, indices, NULL, nbTris);
+				RenderMeshActor* meshActor = SAMPLE_NEW2(RenderMeshActor)(*getRenderer(), verts, nbVerts, verts, NULL, indices, NULL, nbTris);
 				if(data.mName)
 					strcpy(meshActor->mName, data.mName);
 				PxShape* shape; 
@@ -2056,7 +2056,7 @@ RenderBaseActor* PhysXSample::createRenderBoxFromShape(PxRigidActor* actor, PxSh
 			PX_ASSERT(status);
 
 			// Create render object
-			shapeRenderActor = SAMPLE_NEW(RenderBoxActor)(*renderer, geometry.halfExtents, uvs);
+			shapeRenderActor = SAMPLE_NEW2(RenderBoxActor)(*renderer, geometry.halfExtents, uvs);
 		}
 		break;
 	default: {}
@@ -2088,13 +2088,13 @@ RenderBaseActor* PhysXSample::createRenderObjectFromShape(PxRigidActor* actor, P
 		shapeRenderActor = SAMPLE_NEW(RenderSphereActor)(renderer, geom.sphere().radius);
 		break;
 	case PxGeometryType::ePLANE:
-		shapeRenderActor = SAMPLE_NEW(RenderGridActor)(renderer, 50, 1.f, PxShapeExt::getGlobalPose(*shape, *actor).q);
+		shapeRenderActor = SAMPLE_NEW2(RenderGridActor)(renderer, 50, 1.f, PxShapeExt::getGlobalPose(*shape, *actor).q);
 		break;
 	case PxGeometryType::eCAPSULE:
-		shapeRenderActor = SAMPLE_NEW(RenderCapsuleActor)(renderer, geom.capsule().radius, geom.capsule().halfHeight);
+		shapeRenderActor = SAMPLE_NEW2(RenderCapsuleActor)(renderer, geom.capsule().radius, geom.capsule().halfHeight);
 		break;
 	case PxGeometryType::eBOX:
-		shapeRenderActor = SAMPLE_NEW(RenderBoxActor)(renderer, geom.box().halfExtents);
+		shapeRenderActor = SAMPLE_NEW2(RenderBoxActor)(renderer, geom.box().halfExtents);
 		break;
 	case PxGeometryType::eCONVEXMESH:
 		{
@@ -2178,7 +2178,7 @@ RenderBaseActor* PhysXSample::createRenderObjectFromShape(PxRigidActor* actor, P
 			}
 
 			PX_ASSERT(offset==totalNbVerts);
-			shapeRenderActor = SAMPLE_NEW(RenderMeshActor)(renderer, vertices, totalNbVerts, normals, UVs, faces, NULL, totalNbTris);
+			shapeRenderActor = SAMPLE_NEW2(RenderMeshActor)(renderer, vertices, totalNbVerts, normals, UVs, faces, NULL, totalNbTris);
 			shapeRenderActor->setMeshScale(geom.convexMesh().scale);
 
 			SAMPLE_FREE(faces);
@@ -2199,7 +2199,7 @@ RenderBaseActor* PhysXSample::createRenderObjectFromShape(PxRigidActor* actor, P
 			const bool has16bitIndices = tm->getTriangleMeshFlags() & PxTriangleMeshFlag::eHAS_16BIT_TRIANGLE_INDICES ? true : false;
 			const PxU16* faces16 = has16bitIndices ? (const PxU16*)tris : NULL;
 			const PxU32* faces32 = has16bitIndices ? NULL : (const PxU32*)tris;
-			shapeRenderActor = SAMPLE_NEW(RenderMeshActor)(renderer, verts, nbVerts, NULL, NULL, faces16, faces32, nbTris, true);			
+			shapeRenderActor = SAMPLE_NEW2(RenderMeshActor)(renderer, verts, nbVerts, NULL, NULL, faces16, faces32, nbTris, true);			
 			shapeRenderActor->setMeshScale(geom.triangleMesh().scale);
 
 			if (!material)
@@ -2272,7 +2272,7 @@ RenderBaseActor* PhysXSample::createRenderObjectFromShape(PxRigidActor* actor, P
 				indices_16bit[i*3+2] = indices[i*3+1];
 			}
 		
-			shapeRenderActor = SAMPLE_NEW(RenderMeshActor)(renderer, vertexes, nbVerts, NULL, NULL, indices_16bit, NULL, nbFaces);
+			shapeRenderActor = SAMPLE_NEW2(RenderMeshActor)(renderer, vertexes, nbVerts, NULL, NULL, indices_16bit, NULL, nbFaces);
 			SAMPLE_FREE(indices_16bit);
 			SAMPLE_FREE(indices);
 			DELETEARRAY(sampleBuffer);
@@ -2658,7 +2658,7 @@ RenderMaterial* PhysXSample::createRenderMaterialFromTextureFile(const char* fil
 	RAWTexture data;
 	data.mName = filename;
 	RenderTexture* texture = createRenderTextureFromRawTexture(data);	
-	material = SAMPLE_NEW(RenderMaterial)(*getRenderer(), PxVec3(0.7f, 0.7f, 0.7f), 1.0f, true, MATERIAL_CLOTH, texture);
+	material = SAMPLE_NEW2(RenderMaterial)(*getRenderer(), PxVec3(0.7f, 0.7f, 0.7f), 1.0f, true, MATERIAL_CLOTH, texture);
 	mRenderMaterials.push_back(material);
 
 	return material;
@@ -2669,7 +2669,7 @@ RenderMaterial* PhysXSample::createRenderMaterialFromTextureFile(const char* fil
 
 void PhysXSample::createRenderObjectsFromCloth(const PxCloth& cloth, const PxClothMeshDesc& meshDesc, RenderMaterial* material, const PxVec2* uv, bool enableDebugRender, PxReal scale)
 {
-    RenderClothActor* clothActor = SAMPLE_NEW (RenderClothActor)
+    RenderClothActor* clothActor = SAMPLE_NEW2 (RenderClothActor)
 		(*getRenderer(), cloth, meshDesc,uv, scale );
 	if(!clothActor)
 		return;
@@ -2711,7 +2711,7 @@ PxRigidActor* PhysXSample::createGrid(RenderMaterial* material)
 	PxShape* shape;
 	plane->getShapes(&shape, 1);
 
-	RenderGridActor* actor = SAMPLE_NEW(RenderGridActor)(*renderer, 20, 10.0f);
+	RenderGridActor* actor = SAMPLE_NEW2(RenderGridActor)(*renderer, 20, 10.0f);
 	link(actor, shape, plane);
 	actor->setTransform(PxTransform(PxIdentity));
 	mRenderActors.push_back(actor);
@@ -3025,7 +3025,7 @@ void PhysXSample::importRAWFile(const char* relativePath, PxReal scale, bool rec
 
 RenderParticleSystemActor* PhysXSample::createRenderObjectFromParticleSystem(ParticleSystem& ps, RenderMaterial* material, bool useMeshInstancing, bool useFading, PxReal fadingPeriod, PxReal instancingScale)
 {
-	RenderParticleSystemActor* renderActor = SAMPLE_NEW(RenderParticleSystemActor)(*getRenderer(), &ps, useMeshInstancing, useFading, fadingPeriod, instancingScale);
+	RenderParticleSystemActor* renderActor = SAMPLE_NEW2(RenderParticleSystemActor)(*getRenderer(), &ps, useMeshInstancing, useFading, fadingPeriod, instancingScale);
 	if(material) renderActor->setRenderMaterial(material);
 
 	mRenderActors.push_back(renderActor);
