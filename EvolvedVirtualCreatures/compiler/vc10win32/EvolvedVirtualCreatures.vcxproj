@@ -29,9 +29,6 @@
     <ProjectReference Include="..\..\..\SampleBase\compiler\vc10win32\SampleBase.vcxproj">
       <Project>{32ca1d72-b281-0440-c8bd-65b377832668}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\wxMemMonitorLib\wxMemMonitorLib.vcxproj">
-      <Project>{937b4bdb-2bc4-43de-9e32-ba36aee888eb}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B1ED425F-885E-4287-94D3-C55D6FC2FE81}</ProjectGuid>
