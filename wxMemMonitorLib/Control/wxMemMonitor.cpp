@@ -18,7 +18,7 @@ namespace memmonitor
 	static const int CMD_SHOW_WINDOW = wxNewId();
 	static const int CMD_TERMINATE = wxNewId();
 
-	static const bool IsThreadRunning = true;
+	static const bool g_IsThreadRunning = true;
 }
 
 
@@ -26,13 +26,11 @@ using namespace memmonitor;
 
 CApp::CApp()
 {
-	Connect(CMD_TERMINATE, wxEVT_THREAD,
-		wxThreadEventHandler(CApp::OnTerminate));
+	Connect(CMD_TERMINATE, wxEVT_THREAD, wxThreadEventHandler(CApp::OnTerminate));
 }
 void CApp::OnTerminate(wxThreadEvent& WXUNUSED(event))
 {
 	ExitMainLoop();
-	OnExit();
 }
 
 
@@ -47,7 +45,7 @@ bool memmonitor::Init(EXECUTE_TYPE type, HINSTANCE hInst, const std::string conf
 	SetConfigFileName(configFileName);
 	SethInstance(hInst);
 
-	if (IsThreadRunning)
+	if (g_IsThreadRunning)
 	{
 		if (INNER_PROCESS == type)
 			return run_dll(type, hInst, configFileName);
@@ -113,11 +111,11 @@ bool memmonitor::ShowToggle()
 //------------------------------------------------------------------------
 void memmonitor::Cleanup()
 {
-	if (IsThreadRunning)
+	if (g_IsThreadRunning)
 	{
 		wxCriticalSectionLocker lock(gs_wxStartupCS);
 
-		if ( gs_wxMainThread )
+		if (gs_wxMainThread)
 		{
 			// If wx main thread is running, we need to stop it. To accomplish this,
 			// send a message telling it to terminate the app.
@@ -137,8 +135,6 @@ void memmonitor::Cleanup()
 
 	if (INNER_PROCESS == GetExecuteType())
 	{
-		if ( wxTheApp )
-			wxTheApp->OnExit();
 		wxEntryCleanup();
 	}
 

@@ -10,7 +10,9 @@
 #include "PsFile.h"
 
 #include "../../../wxMemMonitorLib/wxMemMonitor.h"
-//MEMORYMONITOR_INNER_PROCESS();
+//#include "vld/vld.h"
+MEMORYMONITOR_INNER_PROCESS();
+
 
 
 using namespace SampleFramework;
@@ -42,15 +44,12 @@ void mainInitialize()
 	if(gApp->isOpen()) gApp->onOpen();
 #endif
 
-	// init memmonitor
-	//if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
+	if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
 	//if (!memmonitor::Init(memmonitor::INNER_PROCESS, NULL,"config_evc.json" ))
-	//{
+	{
 	//	MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
-	//	assert(0);
-	//}
-
-
+		//assert(0);
+	}
 }
 
 void mainTerminate()
@@ -104,5 +103,3 @@ int main()
 	mainTerminate();
 	return 0;
 }
-
-/**/

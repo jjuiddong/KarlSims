@@ -79,7 +79,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalIncludeDirectories>./../../../SampleBase;./../../../PxToolkit/include;./../../../SampleFramework/framework/include;./../../../SampleFramework/renderer/include;./../../../SampleFramework/platform/include;$(PHYSX_DIR)Source/shared/general/shared;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Source/Common/src;$(PHYSX_DIR)Source/GeomUtils/headers;$(PHYSX_DIR)Source/GeomUtils/include;$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Source/PhysXVehicle/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -97,6 +97,7 @@
       <AdditionalOptions>Winmm.lib /LIBPATH:../lib/win32 PhysX3CommonDEBUG_x86.lib PhysX3DEBUG_x86.lib PhysX3CookingDEBUG_x86.lib PhysX3CharacterKinematicDEBUG_x86.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PxTaskDEBUG.lib /DEBUG </AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>../../vld/lib/Win32/vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

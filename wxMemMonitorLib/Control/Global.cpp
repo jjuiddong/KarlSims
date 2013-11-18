@@ -251,9 +251,7 @@ bool	memmonitor::InitMemoryMonitor(const std::string &configFileName)
 	}
 	catch (std::exception &e)
 	{
-		SetErrorMsg(
-			format( "\"%s\" json script Err!! [%s]\n",  
-			configFileName.c_str(), e.what()) );
+		SetErrorMsg( format("\"%s\" json script Err!! [%s]\n",  configFileName.c_str(), e.what()) );
 		return false;
 	}
 
@@ -404,10 +402,6 @@ void	memmonitor::Clear()
 		}
 		SAFE_DELETE(g_pMemMap);
 	}
-
-	dia::Cleanup();
-	sharedmemory::Release();
-	visualizer::Release();
 }
 MapType& memmonitor::GetMemoryMap()
 {

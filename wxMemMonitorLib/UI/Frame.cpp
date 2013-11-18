@@ -81,6 +81,9 @@ CFrame::~CFrame()
 	WriteWindowPosition();
 	// deinitialize the frame manager
 	m_mgr.UnInit();
+	dia::Cleanup();
+	sharedmemory::Release();
+	visualizer::Release();
 }
 
 
