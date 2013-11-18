@@ -1,0 +1,171 @@
+
+CLobbyServer{
+	preview
+	(
+		#(
+			Users : [$e.m_Users],
+			Rooms : [$e.m_Rooms],
+			[actual member] : [$e, !]
+		)
+	)
+}
+
+
+common::ReferencePtr<*>{
+	preview
+	(
+		#(
+			 Ptr : [$e.m_p, !]
+		)
+	)
+}
+
+common::CThread{
+	preview
+	(
+		#(
+			Name : [$e.m_Name],
+			State : [$e.m_State],
+			[actual member] : [$e, !]
+		)
+	)
+}
+
+Vector2{
+	preview
+	(
+		$e.x,
+		$e.y
+	)
+}
+
+boost::container::basic_string<char,*>{
+
+	preview		( #if( $e.members_.m_repr.s.h.is_short != 0 ) ( [$e.members_.m_repr.s.data , s]) )
+
+}
+
+std::list<*>{
+	children
+	(
+		#list
+		(
+			head : $e._Myhead->_Next,
+			size : $e._Mysize,
+			next : _Next
+		) : $e._Myval
+	)
+	preview
+	(
+		#(
+			"[", $e._Mysize, "](",
+			#list
+			(
+				head : $e._Myhead->_Next,
+				size : $e._Mysize,
+				next : _Next
+			) : $e._Myval,
+			")"
+		)
+	)
+}
+
+std::basic_string<char,*>{
+	preview		( #if(($e._Myres) < ($e._BUF_SIZE)) ( [$e._Bx._Buf,s]) #else ( [$e._Bx._Ptr,s]))
+	stringview	( #if(($e._Myres) < ($e._BUF_SIZE)) ( [$e._Bx._Buf,sb]) #else ( [$e._Bx._Ptr,sb]))
+	children
+	(
+		#if(($e._Myres) < ($e._BUF_SIZE))
+		(
+			#([actual members]: [$e,!] , #array( expr: $e._Bx._Buf[$i], size: $e._Mysize))
+		)
+		#else
+		(
+			#([actual members]: [$e,!],  #array( expr: $e._Bx._Ptr[$i], size: $e._Mysize))
+		)
+	)
+}
+std::basic_string<unsigned short,*>|std::basic_string<wchar_t,*>{
+	preview
+	(
+		#if(($e._Myres) < ($e._BUF_SIZE)) ( [$e._Bx._Buf,su] )
+		#else ( [$e._Bx._Ptr,su] )
+	)
+	stringview
+	(
+		#if(($e._Myres) < ($e._BUF_SIZE)) ( [$e._Bx._Buf,sub] )
+		#else ( [$e._Bx._Ptr,sub] )
+	)
+	children
+	(
+		#if(($e._Myres) < ($e._BUF_SIZE))
+		(
+			#(
+				[actual members]: [$e,!] ,
+				#array( expr: $e._Bx._Buf[$i], size: $e._Mysize)
+			)
+		)
+		#else
+		(
+			#(
+				[actual members]: [$e,!],
+				#array( expr: $e._Bx._Ptr[$i], size: $e._Mysize)
+			)
+		)
+	)
+}
+
+std::vector<*>{
+	children
+	(
+		#array
+		(
+			expr :		($e._Myfirst)[$i],
+			size :		$e._Mylast-$e._Myfirst
+		)
+	)
+	preview
+	(
+		#(
+			"[", $e._Mylast - $e._Myfirst , "](",
+			#array
+			(
+				expr :	($e._Myfirst)[$i],
+				size :	$e._Mylast-$e._Myfirst
+			),
+			")"
+		)
+	)
+}
+
+
+std::map<*>|std::multimap<*>|std::set<*>|std::multiset<*>{
+	preview (
+		#(
+			"[",
+			$e._Mysize,
+			"](",
+			#tree(
+				head: $e._Myhead->_Parent,
+				skip: $e._Myhead,
+				left: _Left,
+				right: _Right,
+				size: $e._Mysize
+			) : $e._Myval,
+			")"
+		)
+	)
+
+	children (
+		#(
+			#([comp] : $e.comp),
+			#tree(
+				head: $e._Myhead->_Parent,
+				skip: $e._Myhead,
+				left: _Left,
+				right: _Right,
+				size: $e._Mysize
+			) : $e._Myval
+		)
+	)
+}
