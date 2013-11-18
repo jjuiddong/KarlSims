@@ -61,7 +61,9 @@ bool CMemoryTree::UpdateMemoryMap()
 	BOOST_FOREACH(SMemInfo &info, memList)
 	{
 		wxTreeItemId itemId = m_pTree->AppendItem( rootId, info.name );
-		m_pTree->AppendItem( itemId, wxString::Format("size: %d", info.size) );
+		std::stringstream ss;
+		ss << "size: " << info.size;
+		m_pTree->AppendItem( itemId, ss.str()); //wxString::Format("size: %d", info.size) );
 		m_pTree->AppendItem( itemId, wxString::Format("ptr: 0x%x", (DWORD)info.ptr) );
 
 		if (selectItemName == info.name)
