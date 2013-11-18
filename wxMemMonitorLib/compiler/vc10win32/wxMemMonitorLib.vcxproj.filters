@@ -24,153 +24,153 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\Log.h">
+    <ClInclude Include="..\..\common\Log.h">
       <Filter>Src\common</Filter>
     </ClInclude>
-    <ClInclude Include="common\Reference.h">
+    <ClInclude Include="..\..\common\Reference.h">
       <Filter>Src\common</Filter>
     </ClInclude>
-    <ClInclude Include="common\Singleton.h">
+    <ClInclude Include="..\..\common\Singleton.h">
       <Filter>Src\common</Filter>
     </ClInclude>
-    <ClInclude Include="common\String.h">
+    <ClInclude Include="..\..\common\String.h">
       <Filter>Src\common</Filter>
     </ClInclude>
-    <ClInclude Include="common\Time.h">
+    <ClInclude Include="..\..\common\Time.h">
       <Filter>Src\common</Filter>
     </ClInclude>
-    <ClInclude Include="Control\Global.h">
+    <ClInclude Include="..\..\Control\Global.h">
       <Filter>Src\control</Filter>
     </ClInclude>
-    <ClInclude Include="dia\DiaWrapper.h">
+    <ClInclude Include="..\..\dia\DiaWrapper.h">
       <Filter>Src\dia</Filter>
     </ClInclude>
-    <ClInclude Include="memory\SharedMemoryMng.h">
+    <ClInclude Include="..\..\memory\SharedMemoryMng.h">
       <Filter>Src\memory</Filter>
     </ClInclude>
-    <ClInclude Include="memory\SharedMemoryString.h">
+    <ClInclude Include="..\..\memory\SharedMemoryString.h">
       <Filter>Src\memory</Filter>
     </ClInclude>
-    <ClInclude Include="memory\SharedMemory.h">
+    <ClInclude Include="..\..\memory\SharedMemory.h">
       <Filter>Src\memory</Filter>
     </ClInclude>
-    <ClInclude Include="memory\SharedMemoryContainer.h">
+    <ClInclude Include="..\..\memory\SharedMemoryContainer.h">
       <Filter>Src\memory</Filter>
     </ClInclude>
-    <ClInclude Include="memory\SharedMemoryList.h">
+    <ClInclude Include="..\..\memory\SharedMemoryList.h">
       <Filter>Src\memory</Filter>
     </ClInclude>
-    <ClInclude Include="UI\MemoryTree.h">
+    <ClInclude Include="..\..\UI\Frame.h">
       <Filter>Src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="UI\PropertyItemAdapter.h">
+    <ClInclude Include="..\..\UI\LogWindow.h">
       <Filter>Src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="UI\PropertyWindow.h">
+    <ClInclude Include="..\..\UI\MemoryTree.h">
       <Filter>Src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Frame.h">
+    <ClInclude Include="..\..\UI\PropertyItemAdapter.h">
       <Filter>Src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="UI\LogWindow.h">
+    <ClInclude Include="..\..\UI\PropertyWindow.h">
       <Filter>Src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\VisualizerGlobal.h">
+    <ClInclude Include="..\..\visualizer\VisualizerParser.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\VisualizerParser.h">
+    <ClInclude Include="..\..\visualizer\VisualizerScanner.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\VisualizerScanner.h">
+    <ClInclude Include="..\..\visualizer\DefaultPropertyMaker.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\DefaultPropertyMaker.h">
+    <ClInclude Include="..\..\visualizer\PropertyMaker.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\PropertyMaker.h">
+    <ClInclude Include="..\..\visualizer\Variant.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\Variant.h">
+    <ClInclude Include="..\..\visualizer\VisualizerDefine.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="visualizer\VisualizerDefine.h">
+    <ClInclude Include="..\..\visualizer\VisualizerGlobal.h">
       <Filter>Src\visualizer</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="..\..\stdafx.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="wxMemMonitor.h">
+    <ClInclude Include="..\..\targetver.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="..\..\wxMemMonitor.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common\Log.cpp">
+    <ClCompile Include="..\..\common\Log.cpp">
       <Filter>Src\common</Filter>
     </ClCompile>
-    <ClCompile Include="common\String.cpp">
+    <ClCompile Include="..\..\common\String.cpp">
       <Filter>Src\common</Filter>
     </ClCompile>
-    <ClCompile Include="Control\Global.cpp">
+    <ClCompile Include="..\..\Control\Global.cpp">
       <Filter>Src\control</Filter>
     </ClCompile>
-    <ClCompile Include="Control\wxMemMonitor.cpp">
+    <ClCompile Include="..\..\Control\wxMemMonitor.cpp">
       <Filter>Src\control</Filter>
     </ClCompile>
-    <ClCompile Include="dia\DiaWrapper.cpp">
+    <ClCompile Include="..\..\dia\DiaWrapper.cpp">
       <Filter>Src\dia</Filter>
     </ClCompile>
-    <ClCompile Include="memory\SharedMemoryMng.cpp">
+    <ClCompile Include="..\..\memory\allocmemory.cpp">
       <Filter>Src\memory</Filter>
     </ClCompile>
-    <ClCompile Include="memory\SharedMemoryString.cpp">
+    <ClCompile Include="..\..\memory\SharedMemoryMng.cpp">
       <Filter>Src\memory</Filter>
     </ClCompile>
-    <ClCompile Include="memory\allocmemory.cpp">
+    <ClCompile Include="..\..\memory\SharedMemoryString.cpp">
       <Filter>Src\memory</Filter>
     </ClCompile>
-    <ClCompile Include="UI\MemoryTree.cpp">
+    <ClCompile Include="..\..\UI\App.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="UI\PropertyItemAdapter.cpp">
+    <ClCompile Include="..\..\UI\Frame.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="UI\PropertyWindow.cpp">
+    <ClCompile Include="..\..\UI\LogWindow.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="UI\App.cpp">
+    <ClCompile Include="..\..\UI\MemoryTree.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Frame.cpp">
+    <ClCompile Include="..\..\UI\PropertyItemAdapter.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="UI\LogWindow.cpp">
+    <ClCompile Include="..\..\UI\PropertyWindow.cpp">
       <Filter>Src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\VisualizerGlobal.cpp">
+    <ClCompile Include="..\..\visualizer\DefaultPropertyMaker.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\VisualizerParser.cpp">
+    <ClCompile Include="..\..\visualizer\PropertyMaker.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\VisualizerScanner.cpp">
+    <ClCompile Include="..\..\visualizer\Variant.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\DefaultPropertyMaker.cpp">
+    <ClCompile Include="..\..\visualizer\VisualizerDefine.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\PropertyMaker.cpp">
+    <ClCompile Include="..\..\visualizer\VisualizerGlobal.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\Variant.cpp">
+    <ClCompile Include="..\..\visualizer\VisualizerParser.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="visualizer\VisualizerDefine.cpp">
+    <ClCompile Include="..\..\visualizer\VisualizerScanner.cpp">
       <Filter>Src\visualizer</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="..\..\stdafx.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
