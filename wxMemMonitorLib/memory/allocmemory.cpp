@@ -173,6 +173,8 @@ std::string memmonitor::ParseObjectName(const std::string &objectName)
 //------------------------------------------------------------------------
 bool	memmonitor::CheckValidAddress(const void *ptr )
 {
+	if (!ptr) return false;
+
 	switch (GetExecuteType())
 	{
 	case INNER_PROCESS: return (0xCDCDCDCD == (DWORD)ptr)? false : true;

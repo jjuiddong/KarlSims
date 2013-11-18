@@ -360,7 +360,7 @@ class PhysXSampleApplication :	public SampleFramework::SampleApplication, public
 
 #define REGISTER_SAMPLE(className, fullPath)													\
 	static PhysXSample* SAMPLE_CREATOR(className)(PhysXSampleApplication& app) {				\
-		return SAMPLE_NEW(className)(app);\
+			return new (className)(app);\
 	}																							\
 	static SampleFunctionCreator SAMPLE_CREATOR_VAR(className)(SAMPLE_CREATOR(className));		\
 	struct SAMPLE_STARTER(className) {															\

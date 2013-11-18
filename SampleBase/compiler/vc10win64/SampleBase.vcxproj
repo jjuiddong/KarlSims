@@ -326,6 +326,9 @@
     <ProjectReference Include="..\..\..\SampleFramework\renderer\compiler\vc10win64\SampleRenderer-MT.vcxproj">
       <Project>{3d9b89a3-8fe9-3d75-5926-925e5aecac31}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\wxMemMonitorLib\compiler\vc10win64\wxMemMonitorLib.vcxproj">
+      <Project>{8d30ba71-8823-48f1-a45c-3c8acc1cc9ec}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

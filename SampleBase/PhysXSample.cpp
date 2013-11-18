@@ -2720,6 +2720,7 @@ PxRigidActor* PhysXSample::createGrid(RenderMaterial* material)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+#include <SamplePlatform.h>
 
 void PhysXSample::spawnDebugObject()
 {

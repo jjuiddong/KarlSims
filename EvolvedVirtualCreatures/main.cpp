@@ -54,10 +54,10 @@ void mainInitialize()
 
 void mainTerminate()
 {
+	memmonitor::Cleanup();
 	DELETESINGLE(gApp);
 	DELETESINGLE(gSampleCommandLine);
 	releaseSampleAllocator();	
-	memmonitor::Cleanup();
 }
 
 

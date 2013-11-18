@@ -285,20 +285,20 @@ static ATOM registerWindowClass(HINSTANCE hInstance)
 	static ATOM atom = 0;
 	if(!atom)
 	{
-		WNDCLASSEXA wcex;
-		wcex.cbSize         = sizeof(WNDCLASSEX); 
-		wcex.style          = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc    = (WNDPROC)windowProc;
-		wcex.cbClsExtra     = 0;
-		wcex.cbWndExtra     = sizeof(void*);
-		wcex.hInstance      = hInstance;
-		wcex.hIcon          = ::LoadIconA(hInstance, "SampleApplicationIcon");
-		wcex.hCursor        = ::LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszMenuName   = 0;
-		wcex.lpszClassName  = g_windowClassName;
-		wcex.hIconSm        = ::LoadIconA(wcex.hInstance, "SampleApplicationIcon");
-		atom = ::RegisterClassExA(&wcex);
+		WNDCLASSEX wcex;
+		wcex.cbSize = sizeof(wcex); 
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = (WNDPROC)windowProc;
+		wcex.cbClsExtra = 0;
+		wcex.cbWndExtra = sizeof(void*);
+		wcex.hInstance = hInstance;
+		wcex.hIcon = LoadIcon(hInstance, L"SampleApplicationIcon");
+		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+		wcex.lpszMenuName = 0;
+		wcex.lpszClassName = L"RendererWindow"; //g_windowClassName;
+		wcex.hIconSm = ::LoadIcon(wcex.hInstance, L"SampleApplicationIcon");
+		atom = ::RegisterClassEx(&wcex);
 	}
 	return atom;
 }
@@ -618,7 +618,8 @@ bool WindowsPlatform::openWindow(physx::PxU32& width,
 	{
 		int offset = fullscreen ? 0 : 50;
 
-		registerWindowClass((HINSTANCE)::GetModuleHandle(0));
+		const HINSTANCE hInstance = ::GetModuleHandle(0);
+		registerWindowClass(hInstance);
 		RECT winRect;
 		winRect.left   = offset;
 		winRect.top    = offset;

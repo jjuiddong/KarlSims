@@ -103,9 +103,6 @@
     <ProjectReference Include="..\..\..\SampleBase\compiler\vc10win64\SampleBase.vcxproj">
       <Project>{ba90589c-6cea-670c-950c-7bcf10e4792f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\wxMemMonitorLib\compiler\vc10win64\wxMemMonitorLib.vcxproj">
-      <Project>{8d30ba71-8823-48f1-a45c-3c8acc1cc9ec}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\wxMemMonitorLib\wxMemMonitorLib.vcxproj">
       <Project>{937b4bdb-2bc4-43de-9e32-ba36aee888eb}</Project>
     </ProjectReference>
