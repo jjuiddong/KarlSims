@@ -99,6 +99,9 @@
     <ClInclude Include="..\..\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\compiler\vc10win64\Common.vcxproj">
+      <Project>{29e20223-9db1-4c00-9434-bcb99b9e5a7f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\PxToolkit\compiler\vc10win64\PxToolkit.vcxproj">
       <Project>{cd5f28f8-fdd3-66c2-6bee-2e7247e708a9}</Project>
     </ProjectReference>
