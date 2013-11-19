@@ -78,9 +78,9 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Include/physxprofilesdk;$(PHYSX_DIR)Include/physxvisualdebuggersdk;./../../include;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Include/geometry;$(PHYSX_DIR)Include/pvd;$(PHYSX_DIR)Include/particles;$(PHYSX_DIR)Include/cooking;$(PHYSX_DIR)Include/extensions;$(PHYSX_DIR)Include/characterdynamic;$(PHYSX_DIR)Include/vehicle;$(PHYSX_DIR)Include/RepX;$(PHYSX_DIR)Source/GeomUtils/headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;PX_PHYSX_DLL_NAME_POSTFIX=DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <WarningLevel>Level3</WarningLevel>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
