@@ -23,6 +23,9 @@
     <ClInclude Include="..\..\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\compiler\vc10win32\Common.vcxproj">
+      <Project>{f3998dc9-8441-45d0-a8f0-719c0a06c955}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\PxToolkit\compiler\vc10win32\PxToolkit.vcxproj">
       <Project>{297b87d3-0d0c-9f5b-347b-708882e94af9}</Project>
     </ProjectReference>

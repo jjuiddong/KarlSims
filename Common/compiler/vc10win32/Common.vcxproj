@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F3998DC9-8441-45D0-A8F0-719C0A06C955}</ProjectGuid>
+    <RootNamespace>Common</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../Lib/win32/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Win32/$(ProjectName)/$(Configuration)/</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../Lib/$(ProjectName)/$(Configuration)/</OutDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../Obj/$(ProjectName)/$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>-Zm200
+ %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>../../common/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\CodeGen.h" />
+    <ClInclude Include="..\..\Common.h" />
+    <ClInclude Include="..\..\container\StableVectorMap.h" />
+    <ClInclude Include="..\..\container\VectorHelper.h" />
+    <ClInclude Include="..\..\container\VectorMap.h" />
+    <ClInclude Include="..\..\container\VectorSet.h" />
+    <ClInclude Include="..\..\etc\AutoLock.h" />
+    <ClInclude Include="..\..\etc\Dbg.h" />
+    <ClInclude Include="..\..\etc\Directory.h" />
+    <ClInclude Include="..\..\etc\Dump.h" />
+    <ClInclude Include="..\..\etc\FastMemLoader.h" />
+    <ClInclude Include="..\..\etc\FilePath.h" />
+    <ClInclude Include="..\..\etc\Log.h" />
+    <ClInclude Include="..\..\etc\MemProtect.h" />
+    <ClInclude Include="..\..\etc\parser.h" />
+    <ClInclude Include="..\..\etc\RandNoDuplicate.h" />
+    <ClInclude Include="..\..\etc\Reference.h" />
+    <ClInclude Include="..\..\etc\Singleton.h" />
+    <ClInclude Include="..\..\etc\String.h" />
+    <ClInclude Include="..\..\etc\Time.h" />
+    <ClInclude Include="..\..\event\Event.h" />
+    <ClInclude Include="..\..\event\EventHandler.h" />
+    <ClInclude Include="..\..\math\box.h" />
+    <ClInclude Include="..\..\math\Math.h" />
+    <ClInclude Include="..\..\math\Matrix.h" />
+    <ClInclude Include="..\..\math\plane.h" />
+    <ClInclude Include="..\..\math\Quaternion.h" />
+    <ClInclude Include="..\..\math\sphere.h" />
+    <ClInclude Include="..\..\math\triangle.h" />
+    <ClInclude Include="..\..\math\Vector.h" />
+    <ClInclude Include="..\..\math\Vector2.h" />
+    <ClInclude Include="..\..\math\Vector3.h" />
+    <ClInclude Include="..\..\stdafx.h" />
+    <ClInclude Include="..\..\targetver.h" />
+    <ClInclude Include="..\..\thread\Instance.h" />
+    <ClInclude Include="..\..\thread\Task.h" />
+    <ClInclude Include="..\..\thread\Thread.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\etc\Dbg.cpp" />
+    <ClCompile Include="..\..\etc\Directory.cpp" />
+    <ClCompile Include="..\..\etc\Dump.cpp" />
+    <ClCompile Include="..\..\etc\FastMemLoader.cpp" />
+    <ClCompile Include="..\..\etc\FilePath.cpp" />
+    <ClCompile Include="..\..\etc\Log.cpp" />
+    <ClCompile Include="..\..\etc\RandNoDuplicate.cpp" />
+    <ClCompile Include="..\..\etc\String.cpp" />
+    <ClCompile Include="..\..\event\EventHandler.cpp" />
+    <ClCompile Include="..\..\math\box.cpp" />
+    <ClCompile Include="..\..\math\Matrix.cpp" />
+    <ClCompile Include="..\..\math\plane.cpp" />
+    <ClCompile Include="..\..\math\Quaternion.cpp" />
+    <ClCompile Include="..\..\math\sphere.cpp" />
+    <ClCompile Include="..\..\math\triangle.cpp" />
+    <ClCompile Include="..\..\math\Vector.cpp" />
+    <ClCompile Include="..\..\math\Vector2.cpp" />
+    <ClCompile Include="..\..\math\Vector3.cpp" />
+    <ClCompile Include="..\..\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\thread\Task.cpp" />
+    <ClCompile Include="..\..\thread\Thread.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

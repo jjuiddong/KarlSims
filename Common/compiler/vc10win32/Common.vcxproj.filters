@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Etc">
+      <UniqueIdentifier>{1f410faa-ce12-45ff-ac59-168302650584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{5b78d34f-31c4-4dd8-943f-91e174d2140e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thread">
+      <UniqueIdentifier>{db7d0166-087b-4147-b4bb-01d4b13f986d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Container">
+      <UniqueIdentifier>{ed834417-7dd4-4102-bad7-20768e9c3c82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{c6d01237-9f84-4e81-a34a-15e4bada43b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\container\StableVectorMap.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\container\VectorHelper.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\container\VectorMap.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\container\VectorSet.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\AutoLock.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Dbg.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Directory.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Dump.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\FastMemLoader.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\FilePath.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Log.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\MemProtect.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\parser.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\RandNoDuplicate.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Reference.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Singleton.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\String.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\etc\Time.h">
+      <Filter>Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\event\Event.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\event\EventHandler.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\triangle.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Vector.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Vector2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Vector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\box.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Matrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\plane.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\Quaternion.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\sphere.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thread\Task.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thread\Thread.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thread\Instance.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CodeGen.h" />
+    <ClInclude Include="..\..\Common.h" />
+    <ClInclude Include="..\..\stdafx.h" />
+    <ClInclude Include="..\..\targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\etc\Dbg.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\Directory.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\Dump.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\FastMemLoader.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\FilePath.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\Log.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\RandNoDuplicate.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\etc\String.cpp">
+      <Filter>Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\event\EventHandler.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\box.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\Matrix.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\plane.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\Quaternion.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\sphere.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\triangle.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\Vector.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\Vector2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\Vector3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thread\Task.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thread\Thread.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ReadMe.txt" />
+  </ItemGroup>
+</Project>
