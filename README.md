@@ -33,7 +33,7 @@ if (!memmonitor::Init(memmonitor::INNER_PROCESS,hInstance,"config_target.json" )
 memmonitor::Cleanup();
 ```
 
-* ambigious funciton 'floor' 
+* ambigious function 'floor' 
     - modify -> floor to ::floor (in wxWidgets/geometry.h)
 
 

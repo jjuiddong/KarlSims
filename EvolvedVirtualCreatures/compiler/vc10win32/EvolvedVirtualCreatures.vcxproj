@@ -72,10 +72,10 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;PHYSX_PROFILE_SDK;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;PHYSX_PROFILE_SDK;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalIncludeDirectories>./../../../SampleBase;./../../../PxToolkit/include;./../../../SampleFramework/framework/include;./../../../SampleFramework/renderer/include;./../../../SampleFramework/platform/include;$(PHYSX_DIR)Source/shared/general/shared;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Source/Common/src;$(PHYSX_DIR)Source/GeomUtils/headers;$(PHYSX_DIR)Source/GeomUtils/include;$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Source/PhysXVehicle/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <StringPooling>true</StringPooling>
@@ -92,8 +92,7 @@
       <MapFileName>$(OutDir)/$(ProjectName)DEBUG.exe.map</MapFileName>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalOptions>Winmm.lib /LIBPATH:../lib/win32 PhysX3CommonDEBUG_x86.lib PhysX3DEBUG_x86.lib PhysX3CookingDEBUG_x86.lib PhysX3CharacterKinematicDEBUG_x86.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PxTaskDEBUG.lib /DEBUG </AdditionalOptions>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>../../vld/lib/Win32/vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

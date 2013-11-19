@@ -133,7 +133,7 @@ namespace memmonitor
 		{
 			DeAllocateMem(ptr);
 		}
-		__forceinline void	operator delete (void* p, const char*, const char *, int)
+		__forceinline void	operator delete (void* ptr, const char*, const char *, int)
 		{
 			DeAllocateMem(ptr);
 		}

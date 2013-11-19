@@ -5,9 +5,6 @@ wxMemMonitorLib
 
 wxWidgets Setting
 ---------
-- visual studio
- - general- Use MFC in a Static Library
- - code generation->runtime library - multi thread debug 
 
 
 Usage:
