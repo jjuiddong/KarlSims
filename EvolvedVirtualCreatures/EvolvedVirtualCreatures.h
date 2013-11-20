@@ -3,8 +3,7 @@
 #include "PhysXSample.h"
 
 
-// Evc
-// Evolved Virtual Creatures
+// Evc, Evolved Virtual Creatures
 class CEvc : public PhysXSample
 {
 public:
