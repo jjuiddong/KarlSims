@@ -4,10 +4,12 @@
     <ClCompile Include="..\..\stdafx.cpp" />
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
+    <ClCompile Include="..\..\Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
+    <ClInclude Include="..\..\Node.h" />
   </ItemGroup>
 </Project>

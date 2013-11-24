@@ -59,11 +59,12 @@
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)/$(ProjectName)DEBUG.exe.map</MapFileName>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalOptions>Winmm.lib /LIBPATH:../../lib/win64 /LIBPATH:$(PHYSX_DIR)Lib/win64 PhysX3CommonDEBUG_x64.lib PhysX3DEBUG_x64.lib PhysX3CookingDEBUG_x64.lib PhysX3CharacterKinematicDEBUG_x64.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PxTaskDEBUG.lib /DEBUG %(AdditionalOptions)</AdditionalOptions>
@@ -89,12 +90,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\Node.cpp" />
     <ClCompile Include="..\..\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
+    <ClInclude Include="..\..\Node.h" />
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
   </ItemGroup>

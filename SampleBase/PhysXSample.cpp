@@ -1197,6 +1197,15 @@ RenderMaterial* PhysXSample::getMaterial(PxU32 materialID)
 	return NULL;
 }
 
+
+RenderMaterial* PhysXSample::getManageMaterial(PxU32 materialID)
+{
+	if (MATERIAL_COUNT <= materialID)
+		return NULL;
+	return mManagedMaterials[materialID];
+}
+
+
 Stepper* PhysXSample::getStepper()
 {
 	switch(mStepperType)
@@ -2760,7 +2769,7 @@ void PhysXSample::spawnDebugObject()
 		actor = createTestCompound(pos, 320, 0.1f, 2.0f, &vel, NULL, mDefaultDensity, true);
 		break;
 	}
-	
+
 	if (actor)
 		onDebugObjectCreation(actor);
 

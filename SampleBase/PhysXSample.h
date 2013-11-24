@@ -237,6 +237,7 @@ public:	// getter & setter
 	PX_FORCE_INLINE	PxScene&								getActiveScene()					const	{ return *mScene; }
 	PX_FORCE_INLINE	PxMaterial&								getDefaultMaterial()				const	{ return *mMaterial; }
 					RenderMaterial*							getMaterial(PxU32 materialID);
+					RenderMaterial*							getManageMaterial(PxU32 materialID);
 
 	PX_FORCE_INLINE	Camera&									getCamera()							const	{ return mApplication.getCamera(); }
 	PX_FORCE_INLINE	SampleRenderer::Renderer*				getRenderer()						const	{ return mApplication.getRenderer(); }

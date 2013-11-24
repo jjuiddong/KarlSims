@@ -24,7 +24,7 @@
 
 // Macro
 	#define random( m_posX )		(int)( ( (long)rand() * (m_posX) ) / ( RAND_MAX + 1 ) )
-	#define randomize()		srand( (unsigned)time( NULL ) )
+	//#define randomize()		srand( (unsigned)time( NULL ) )
 
 	#define ABS( m_posX )	( (m_posX) >= 0 ? (m_posX) : -(m_posX) )
 
