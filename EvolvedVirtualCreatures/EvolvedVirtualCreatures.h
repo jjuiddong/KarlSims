@@ -4,8 +4,11 @@
 #include "Node.h"
 
 
+DECLARE_TYPE_NAME(CEvc)
+
 // Evc, Evolved Virtual Creatures
 class CEvc : public PhysXSample
+				, public memmonitor::Monitor<CEvc, TYPE_NAME(CEvc)>
 {
 public:
 	CEvc(PhysXSampleApplication& app);
@@ -35,6 +38,7 @@ protected:
 
 private:
 	list<evc::CNode*> m_Nodes;
+	bool m_ApplyJoint;
 
 };
 

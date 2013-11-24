@@ -73,14 +73,10 @@ enum StepperType
 };
 
 
-#include "../wxMemMonitorLib/wxMemMonitor.h"
-DECLARE_TYPE_NAME(PhysXSample)
-
 class PhysXSample	: public PVD::PvdConnectionHandler //receive notifications when pvd is connected and disconnected.
 					, public RAWImportCallback
 					//, public SampleAllocateable
 					, public PxDeletionListener
-					, public memmonitor::Monitor<PhysXSample, TYPE_NAME(PhysXSample)>
 {
 	typedef std::map<PhysXShape, RenderBaseActor*> PhysXShapeToRenderActorMap;
 

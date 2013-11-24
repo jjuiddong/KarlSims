@@ -34,6 +34,7 @@ REGISTER_SAMPLE(CEvc, "Evolved Virtual Creatures")
 
 CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
+,	m_ApplyJoint(true)
 {
 }
 
@@ -161,7 +162,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 void CEvc::spawnNode()
 {
 	evc::CNode *pnode = new evc::CNode(*this);
-	pnode->GenerateHuman();
+	pnode->GenerateHuman(m_ApplyJoint);
 	m_Nodes.push_back( pnode );
 }
 

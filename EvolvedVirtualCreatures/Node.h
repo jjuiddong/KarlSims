@@ -4,16 +4,21 @@
 
 class PhysXSample;
 
+
+//public 
+
 namespace evc
 {
-	class CNode
+	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
+
+	class CNode : public memmonitor::Monitor<CNode, TYPE_NAME(CNode)>
 	{
 	public:
 		CNode(PhysXSample &sample);
 		virtual ~CNode();
 
 		bool Generate();
-		bool GenerateHuman();
+		bool GenerateHuman(const bool flag);
 
 
 	protected:

@@ -9,7 +9,7 @@
 #include "PhysXSampleApplication.h"
 #include "PsFile.h"
 
-#include "../../../wxMemMonitorLib/wxMemMonitor.h"
+//#include "../../../wxMemMonitorLib/wxMemMonitor.h"
 //#include "vld/vld.h"
 MEMORYMONITOR_INNER_PROCESS();
 
