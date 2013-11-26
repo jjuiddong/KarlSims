@@ -50,7 +50,7 @@ bool CNode::Generate()
 
 bool CNode::GenerateHuman(const bool flag)
 {
-	const PxVec3 pos = m_Sample.getCamera().getPos();
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
 	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
 
 	//PxRigidDynamic* actor1 = m_Sample.createBox(pos, PxVec3(0.3f, 0.3f, 0.3f), &vel, m_Sample.getManageMaterial(MATERIAL_RED), 1.f);
@@ -61,46 +61,269 @@ bool CNode::GenerateHuman(const bool flag)
 	//PxRigidDynamic* actor4_1 = m_Sample.createBox(pos, PxVec3(0.1f, 0.1f, 0.1f), &vel, m_Sample.getManageMaterial(MATERIAL_RED), 1.f);
 	//PxRigidDynamic* actor5 = m_Sample.createBox(pos, PxVec3(1.f, 0.3f, 0.3f), &vel, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
 	//PxRigidDynamic* actor6 = m_Sample.createBox(pos, PxVec3(1.f, 0.3f, 0.3f), &vel, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
-	PxRigidDynamic* actor7 = m_Sample.createBox(pos, PxVec3(0.3f, 0.3f, 0.3f), &vel, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
-	PxRigidDynamic* actor8 = m_Sample.createBox(pos, PxVec3(0.3f, 0.3f, 0.3f), &vel, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 
-	PxRigidDynamic* actor9 = m_Sample.createBox(PxVec3(pos.x-1.4f, pos.y, pos.z), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
-	PxRigidDynamic* actor10 = m_Sample.createBox(PxVec3(pos.x+1.4f, pos.y, pos.z), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_RED), 1.f);
+	PxRigidDynamic* head = m_Sample.createSphere(pos+PxVec3(0,0,1.6f), 0.5f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* body = m_Sample.createBox(pos, PxVec3(1,.3f,1), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
 
-	const float scale = 1.f;
-	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
-	//	actor1, PxTransform(PxVec3(0,0,1.4f)*scale),
-	//	actor2, PxTransform(PxVec3(0,0,0)*scale)))
-	//{
-	//	j->setProjectionLinearTolerance(.5f);
-	//}
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createSphere(pos+PxVec3(1.4f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createSphere(pos+PxVec3(2.0f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	//PxRigidDynamic* left_arm_joint1 = m_Sample.createSphere(pos+PxVec3(3.6f,0,.7f), 0.3f, &vel, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	//PxRigidDynamic* left_arm_joint2 = m_Sample.createSphere(pos+PxVec3(3.4f,0,.7f), 0.3f, &vel, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
+	//PxRigidDynamic* left_arm_2 = m_Sample.createBox(pos+PxVec3(4.4f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_RED), 1.f);
+	PxRigidDynamic* left_pelvis_joint1 = m_Sample.createSphere(pos+PxVec3(.7f,0,-1.4f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_pelvis_joint2 = m_Sample.createSphere(pos+PxVec3(.7f,0,-2.0f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_leg_1 = m_Sample.createBox(pos+PxVec3(1,0,-3.3f), PxVec3(0.3f, 0.3f, 1), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
 
-	// left arm
+
+	PxRigidDynamic* right_shoulder_joint1 = m_Sample.createSphere(pos+PxVec3(-1.4f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* right_shoulder_joint2 = m_Sample.createSphere(pos+PxVec3(-2.0f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	//PxRigidDynamic* right_arm_joint1 = m_Sample.createSphere(pos, 0.3f, &vel, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	//PxRigidDynamic* right_arm_joint2 = m_Sample.createSphere(pos, 0.3f, &vel, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* right_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	//PxRigidDynamic* right_arm_2 = m_Sample.createBox(PxVec3(pos.x+1.4f, pos.y, pos.z), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_RED), 1.f);
+	PxRigidDynamic* right_pelvis_joint1 = m_Sample.createSphere(pos+PxVec3(-.7f,0,-1.4f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* right_pelvis_joint2 = m_Sample.createSphere(pos+PxVec3(-.7f,0,-2.0f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* right_leg_1 = m_Sample.createBox(pos+PxVec3(-1,0,-3.3f), PxVec3(0.3f, 0.3f, 1), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+
+
+ 	const float scale = 1.f;
+	// body - head
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		head, PxTransform(PxVec3(0,0,1.6f))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// body - left shoulder
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint1, PxTransform(PxVec3(1.4f,0,.7f))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left shoulder joint
 	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
-		actor7, PxTransform(PxVec3(0,0,0)*scale),
-		actor8, PxTransform(PxVec3(-.7f,0,0)*scale)))
+		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)*scale),
+		left_shoulder_joint2, PxTransform(PxVec3(.6f,0,0)*scale)))
 	{
 		if (flag)
 		{
 			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
 			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
 		}
-		j->setProjectionLinearTolerance(0.5f);
+		j->setProjectionLinearTolerance(0.1f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
+	// left shoulder - left arm
 	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
-		actor9, PxTransform(PxVec3(1.4f,0,0)*scale),
-		actor7, PxTransform(PxVec3(0,0,0)*scale)))
+		left_shoulder_joint2, PxTransform(PxVec3(0,0,0)*scale),
+		left_arm_1, PxTransform(PxVec3(1.3f,0,0)*scale)))
 	{
-		j->setProjectionLinearTolerance(.5f);
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
+
+	// body - left pelvis joint
 	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
-		actor10, PxTransform(PxVec3(-1.4f,0,0)*scale),
-		actor8, PxTransform(PxVec3(0,0,0)*scale)))
+		body, PxTransform(PxVec3(0,0,0)),
+		left_pelvis_joint1, PxTransform(PxVec3(.7f,0,-1.4f))
+		))
 	{
-		j->setProjectionLinearTolerance(.5f);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
+
+	// left pelvis  joint
+	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		left_pelvis_joint1, PxTransform(PxVec3(0,0,0)*scale),
+		left_pelvis_joint2, PxTransform(PxVec3(0,0,-.6f)*scale)))
+	{
+		if (flag)
+		{
+			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setProjectionLinearTolerance(0.1f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left pelvis joint - left leg
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		left_pelvis_joint2, PxTransform(PxVec3(0,0,0)*scale),
+		left_leg_1, PxTransform(PxVec3(0,0,-1.3f)*scale)))
+	{
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+
+
+	// body - right shoulder
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint1, PxTransform(PxVec3(-1.4f,0,.7f))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// right shoulder joint
+	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		right_shoulder_joint1, PxTransform(PxVec3(0,0,0)*scale),
+		right_shoulder_joint2, PxTransform(PxVec3(-.6f,0,0)*scale)))
+	{
+		if (flag)
+		{
+			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setProjectionLinearTolerance(0.1f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// right shoulder - right arm
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		right_shoulder_joint2, PxTransform(PxVec3(0,0,0)*scale),
+		right_arm_1, PxTransform(PxVec3(-1.3f,0,0)*scale)))
+	{
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+
+	// body - right pelvis joint
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		right_pelvis_joint1, PxTransform(PxVec3(-.7f,0,-1.4f))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+	
+	// right pelvis  joint
+	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		right_pelvis_joint1, PxTransform(PxVec3(0,0,0)*scale),
+		right_pelvis_joint2, PxTransform(PxVec3(0,0,-.6f)*scale)))
+	{
+		if (flag)
+		{
+			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setProjectionLinearTolerance(0.1f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// right pelvis joint - left leg
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		right_pelvis_joint2, PxTransform(PxVec3(0,0,0)*scale),
+		right_leg_1, PxTransform(PxVec3(0,0,-1.3f)*scale)))
+	{
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+
+
+	// left arm
+	//if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+	//	left_arm_joint1, PxTransform(PxVec3(0,0,0)*scale),
+	//	left_arm_joint2, PxTransform(PxVec3(-.7f,0,0)*scale)))
+	//{
+	//	if (flag)
+	//	{
+	//		j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+	//		j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	//	}
+	//	j->setProjectionLinearTolerance(0.5f);
+	//}
+
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	left_arm_1, PxTransform(PxVec3(0,0,0)*scale),
+	//	left_arm_joint1, PxTransform(PxVec3(1,0,0)*scale)))
+	//{
+	//	j->setProjectionLinearTolerance(.5f);
+	//}
+
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	left_arm_2, PxTransform(PxVec3(-1.4f,0,0)*scale),
+	//	left_arm_joint2, PxTransform(PxVec3(0,0,0)*scale)))
+	//{
+	//	j->setProjectionLinearTolerance(.5f);
+	//}
+
+
+
+
+	// right shoulder
+	//if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+	//	right_shoulder_joint1, PxTransform(PxVec3(0,0,0)*scale),
+	//	right_shoulder_joint2, PxTransform(PxVec3(-.7f,0,0)*scale)))
+	//{
+	//	if (flag)
+	//	{
+	//		j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+	//		j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	//	}
+	//	j->setProjectionLinearTolerance(0.5f);
+	//}
+
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	body, PxTransform(PxVec3(0,0,0)*scale),
+	//	right_shoulder_joint1, PxTransform(PxVec3(-1,0,.7f)*scale)))
+	//{
+	//	j->setProjectionLinearTolerance(.5f);
+	//}
+
+
+
+
+
+	// right arm
+	//if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+	//	right_arm_joint1, PxTransform(PxVec3(0,0,0)*scale),
+	//	right_arm_joint2, PxTransform(PxVec3(-.7f,0,0)*scale)))
+	//{
+	//	if (flag)
+	//	{
+	//		j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, 0.01f));
+	//		j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	//	}
+	//	j->setProjectionLinearTolerance(0.5f);
+	//}
+
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	right_arm_1, PxTransform(PxVec3(1.4f,0,0)*scale),
+	//	right_arm_joint1, PxTransform(PxVec3(0,0,0)*scale)))
+	//{
+	//	j->setProjectionLinearTolerance(.5f);
+	//}
+
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	right_arm_2, PxTransform(PxVec3(-1.4f,0,0)*scale),
+	//	right_arm_joint2, PxTransform(PxVec3(0,0,0)*scale)))
+	//{
+	//	j->setProjectionLinearTolerance(.5f);
+	//}
+
+
+
+
+
+
+
+
 
 	//// left arm
 	//if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
@@ -165,6 +388,72 @@ bool CNode::GenerateHuman(const bool flag)
 	//{
 	//	j->setProjectionLinearTolerance(.5f);
 	//}
+
+	return true;
+}
+
+
+bool CNode::GenerateHuman2(const bool flag)
+{
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
+	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
+
+	PxVec3 inPosition = pos;
+	PxReal yRot(0);
+	PxRigidDynamic *mSubmarineActor;
+
+	//PX_ASSERT(mSubmarineActor == NULL);
+
+	std::vector<PxTransform> localPoses;
+	std::vector<const PxGeometry*> geometries;
+
+	// cabin
+	PxSphereGeometry cabinGeom(1.5f);
+	PxTransform	cabinPose = PxTransform(PxIdentity); 
+	cabinPose.p.x = -0.5f;
+
+	// engine
+	PxBoxGeometry engineGeom(0.25f, 1.0f, 1.0f);
+	PxTransform	enginePose = PxTransform(PxIdentity); 
+	enginePose.p.x = cabinPose.p.x + cabinGeom.radius + engineGeom.halfExtents.x;
+
+	// tanks
+	PxCapsuleGeometry tankGeom(0.5f, 1.8f);
+	PxTransform	tank1Pose = PxTransform(PxIdentity); 
+	tank1Pose.p = PxVec3(0,-cabinGeom.radius, cabinGeom.radius);
+	PxTransform	tank2Pose = PxTransform(PxIdentity); 
+	tank2Pose.p = PxVec3(0,-cabinGeom.radius, -cabinGeom.radius);
+
+	localPoses.push_back(cabinPose);
+	geometries.push_back(&cabinGeom);
+	localPoses.push_back(enginePose);
+	geometries.push_back(&engineGeom);
+	localPoses.push_back(tank1Pose);
+	geometries.push_back(&tankGeom);
+	localPoses.push_back(tank2Pose);
+	geometries.push_back(&tankGeom);
+
+	// put the shapes together into one actor
+	mSubmarineActor = m_Sample.createCompound(inPosition, localPoses, geometries, 0, m_Sample.getManageMaterial(MATERIAL_YELLOW), 
+		1.0f)->is<PxRigidDynamic>();
+
+	//if(!mSubmarineActor) fatalError("createCompound failed!");
+
+	//disable the current and buoyancy effect for the sub.
+	//mSubmarineActor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+	// set the filtering group for the submarine
+	//setupFiltering(mSubmarineActor, FilterGroup::eSUBMARINE, FilterGroup::eMINE_HEAD | FilterGroup::eMINE_LINK);
+
+	mSubmarineActor->setLinearDamping(0.15f);
+	mSubmarineActor->setAngularDamping(15.0f);
+
+	PxTransform globalPose; 
+	globalPose.p = inPosition;
+	globalPose.q = PxQuat(yRot, PxVec3(0,1,0));
+	mSubmarineActor->setGlobalPose(globalPose);
+
+	mSubmarineActor->setCMassLocalPose(PxTransform(PxIdentity));
 
 	return true;
 }

@@ -19,6 +19,7 @@ namespace evc
 
 		bool Generate();
 		bool GenerateHuman(const bool flag);
+		bool GenerateHuman2(const bool flag);
 
 
 	protected:

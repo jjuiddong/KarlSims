@@ -155,12 +155,14 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	getApplication().getPlatform()->getSampleUserInput()->unregisterInputEvent(CAMERA_SPEED_DECREASE);
     
 	//touch events
-	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object",		ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 }
 
 
 void CEvc::spawnNode()
 {
+	PxSceneWriteLock scopedLock(*mScene);
+
 	evc::CNode *pnode = new evc::CNode(*this);
 	pnode->GenerateHuman(m_ApplyJoint);
 	m_Nodes.push_back( pnode );
