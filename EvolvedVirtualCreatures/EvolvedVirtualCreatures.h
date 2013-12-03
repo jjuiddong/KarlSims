@@ -14,9 +14,10 @@ public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
 
-	virtual	void onTickPreRender(float dtime);
+	//virtual	void onTickPreRender(float dtime);
 	virtual	void	onTickPostRender(float dtime);
-	virtual	void	customizeSceneDesc(PxSceneDesc&);
+	virtual	void customizeSceneDesc(PxSceneDesc&);
+	virtual	void onSubstepSetup(float dtime, pxtask::BaseTask* cont);
 
 	virtual	void	newMesh(const RAWMesh&);
 	virtual	void	onInit();
@@ -32,17 +33,23 @@ public:
 
 
 protected:
-	void spawnNode();
+	void spawnNode(const int key);
+	void pickup();
 	virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val);
 
 
 private:
 	list<evc::CNode*> m_Nodes;
 	bool m_ApplyJoint;
+	float m_Force;
 
 };
 
 
 inline PxU32 CEvc::getDebugObjectTypes() const { 
 	return DEBUG_OBJECT_BOX | DEBUG_OBJECT_SPHERE | DEBUG_OBJECT_CAPSULE | DEBUG_OBJECT_CONVEX;
+}
+
+inline void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc) {
+	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
 }

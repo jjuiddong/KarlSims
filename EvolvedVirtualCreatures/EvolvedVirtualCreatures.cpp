@@ -20,6 +20,7 @@
 #include <SampleUserInputIds.h>
 #include <SampleUserInputDefines.h>
 
+#include "Picking.h"
 
 #include "Node.h"
 
@@ -35,6 +36,7 @@ REGISTER_SAMPLE(CEvc, "Evolved Virtual Creatures")
 CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
 ,	m_ApplyJoint(true)
+,	m_Force(5000.f)
 {
 }
 
@@ -45,66 +47,63 @@ CEvc::~CEvc()
 		delete node;
 	}
 	m_Nodes.clear();
-
 }
 
-void CEvc::onTickPreRender(float dtime)
-{
-	PhysXSample::onTickPreRender(dtime);
-}
-
-void CEvc::onTickPostRender(float dtime)
-{
-	PhysXSample::onTickPostRender(dtime);
-}
-
-void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
-{
-	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
-}
 
 void CEvc::newMesh(const RAWMesh& data)
 {
 }
 
-static void gValue(Console* console, const char* text, void* userData)
-{
-	if(!text)
-	{
-		console->out("Usage: value <float>");
-		return;
-	}
+//class Console;
+//static void gValue(Console* console, const char* text, void* userData)
+//{
+//	if(!text)
+//	{
+//		console->out("Usage: value <float>");
+//		return;
+//	}
+//	const float val = (float)::atof(text);
+//	printf("value: %f\n", val);
+//}
+//
+//static void gExport(Console* console, const char* text, void* userData)
+//{
+//	if(!text)
+//	{
+//		console->out("Usage: export <filename>");
+//		return;
+//	}
+//}
+//
+//static void gImport(Console* console, const char* text, void* userData)
+//{
+//	if(!text)
+//	{
+//		console->out("Usage: import <filename>");
+//		return;
+//	}
+//}
 
-	const float val = (float)::atof(text);
-	printf("value: %f\n", val);
+void	CEvc::onTickPostRender(float dtime)
+{
+	PhysXSample::onTickPostRender(dtime);
+
+	PxReal vertices[] = {0, 0, 1, 1};
+	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+	getRenderer()->drawLines2D(2, vertices, colors );
+	PxReal vertices2[] = {1, 0, 0, 1};
+	getRenderer()->drawLines2D(2, vertices2, colors );
 }
 
-static void gExport(Console* console, const char* text, void* userData)
-{
-	if(!text)
-	{
-		console->out("Usage: export <filename>");
-		return;
-	}
-}
-
-static void gImport(Console* console, const char* text, void* userData)
-{
-	if(!text)
-	{
-		console->out("Usage: import <filename>");
-		return;
-	}
-}
 
 void CEvc::onInit()
 {
-	if (getConsole())
-	{
-		getConsole()->addCmd("value", gValue);
-		getConsole()->addCmd("export", gExport);
-		getConsole()->addCmd("import", gImport);
-	}
+	//if (getConsole())
+	//{
+	//	getConsole()->addCmd("value", gValue);
+	//	getConsole()->addCmd("export", gExport);
+	//	getConsole()->addCmd("import", gImport);
+	//}
 
 	PhysXSample::onInit();
 
@@ -155,20 +154,86 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	getApplication().getPlatform()->getSampleUserInput()->unregisterInputEvent(CAMERA_SPEED_DECREASE);
     
 	//touch events
+	DIGITAL_INPUT_EVENT_DEF(PICKUP, WKEY_SPACE,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2, WKEY_2,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT3, WKEY_3,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT4, WKEY_4,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5, WKEY_5,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT3,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT4,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
 }
 
 
-void CEvc::spawnNode()
+/**
+ @brief 
+ @date 2013-12-03
+*/
+void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
-
 	evc::CNode *pnode = new evc::CNode(*this);
-	pnode->GenerateHuman(m_ApplyJoint);
+	switch (key)
+	{
+	case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(m_ApplyJoint); break;
+	}
 	m_Nodes.push_back( pnode );
 }
 
 
+/**
+ @brief 
+ @date 2013-12-03
+*/
+void CEvc::pickup()
+{
+	PxU32 width;
+	PxU32 height;
+	mApplication.getPlatform()->getWindowSize(width, height);
+	mPicking->moveCursor(width/2,height/2);
+	mPicking->lazyPick();
+	PxActor *actor = mPicking->letGo();
+	//PxRigidDynamic *rigidActor = static_cast<PxRigidDynamic*>(actor->is<PxRigidDynamic>());
+	PxRigidDynamic *rigidActor = (PxRigidDynamic*)actor;
+	if (rigidActor)
+	{
+		const PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
+		const PxVec3 vel = getCamera().getViewDir() * 20.f;
+
+		rigidActor->addForce( getCamera().getViewDir()*m_Force );
+
+		PxU32 nbShapes = rigidActor->getNbShapes();
+		if(!nbShapes)
+			return;
+
+		PxShape** shapes = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*nbShapes);
+		PxU32 nb = rigidActor->getShapes(shapes, nbShapes);
+		PX_ASSERT(nb==nbShapes);
+		for(PxU32 i=0;i<nbShapes;i++)
+		{
+			RenderBaseActor *renderActor = getRenderActor(rigidActor, shapes[i]);
+			if (renderActor)
+			{
+				renderActor->setRenderMaterial(mManagedMaterials[ 1]);
+			}
+		}
+		SAMPLE_FREE(shapes);
+	}	
+}
+
+
+/**
+ @brief 
+ @date 2013-12-03
+*/
 void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 {
 	if (val)
@@ -176,8 +241,32 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		switch (ie.m_Id)
 		{
 		case SPAWN_DEBUG_OBJECT:
-			spawnNode();
+		case SPAWN_DEBUG_OBJECT2:
+		case SPAWN_DEBUG_OBJECT3:
+		case SPAWN_DEBUG_OBJECT4:
+		case SPAWN_DEBUG_OBJECT5:
+			spawnNode(ie.m_Id);
+			break;
+
+		case PICKUP:
+			pickup();
 			break;
 		}
 	}
 }
+
+
+/**
+ @brief 
+ @date 2013-12-03
+*/
+void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
+{
+	PhysXSample::onSubstepSetup(dtime, cont);
+
+	BOOST_FOREACH (auto &node, m_Nodes)
+	{
+		node->Move(dtime);
+	}
+}
+

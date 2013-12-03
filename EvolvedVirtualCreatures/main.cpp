@@ -23,6 +23,7 @@ static SampleCommandLine* gSampleCommandLine = NULL;
 
 #define SEPARATE_EVENT_LOOP 1
 
+
 void mainInitialize()
 {
 	PX_ASSERT(gSampleCommandLine);

@@ -4,9 +4,6 @@
 
 class PhysXSample;
 
-
-//public 
-
 namespace evc
 {
 	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
@@ -20,6 +17,11 @@ namespace evc
 		bool Generate();
 		bool GenerateHuman(const bool flag);
 		bool GenerateHuman2(const bool flag);
+		bool GenerateHuman3(const bool flag);
+		bool GenerateHuman4(const bool flag);
+		bool GenerateHuman5(const bool flag);
+
+		void Move(float dtime);
 
 
 	protected:
@@ -27,5 +29,11 @@ namespace evc
 
 	private:
 		PhysXSample &m_Sample;
+
+		PxRigidDynamic* m_pHead;
+		vector<PxRigidDynamic*> m_Joints;
+		float m_Force;
+		float m_ElapseT;
+
 	};
 }
