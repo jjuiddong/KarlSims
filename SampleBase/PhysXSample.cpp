@@ -738,6 +738,7 @@ PhysXSample::PhysXSample(PhysXSampleApplication& app, PxU32 maxSubSteps) :
 	mFixedStepper(0.016666660f, maxSubSteps),
 	mInvertedFixedStepper(0.016666660f, maxSubSteps),
 	mVariableStepper(1.0f / 80.0f, 1.0f / 40.0f, maxSubSteps),
+	//mVariableStepper(1.0f / 2000.0f, 1.0f / 40.f, maxSubSteps),
 	mWireFrame(false),
 	mSimulationTime(0.0f),
 	mPicked(false),

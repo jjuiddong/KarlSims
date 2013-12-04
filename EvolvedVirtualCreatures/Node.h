@@ -3,6 +3,7 @@
 
 
 class PhysXSample;
+class CEvc;
 
 namespace evc
 {
@@ -11,7 +12,7 @@ namespace evc
 	class CNode : public memmonitor::Monitor<CNode, TYPE_NAME(CNode)>
 	{
 	public:
-		CNode(PhysXSample &sample);
+		CNode(CEvc &sample);
 		virtual ~CNode();
 
 		bool Generate();
@@ -20,15 +21,17 @@ namespace evc
 		bool GenerateHuman3(const bool flag);
 		bool GenerateHuman4(const bool flag);
 		bool GenerateHuman5(const bool flag);
+		bool GenerateHuman6(const bool flag);
 
 		void Move(float dtime);
 
 
 	protected:
+		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
 
 
 	private:
-		PhysXSample &m_Sample;
+		CEvc &m_Sample;
 
 		PxRigidDynamic* m_pHead;
 		vector<PxRigidDynamic*> m_Joints;

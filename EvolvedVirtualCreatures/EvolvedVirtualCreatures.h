@@ -4,15 +4,38 @@
 #include "Node.h"
 
 
+struct NodeGroup
+{
+	enum Enum
+	{
+		HEAD		= (1 << 0),
+		BODY		= (1 << 1),
+		L_ARM		= (1 << 2),
+		R_ARM		= (1 << 3),
+	};
+};
+
+
+
 DECLARE_TYPE_NAME(CEvc)
 
 // Evc, Evolved Virtual Creatures
 class CEvc : public PhysXSample
+				, public PxSimulationEventCallback
 				, public memmonitor::Monitor<CEvc, TYPE_NAME(CEvc)>
 {
 public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
+
+
+	// Implements PxSimulationEventCallback
+	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
+	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count) {}
+	virtual void onConstraintBreak(PxConstraintInfo*, PxU32) {}
+	virtual void onWake(PxActor** , PxU32 ) {}
+	virtual void onSleep(PxActor** , PxU32 ){}
+
 
 	//virtual	void onTickPreRender(float dtime);
 	virtual	void	onTickPostRender(float dtime);
@@ -31,7 +54,6 @@ public:
 	PxRigidDynamic*	createJointSphere(const PxVec3& pos, PxReal radius, const PxVec3* linVel=NULL, 
 		RenderMaterial* material=NULL, PxReal density=1.0f);
 
-
 protected:
 	void spawnNode(const int key);
 	void pickup();
@@ -40,16 +62,17 @@ protected:
 
 private:
 	list<evc::CNode*> m_Nodes;
+
+
+	// for debugging
+public:
 	bool m_ApplyJoint;
 	float m_Force;
-
+	float m_Value1;
+	float m_Value2;
 };
 
 
 inline PxU32 CEvc::getDebugObjectTypes() const { 
 	return DEBUG_OBJECT_BOX | DEBUG_OBJECT_SPHERE | DEBUG_OBJECT_CAPSULE | DEBUG_OBJECT_CONVEX;
-}
-
-inline void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc) {
-	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
 }

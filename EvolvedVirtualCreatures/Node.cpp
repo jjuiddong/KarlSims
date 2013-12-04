@@ -2,11 +2,30 @@
 #include "stdafx.h"
 #include "node.h"
 #include "PhysXSample.h"
+#include "EvolvedVirtualCreatures.h"
 
 
 using namespace evc;
 
-CNode::CNode(PhysXSample &sample) :
+
+void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
+{
+	PxFilterData filterData;
+	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word1 = filterMask;	// word1 = ID mask to filter pairs that trigger a contact callback;
+	const PxU32 numShapes = actor->getNbShapes();
+	PxShape** shapes = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*numShapes);
+	actor->getShapes(shapes, numShapes);
+	for(PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = shapes[i];
+		shape->setSimulationFilterData(filterData);
+	}
+	SAMPLE_FREE(shapes);
+}
+
+
+CNode::CNode(CEvc &sample) :
 	m_Sample(sample)
 ,	m_Force(1.f)
 ,	m_pHead(NULL)
@@ -537,10 +556,19 @@ bool CNode::GenerateHuman4(const bool flag)
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
+	//head->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	setCollisionGroup(head, NodeGroup::HEAD);
+	setCollisionGroup(body, NodeGroup::BODY);
 
 	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createSphere(pos+PxVec3(-1.4f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
 	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createSphere(pos+PxVec3(-2.0f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 	PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
+
+	setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
+	//left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+
 
 	float scale = 1.f;
 
@@ -578,6 +606,8 @@ bool CNode::GenerateHuman4(const bool flag)
 	PxRigidDynamic* right_shoulder_joint2 = m_Sample.createSphere(pos+PxVec3(2.0f,0,.7f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 	PxRigidDynamic* right_arm_1 = m_Sample.createBox(pos+PxVec3(3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 
+	setCollisionGroup(right_arm_1, NodeGroup::R_ARM);
+
 	// body - left shoulder
 	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
 		body, PxTransform(PxVec3(0,0,0)),
@@ -606,8 +636,8 @@ bool CNode::GenerateHuman4(const bool flag)
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
-
-
+	//setupFiltering(left_arm_1, FilterGroup::eSUBMARINE, FilterGroup::eMINE_HEAD | FilterGroup::eMINE_LINK);
+	//setupFiltering(body, FilterGroup::eMINE_HEAD, FilterGroup::eSUBMARINE);
 
 	m_pHead = head;
 	m_Joints.push_back(left_shoulder_joint1);
@@ -618,6 +648,7 @@ bool CNode::GenerateHuman4(const bool flag)
 	m_Joints.push_back(right_shoulder_joint2);
 	//m_Joints.push_back(right_pelvis_joint1);
 	//m_Joints.push_back(right_pelvis_joint2);
+/**/
 
 	return true;
 }
@@ -632,13 +663,108 @@ bool CNode::GenerateHuman5(const bool flag)
 	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
 	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
 
-	PxRigidDynamic* head = m_Sample.createSphere(pos, 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
-	PxRigidDynamic* body = m_Sample.createSphere(pos+PxVec3(1,0,0), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
 
-	m_Joints.push_back(head);
-	m_Joints.push_back(body);
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
 
-	m_pHead = head;
+	setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
+	left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint1, PxTransform(PxVec3(0.6f,0,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left shoulder joint
+	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint2, PxTransform(PxVec3(1,0,0))))
+	{
+		if (flag)
+		{
+			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, PxSpring(0,0)));
+			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left shoulder - left arm
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint2, PxTransform(PxVec3(0,0,0)),
+		left_arm_1, PxTransform(PxVec3(1.3f,0,0))))
+	{
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	m_Joints.push_back(left_shoulder_joint1);
+	m_Joints.push_back(left_shoulder_joint2);
+
+	return true;
+}
+
+
+/**
+ @brief joint test
+ @date 2013-12-04
+*/
+bool CNode::GenerateHuman6(const bool flag)
+{
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
+	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
+
+	PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 100.f);
+	PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
+
+	setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
+	//left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint1, PxTransform(PxVec3(0.6f,0,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left shoulder joint
+	if (PxSphericalJoint* j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint2, PxTransform(PxVec3(1,0,0))))
+	{
+		if (flag)
+		{
+			j->setLimitCone(PxJointLimitCone(PxPi/2, PxPi/6, PxSpring(0,0)));
+			j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	// left shoulder - left arm
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint2, PxTransform(PxVec3(0,0,0)),
+		left_arm_1, PxTransform(PxVec3(1.3f,0,0))))
+	{
+		j->setProjectionLinearTolerance(0);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	m_Joints.push_back(left_shoulder_joint1);
+	m_Joints.push_back(left_shoulder_joint2);
 
 	return true;
 }
@@ -650,8 +776,8 @@ bool CNode::GenerateHuman5(const bool flag)
 */
 void CNode::Move(float dtime)
 {
-	if (!m_pHead)
-		return;
+	//if (!m_pHead)
+	//	return;
 
 	//PxTransform m = m_left_pelvis_joint2->getGlobalPose();
 	//m.p.x += (dtime * 40.f);
@@ -676,38 +802,66 @@ void CNode::Move(float dtime)
 		//	elapseT = 0.f;
 	}
 
-	PxTransform mh = m_pHead->getGlobalPose();
+	//if (m_Joints.size() < 3)
+	//	return;
+
+	//PxTransform mh = m_pHead->getGlobalPose();
 	PxTransform m0 = m_Joints[ 0]->getGlobalPose();
 	PxTransform m1 = m_Joints[ 1]->getGlobalPose();
-	
-	PxVec3 v0 = m0.p - mh.p;
-	v0.normalize();
-	PxVec3 y0(0,1,0);
-	PxVec3 dir = y0.cross(v0);
-	dir.normalize();
+	//PxTransform m2 = m_Joints[ 2]->getGlobalPose();
 
-	//(m_Force*m_ElapseT)
 	PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
-	//PxQuat q(.0f, PxVec3(1,0,0));
-	PxTransform qm(q);
+	//PxTransform qm(q);
+	//PxVec3 v0 = m1.p - m0.p;
+	//PxTransform vm = qm * PxTransform(v0);
 
-	//PxVec3 dist = m1.p - m0.p;
-	PxVec3 dist(0,.6f,0);
-	PxTransform m(dist);
-	PxTransform vm = qm * m;
+	PxTransform mov(m1.p, q);
+	m_Joints[ 1]->clearTorque();
+	//m_Joints[ 1]->addTorque(PxVec3(1,0,0)*m_Force);
+	m_Joints[ 1]->setAngularVelocity(PxVec3(0,1,0)*m_Force);
 
-	m1.p = m0.p + vm.p;
-	PxTransform mov(m1.p);
-	m_Joints[ 1]->clearForce();
-	m_Joints[ 1]->setGlobalPose(mov);
+	//PxVec3 dir = m1.p - m2.p;
+	//dir.normalize();
 
+	//PxVec3 front = dir.cross(PxVec3(0,1,0));
+	//front.normalize();
+
+	//if (PxPi < m_ElapseT)
+	//	front = -front;
+	 
+	//m_Joints[ 1]->addForce(PxVec3(1,0,0)* m_Force);
+
+
+
+
+	//
+	////PxVec3 v0 = m0.p - mh.p;
+	////v0.normalize();
+	////PxVec3 y0(0,1,0);
+	////PxVec3 dir = y0.cross(v0);
+	////dir.normalize();
+
+	//PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
+	////PxQuat q(.0f, PxVec3(1,0,0));
+	//PxTransform qm(q);
+
+	////PxVec3 dist = m1.p - m0.p;
+	//PxVec3 dist(0,.6f,0);
+	//PxTransform m(dist);
+	//PxTransform vm = qm * m;
+
+	//m1.p = m0.p + vm.p;
+	//PxTransform mov(m1.p);
+	//m_Joints[ 1]->clearForce();
+	//m_Joints[ 1]->setGlobalPose(mov);
+	//m_Joints[ 1]->addForce(PxVec3(
 
 	//m_Joints[ 1]->addForce(force);
 	//m_Joints[ 3]->addForce(force);
 	//m_Joints[ 5]->addForce(force);
 	//m_Joints[ 7]->addForce(force);
 
-	if (PxPi*2 < m_Force*m_ElapseT)
+	if (PxPi*2 < m_ElapseT*m_Force)
 		m_ElapseT = 0.f;
 /*
 	PxQuat q2(PxPi, PxVec3(1,0,0));
@@ -723,6 +877,23 @@ void CNode::Move(float dtime)
 	PxTransform vm3 = qm3 * PxTransform(PxVec3(0,1,0));
 	PxTransform vm4 = qm4 * PxTransform(PxVec3(0,1,0));*/
 
-
 }
 
+
+void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
+{
+	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+
+	PxU32 nbShapes = actor->getNbShapes();
+	if( nbShapes )
+	{
+		SampleArray<PxShape*> shapes(nbShapes);
+		actor->getShapes( &shapes[0], nbShapes);
+		for( PxU32 j = 0; j < nbShapes; j++)
+		{
+			PxFilterData fd = shapes[j]->getSimulationFilterData();
+			fd.word0 = group;
+			shapes[j]->setSimulationFilterData(fd);
+		}
+	}
+}

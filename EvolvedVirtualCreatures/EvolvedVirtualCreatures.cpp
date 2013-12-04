@@ -37,6 +37,8 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
 ,	m_ApplyJoint(true)
 ,	m_Force(5000.f)
+,	m_Value1(0)
+,	m_Value2(0)
 {
 }
 
@@ -112,6 +114,12 @@ void CEvc::onInit()
 	mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.0f, 0.0f, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
+	//getPhysics().setParameter();
+	PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::L_ARM, false);
+	PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::R_ARM, false);
+	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::L_ARM, false);
+	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::R_ARM, false);
+
 
 	//PxRigidDynamic* actor1 = NULL;
 	//const PxVec3 pos = getCamera().getPos();
@@ -159,12 +167,14 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT3, WKEY_3,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT4, WKEY_4,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5, WKEY_5,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT6, WKEY_6,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT3,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT4,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT6,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
 }
 
@@ -184,6 +194,7 @@ void CEvc::spawnNode(const int key)
 	case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(m_ApplyJoint); break;
 	case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(m_ApplyJoint); break;
 	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(m_ApplyJoint); break;
 	}
 	m_Nodes.push_back( pnode );
 }
@@ -245,6 +256,7 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		case SPAWN_DEBUG_OBJECT3:
 		case SPAWN_DEBUG_OBJECT4:
 		case SPAWN_DEBUG_OBJECT5:
+		case SPAWN_DEBUG_OBJECT6:
 			spawnNode(ie.m_Id);
 			break;
 
@@ -270,3 +282,33 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 	}
 }
 
+
+PxFilterFlags SampleSubmarineFilterShader(	
+	PxFilterObjectAttributes attributes0, PxFilterData filterData0, 
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	// let triggers through
+	if(PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+	// generate contacts for all that were not filtered above
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	// trigger the contact callback for pairs (A,B) where 
+	// the filtermask of A contains the ID of B and vice versa.
+	if((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
+	return PxFilterFlag::eDEFAULT;
+}
+
+
+void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
+{
+	//sceneDesc.filterShader = SampleSubmarineFilterShader;
+	//sceneDesc.simulationEventCallback = this;
+	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
+}
