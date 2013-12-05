@@ -22,7 +22,8 @@ namespace evc
 		bool GenerateHuman4(const bool flag);
 		bool GenerateHuman5(const bool flag);
 		bool GenerateHuman6(const bool flag);
-		bool GenerateHuman7(const bool flag); // prismatic joint
+		bool GenerateHuman7(const bool flag); // Revolution Join
+		bool GenerateHuman8(const bool flag); // creature
 
 		void Move(float dtime);
 
@@ -35,9 +36,15 @@ namespace evc
 		CEvc &m_Sample;
 
 		PxRigidDynamic* m_pHead;
-		vector<PxRigidDynamic*> m_Joints;
+		vector<PxRigidDynamic*> m_Rigids;
+		vector<PxJoint*> m_Joints;
+
+		PxRevoluteJoint *m_RevJoint;
 		float m_Force;
 		float m_ElapseT;
+
+		float m_Vel_Joint1;
+		float m_Vel_Joint2;
 
 	};
 }

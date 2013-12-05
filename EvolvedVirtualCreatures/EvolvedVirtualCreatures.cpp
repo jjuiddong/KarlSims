@@ -37,8 +37,8 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
 ,	m_ApplyJoint(true)
 ,	m_Force(5000.f)
-,	m_Value1(0)
-,	m_Value2(0)
+,	m_Value1(1)
+,	m_Value2(1)
 {
 }
 
@@ -169,6 +169,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5, WKEY_5,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT6, WKEY_6,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT7, WKEY_7,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT8, WKEY_8,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
@@ -177,6 +178,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT5,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT6,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT7,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT8,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
 }
 
@@ -198,6 +200,7 @@ void CEvc::spawnNode(const int key)
 	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(m_ApplyJoint); break;
 	case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(m_ApplyJoint); break;
 	case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(m_ApplyJoint); break;
 	}
 	m_Nodes.push_back( pnode );
 }
@@ -261,6 +264,7 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		case SPAWN_DEBUG_OBJECT5:
 		case SPAWN_DEBUG_OBJECT6:
 		case SPAWN_DEBUG_OBJECT7:
+		case SPAWN_DEBUG_OBJECT8:
 			spawnNode(ie.m_Id);
 			break;
 

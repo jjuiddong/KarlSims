@@ -30,6 +30,9 @@ CNode::CNode(CEvc &sample) :
 ,	m_Force(1.f)
 ,	m_pHead(NULL)
 ,	m_ElapseT(0)
+,	m_RevJoint(NULL)
+,	m_Vel_Joint1(10)
+,	m_Vel_Joint2(-10)
 {
 
 }
@@ -37,6 +40,29 @@ CNode::CNode(CEvc &sample) :
 CNode::~CNode()
 {
 
+}
+
+
+/**
+ @brief 
+ @date 2013-12-05
+*/
+void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
+{
+	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+
+	PxU32 nbShapes = actor->getNbShapes();
+	if( nbShapes )
+	{
+		SampleArray<PxShape*> shapes(nbShapes);
+		actor->getShapes( &shapes[0], nbShapes);
+		for( PxU32 j = 0; j < nbShapes; j++)
+		{
+			PxFilterData fd = shapes[j]->getSimulationFilterData();
+			fd.word0 = group;
+			shapes[j]->setSimulationFilterData(fd);
+		}
+	}
 }
 
 
@@ -110,14 +136,14 @@ bool CNode::GenerateHuman(const bool flag)
 
 	m_pHead = head;
 
-	m_Joints.push_back(left_shoulder_joint1);
-	m_Joints.push_back(left_shoulder_joint2);
-	m_Joints.push_back(left_pelvis_joint1);
-	m_Joints.push_back(left_pelvis_joint2);
-	m_Joints.push_back(right_shoulder_joint1);
-	m_Joints.push_back(right_shoulder_joint2);
-	m_Joints.push_back(right_pelvis_joint1);
-	m_Joints.push_back(right_pelvis_joint2);
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
+	m_Rigids.push_back(left_pelvis_joint1);
+	m_Rigids.push_back(left_pelvis_joint2);
+	m_Rigids.push_back(right_shoulder_joint1);
+	m_Rigids.push_back(right_shoulder_joint2);
+	m_Rigids.push_back(right_pelvis_joint1);
+	m_Rigids.push_back(right_pelvis_joint2);
 
  	const float scale = 1.f;
 	// body - head
@@ -640,12 +666,12 @@ bool CNode::GenerateHuman4(const bool flag)
 	//setupFiltering(body, FilterGroup::eMINE_HEAD, FilterGroup::eSUBMARINE);
 
 	m_pHead = head;
-	m_Joints.push_back(left_shoulder_joint1);
-	m_Joints.push_back(left_shoulder_joint2);
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
 	//m_Joints.push_back(left_pelvis_joint1);
 	//m_Joints.push_back(left_pelvis_joint2);
-	m_Joints.push_back(right_shoulder_joint1);
-	m_Joints.push_back(right_shoulder_joint2);
+	m_Rigids.push_back(right_shoulder_joint1);
+	m_Rigids.push_back(right_shoulder_joint2);
 	//m_Joints.push_back(right_pelvis_joint1);
 	//m_Joints.push_back(right_pelvis_joint2);
 /**/
@@ -705,8 +731,8 @@ bool CNode::GenerateHuman5(const bool flag)
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
-	m_Joints.push_back(left_shoulder_joint1);
-	m_Joints.push_back(left_shoulder_joint2);
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
 
 	return true;
 }
@@ -763,15 +789,15 @@ bool CNode::GenerateHuman6(const bool flag)
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
 
-	m_Joints.push_back(left_shoulder_joint1);
-	m_Joints.push_back(left_shoulder_joint2);
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
 
 	return true;
 }
 
 
 /**
- @brief 
+ @brief Revolution Join
  @date 2013-12-05
 */
 bool CNode::GenerateHuman7(const bool flag)
@@ -781,12 +807,12 @@ bool CNode::GenerateHuman7(const bool flag)
 
 	//PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
 
-	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
-	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-1.4f,-1,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 	//PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
 
 	//setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
-	left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 /*
 	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
@@ -799,18 +825,22 @@ bool CNode::GenerateHuman7(const bool flag)
 	}*/
 
 	// left shoulder joint
-	if (PxPrismaticJoint* j = PxPrismaticJointCreate(m_Sample.getPhysics(), 
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
 		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
-		left_shoulder_joint2, PxTransform(PxVec3(.6f,0,0))))
+		left_shoulder_joint2, PxTransform(PxVec3(0,.6f,0))))
 	{
 		if (flag)
 		{
-			//j->setLimit( PxJointLinearLimitPair(0.6f, 10.0f, PxSpring(0,0)));
-			//j->setPrismaticJointFlag(PxPrismaticJointFlag::eLIMIT_ENABLED, true);
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+			j->setDriveVelocity(m_Sample.m_Value1);
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
 		}
 
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
 	}
 
 	//// left shoulder - left arm
@@ -822,8 +852,224 @@ bool CNode::GenerateHuman7(const bool flag)
 	//	j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	//}
 
-	m_Joints.push_back(left_shoulder_joint1);
-	m_Joints.push_back(left_shoulder_joint2);
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
+
+	return true;
+}
+
+
+/**
+ @brief Revolution Join
+ @date 2013-12-05
+*/
+bool CNode::GenerateHuman8(const bool flag)
+{
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
+	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
+
+	PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,4.f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-1.4f,-1,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_shoulder_joint3 = m_Sample.createBox(pos+PxVec3(-1.4f,-2,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint4 = m_Sample.createBox(pos+PxVec3(-1.4f,-3,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* left_shoulder_joint5 = m_Sample.createBox(pos+PxVec3(-1.4f,-4,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint6 = m_Sample.createBox(pos+PxVec3(-1.4f,-5,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	//PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
+
+
+	PxRigidDynamic* right_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(1.4f,0,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* right_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(1.4f,-1,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* right_shoulder_joint3 = m_Sample.createBox(pos+PxVec3(1.4f,-2,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* right_shoulder_joint4 = m_Sample.createBox(pos+PxVec3(1.4f,-3,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	PxRigidDynamic* right_shoulder_joint5 = m_Sample.createBox(pos+PxVec3(1.4f,-4,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* right_shoulder_joint6 = m_Sample.createBox(pos+PxVec3(1.4f,-5,.7f), PxVec3(0.5f,0.3f,0.1f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+
+	//setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
+	//left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint1, PxTransform(PxQuat(PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(0.6f,0,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint3, PxTransform(PxQuat(PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(0.6f,-2,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint5, PxTransform(PxQuat(PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(0.6f,-4,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+
+	// left shoulder joint
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint2, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+	// left shoulder joint 2
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint3, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint4, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint5, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint6, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+
+	// body - right shoulder
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint1, PxTransform(PxQuat(-PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(-0.6f,0,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint3, PxTransform(PxQuat(-PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(-0.6f,-2,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint5, PxTransform(PxQuat(-PxPi/2.f, PxVec3(0,0,1))) * PxTransform(PxVec3(-0.6f,-4,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+
+	// right shoulder joint
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		right_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint2, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		right_shoulder_joint3, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint4, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		right_shoulder_joint5, PxTransform(PxVec3(0,0,0)),
+		right_shoulder_joint6, PxTransform(PxVec3(0,.6f,0))))
+	{
+		if (flag)
+		{
+			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		}
+		j->setDriveVelocity(1.f);
+		j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+
+		m_Joints.push_back(j);
+	}
+
+
+	//// left shoulder - left arm
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	left_shoulder_joint2, PxTransform(PxVec3(0,0,0)),
+	//	left_arm_1, PxTransform(PxVec3(1.3f,0,0))))
+	//{
+	//	j->setProjectionLinearTolerance(0);
+	//	j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	//}
+
+	m_Rigids.push_back(left_shoulder_joint1);
+	m_Rigids.push_back(left_shoulder_joint2);
 
 	return true;
 }
@@ -865,8 +1111,8 @@ void CNode::Move(float dtime)
 	//	return;
 
 	//PxTransform mh = m_pHead->getGlobalPose();
-	PxTransform m0 = m_Joints[ 0]->getGlobalPose();
-	PxTransform m1 = m_Joints[ 1]->getGlobalPose();
+	PxTransform m0 = m_Rigids[ 0]->getGlobalPose();
+	PxTransform m1 = m_Rigids[ 1]->getGlobalPose();
 	//PxTransform m2 = m_Joints[ 2]->getGlobalPose();
 
 	PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
@@ -921,11 +1167,23 @@ void CNode::Move(float dtime)
 	//m_Joints[ 7]->addForce(force);
 
 	if (PxPi*2 < m_ElapseT)
-	{
-		m_Joints[ 1]->addForce(PxVec3(0,1,0)*m_Force);
-
 		m_ElapseT = 0.f;
+
+	BOOST_FOREACH(auto joint, m_Joints)
+	{
+		if (PxJointConcreteType::eREVOLUTE == joint->getType())
+		{
+			if (PxPi < m_ElapseT)
+			{
+				((PxRevoluteJoint*)joint)->setDriveVelocity(m_Vel_Joint1);
+			}
+			else
+			{
+				((PxRevoluteJoint*)joint)->setDriveVelocity(m_Vel_Joint2);
+			}
+		}
 	}
+
 /*
 	PxQuat q2(PxPi, PxVec3(1,0,0));
 	PxTransform qm2(q2);
@@ -942,21 +1200,3 @@ void CNode::Move(float dtime)
 
 }
 
-
-void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
-{
-	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
-
-	PxU32 nbShapes = actor->getNbShapes();
-	if( nbShapes )
-	{
-		SampleArray<PxShape*> shapes(nbShapes);
-		actor->getShapes( &shapes[0], nbShapes);
-		for( PxU32 j = 0; j < nbShapes; j++)
-		{
-			PxFilterData fd = shapes[j]->getSimulationFilterData();
-			fd.word0 = group;
-			shapes[j]->setSimulationFilterData(fd);
-		}
-	}
-}
