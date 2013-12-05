@@ -39,6 +39,18 @@ if (!memmonitor::Init(memmonitor::INNER_PROCESS,hInstance,"config_target.json" )
 memmonitor::Cleanup();
 ```
 
+* config file settging (json format)
+	- filename: config_evc.json 
+	- path : bin/win32 or win64/
+	- contents: 
+```
+{
+	"pdbpath" : "EvolvedVirtualCreaturesDEBUG.pdb" ,
+	"sharedmemoryname" : "EVC"
+}
+```
+
+
 * ambigious function 'floor' 
     - modify -> floor to ::floor (in wxWidgets/geometry.h)
 
