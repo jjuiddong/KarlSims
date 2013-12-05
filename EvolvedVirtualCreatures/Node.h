@@ -22,6 +22,7 @@ namespace evc
 		bool GenerateHuman4(const bool flag);
 		bool GenerateHuman5(const bool flag);
 		bool GenerateHuman6(const bool flag);
+		bool GenerateHuman7(const bool flag); // prismatic joint
 
 		void Move(float dtime);
 

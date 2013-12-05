@@ -724,7 +724,7 @@ bool CNode::GenerateHuman6(const bool flag)
 	PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
 
 	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
-	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 100.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 	PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
 
 	setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
@@ -762,6 +762,65 @@ bool CNode::GenerateHuman6(const bool flag)
 		j->setProjectionLinearTolerance(0);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	}
+
+	m_Joints.push_back(left_shoulder_joint1);
+	m_Joints.push_back(left_shoulder_joint2);
+
+	return true;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-05
+*/
+bool CNode::GenerateHuman7(const bool flag)
+{
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
+	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
+
+	//PxRigidDynamic* body = m_Sample.createBox(pos+PxVec3(0,-2.5f,0), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+
+	PxRigidDynamic* left_shoulder_joint1 = m_Sample.createBox(pos+PxVec3(-1.4f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREEN), 1.f);
+	PxRigidDynamic* left_shoulder_joint2 = m_Sample.createBox(pos+PxVec3(-2.0f,0,.7f), PxVec3(0.3f,0.3f,0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
+	//PxRigidDynamic* left_arm_1 = m_Sample.createBox(pos+PxVec3(-3.3f,0,.7f), PxVec3(1, 0.3f, 0.3f), NULL, m_Sample.getManageMaterial(MATERIAL_GREY), 1.f);
+
+	//setCollisionGroup(left_arm_1, NodeGroup::L_ARM);
+	left_shoulder_joint1->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	//left_shoulder_joint2->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+/*
+	if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		body, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint1, PxTransform(PxVec3(0.6f,0,0))
+		))
+	{
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}*/
+
+	// left shoulder joint
+	if (PxPrismaticJoint* j = PxPrismaticJointCreate(m_Sample.getPhysics(), 
+		left_shoulder_joint1, PxTransform(PxVec3(0,0,0)),
+		left_shoulder_joint2, PxTransform(PxVec3(.6f,0,0))))
+	{
+		if (flag)
+		{
+			//j->setLimit( PxJointLinearLimitPair(0.6f, 10.0f, PxSpring(0,0)));
+			//j->setPrismaticJointFlag(PxPrismaticJointFlag::eLIMIT_ENABLED, true);
+		}
+
+		j->setProjectionLinearTolerance(0.0f);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	}
+
+	//// left shoulder - left arm
+	//if (PxFixedJoint* j = PxFixedJointCreate(m_Sample.getPhysics(), 
+	//	left_shoulder_joint2, PxTransform(PxVec3(0,0,0)),
+	//	left_arm_1, PxTransform(PxVec3(1.3f,0,0))))
+	//{
+	//	j->setProjectionLinearTolerance(0);
+	//	j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+	//}
 
 	m_Joints.push_back(left_shoulder_joint1);
 	m_Joints.push_back(left_shoulder_joint2);
@@ -816,9 +875,9 @@ void CNode::Move(float dtime)
 	//PxTransform vm = qm * PxTransform(v0);
 
 	PxTransform mov(m1.p, q);
-	m_Joints[ 1]->clearTorque();
+	//m_Joints[ 1]->clearTorque();
 	//m_Joints[ 1]->addTorque(PxVec3(1,0,0)*m_Force);
-	m_Joints[ 1]->setAngularVelocity(PxVec3(0,1,0)*m_Force);
+	//m_Joints[ 1]->setAngularVelocity(PxVec3(0,1,0)*m_Force);
 
 	//PxVec3 dir = m1.p - m2.p;
 	//dir.normalize();
@@ -861,8 +920,12 @@ void CNode::Move(float dtime)
 	//m_Joints[ 5]->addForce(force);
 	//m_Joints[ 7]->addForce(force);
 
-	if (PxPi*2 < m_ElapseT*m_Force)
+	if (PxPi*2 < m_ElapseT)
+	{
+		m_Joints[ 1]->addForce(PxVec3(0,1,0)*m_Force);
+
 		m_ElapseT = 0.f;
+	}
 /*
 	PxQuat q2(PxPi, PxVec3(1,0,0));
 	PxTransform qm2(q2);
