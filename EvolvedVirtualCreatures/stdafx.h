@@ -16,10 +16,13 @@
 
 #include "../../../Common/Common.h"
 #include "../wxMemMonitorLib/wxMemMonitor.h"
+#include <boost/algorithm/string.hpp>
+#include <set>
 
 using std::list;
 using std::vector;
 using std::map;
+using std::set;
 using std::string;
 using std::stringstream;
 

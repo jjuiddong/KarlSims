@@ -5,11 +5,28 @@
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\Node.cpp" />
+    <ClCompile Include="..\..\genoype\GenotypeParser.cpp">
+      <Filter>Genotype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genoype\GenotypeScanner.cpp">
+      <Filter>Genotype</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\Node.h" />
+    <ClInclude Include="..\..\genoype\GenotypeParser.h">
+      <Filter>Genotype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genoype\GenotypeScanner.h">
+      <Filter>Genotype</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Genotype">
+      <UniqueIdentifier>{48ec0c98-4ebd-443c-a6a7-94eb4fe32f6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -1,4 +1,8 @@
-
+/**
+ @filename Node.h
+ 
+ 
+*/
 #pragma once
 
 
@@ -7,8 +11,9 @@ class CEvc;
 
 namespace evc
 {
-	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
+	namespace genotype_parser { struct SExpr; }
 
+	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
 	class CNode : public memmonitor::Monitor<CNode, TYPE_NAME(CNode)>
 	{
 	public:
@@ -24,25 +29,24 @@ namespace evc
 		bool GenerateHuman6(const bool flag);
 		bool GenerateHuman7(const bool flag); // Revolution Join
 		bool GenerateHuman8(const bool flag); // creature
+		bool GenerateHuman9(const bool flag); // load by genotype script
 
 		void Move(float dtime);
 
 
 	protected:
+		void GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt );
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
 
 
 	private:
 		CEvc &m_Sample;
-
 		PxRigidDynamic* m_pHead;
 		vector<PxRigidDynamic*> m_Rigids;
 		vector<PxJoint*> m_Joints;
-
 		PxRevoluteJoint *m_RevJoint;
 		float m_Force;
 		float m_ElapseT;
-
 		float m_Vel_Joint1;
 		float m_Vel_Joint2;
 

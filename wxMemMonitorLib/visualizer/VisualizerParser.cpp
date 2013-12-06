@@ -12,8 +12,8 @@ using namespace std;
 parser::CParser::CParser() 
 {
 	m_pScan = new CScanner();
-	m_bTrace = FALSE;
-	m_bError = FALSE;
+	m_IsTrace = FALSE;
+	m_IsErrorOccur = FALSE;
 
 }
 
@@ -1023,7 +1023,7 @@ BOOL parser::CParser::Match( Tokentype t )
 
 void parser::CParser::SyntaxError( char *szMsg, ... )
 {
-	m_bError = TRUE;
+	m_IsErrorOccur = TRUE;
 	char buf[ 256];
 	va_list marker;
 	va_start(marker, szMsg);

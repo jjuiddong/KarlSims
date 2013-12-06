@@ -3,6 +3,7 @@
 #include "node.h"
 #include "PhysXSample.h"
 #include "EvolvedVirtualCreatures.h"
+#include "genoype/GenotypeParser.h"
 
 
 using namespace evc;
@@ -1076,6 +1077,107 @@ bool CNode::GenerateHuman8(const bool flag)
 
 
 /**
+ @brief load by genotype script
+ @date 2013-12-06
+*/
+bool CNode::GenerateHuman9(const bool flag)
+{
+	genotype_parser::CGenotypeParser parser;
+	genotype_parser::SExpr *pexpr = parser.Parse("genotype.txt");
+
+	GenerateByGenotype(NULL, pexpr, m_Sample.m_GenerationRecursiveCount);
+
+	genotype_parser::RemoveExpression(pexpr);
+	return true;
+}
+
+
+/**
+ @brief create creature by genotype script
+ @date 2013-12-06
+*/
+void CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt )
+{
+	if (!pexpr)
+		return;
+	if (recursiveCnt < 0)
+		return;
+
+	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
+	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
+
+	if (pexpr->isIdOnly)
+	{
+
+	}
+	else
+	{
+		PxRigidDynamic* rigid = NULL;
+		PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
+
+		if (boost::iequals(pexpr->shape, "box"))
+		{
+			rigid = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+		}
+		else if (boost::iequals(pexpr->shape, "sphere"))
+		{
+			rigid = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+		}
+
+		if (parent)
+		{
+			PxJoint* joint = NULL;
+			PxVec3 dir(pexpr->orient.dir.x, pexpr->orient.dir.y, pexpr->orient.dir.z);
+			PxVec3 pos(pexpr->pos.x, pexpr->pos.y, pexpr->pos.z);
+			
+			if (boost::iequals(pexpr->joint, "fixed"))
+			{
+				PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
+					parent, PxTransform(PxVec3(0,0,0)),
+					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
+				joint = j;
+			}
+			else if(boost::iequals(pexpr->joint, "spherical"))
+			{
+				if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+					parent, PxTransform(PxVec3(0,0,0)),
+					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+				{
+					j->setProjectionLinearTolerance(0.0f);
+					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+					joint = j;
+				}
+			}
+			else if(boost::iequals(pexpr->joint, "revolute"))
+			{
+				if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+					parent, PxTransform(PxVec3(0,0,0)),
+					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+				{
+					j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+					j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+					j->setProjectionLinearTolerance(0.0f);
+					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+					joint = j;
+				}
+			}
+
+			if (!joint)
+				return;
+		}
+
+		genotype_parser::SExprList *pnode = pexpr->connection;
+		while (pnode)
+		{
+			GenerateByGenotype( rigid, pnode->expr, recursiveCnt-1 );
+			pnode = pnode->next;
+		}
+	}
+
+}
+
+
+/**
  @brief 
  @date 2013-12-03
 */
@@ -1111,8 +1213,8 @@ void CNode::Move(float dtime)
 	//	return;
 
 	//PxTransform mh = m_pHead->getGlobalPose();
-	PxTransform m0 = m_Rigids[ 0]->getGlobalPose();
-	PxTransform m1 = m_Rigids[ 1]->getGlobalPose();
+	//PxTransform m0 = m_Rigids[ 0]->getGlobalPose();
+	//PxTransform m1 = m_Rigids[ 1]->getGlobalPose();
 	//PxTransform m2 = m_Joints[ 2]->getGlobalPose();
 
 	PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
@@ -1120,7 +1222,7 @@ void CNode::Move(float dtime)
 	//PxVec3 v0 = m1.p - m0.p;
 	//PxTransform vm = qm * PxTransform(v0);
 
-	PxTransform mov(m1.p, q);
+	//PxTransform mov(m1.p, q);
 	//m_Joints[ 1]->clearTorque();
 	//m_Joints[ 1]->addTorque(PxVec3(1,0,0)*m_Force);
 	//m_Joints[ 1]->setAngularVelocity(PxVec3(0,1,0)*m_Force);
@@ -1199,4 +1301,3 @@ void CNode::Move(float dtime)
 	PxTransform vm4 = qm4 * PxTransform(PxVec3(0,1,0));*/
 
 }
-

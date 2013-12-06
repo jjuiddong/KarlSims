@@ -22,13 +22,13 @@ namespace visualizer { namespace parser
 		CScanner *m_pScan;
 		std::string m_fileName;
 		Tokentype m_Token;
-		BOOL m_bTrace;
-		BOOL m_bError;
+		BOOL m_IsTrace;
+		BOOL m_IsErrorOccur;
 
 	public:
 		SVisualizerScript* Parse( const std::string &fileName, BOOL bTrace=FALSE );
 		BOOL Parse( BYTE *pFileMem, int nFileSize , BOOL bTrace=FALSE );
-		BOOL IsError() { return m_bError; }
+		BOOL IsError() { return m_IsErrorOccur; }
 		void Clear();
 
 	private:

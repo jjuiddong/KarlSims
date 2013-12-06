@@ -70,6 +70,7 @@ public:
 	float m_Force;
 	float m_Value1;
 	float m_Value2;
+	int m_GenerationRecursiveCount;
 };
 
 
