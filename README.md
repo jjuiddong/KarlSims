@@ -8,6 +8,7 @@ Evolved Virtual Creatures of Karl Sims Project 1994 with DX3D, PhysX, GA Algorit
 - IDE - vs2010
 - DX3D - DX 9.0
 - PhysX - PhysX 3.3.0 Beta
+- Genotype script https://github.com/jjuiddong/KarlSims/wiki/Genotype-Script
 
 
 NVIDIA PhysX 3.3.0 Beta configure setting
