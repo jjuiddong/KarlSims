@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\genoype\GenotypeScanner.h">
       <Filter>Genotype</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Configure.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Genotype">

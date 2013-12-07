@@ -91,7 +91,7 @@ SExprList* genotype_parser::CGenotypeParser::start()
 
 /**
  @brief 
- expression -> id ( id, vec3, id, quat, vec3, expression-list )
+ expression -> id ( id, vec3, joint-list )
  	| id;
 
  @date 2013-12-05
@@ -103,19 +103,13 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 	{
 		pexpr = new SExpr;
 		pexpr->refCount = 0;
-		pexpr->isIdOnly = false;
+		pexpr->connection = NULL;
+
 		pexpr->id = id();
 		Match(LPAREN);
 		pexpr->shape = id();
 		Match(COMMA);
 		pexpr->dimension = vec3();
-		Match(COMMA);
-		pexpr->joint = id();
-		Match(COMMA);
-		pexpr->orient = quat();
-		Match(COMMA);
-		pexpr->pos = vec3();
-		pexpr->connection = NULL;
 
 		if (m_SymTable.find(pexpr->id) == m_SymTable.end())
 		{
@@ -129,7 +123,7 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		if (COMMA == m_Token)
 		{
 			Match(COMMA);
-			pexpr->connection = expression_list();
+			pexpr->connection = joint_list();
 		}
 
 		Match(RPAREN);
@@ -144,7 +138,6 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		else
 		{
 			pexpr = m_SymTable[ Id];
-			//m_SymTable[ Id]->refCount++;
 		}
 	}
 	return pexpr;
@@ -173,6 +166,59 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
+ @brief joint -> joint( id, quat, vec3, expression )
+ @date 2013-12-07
+*/
+SJoint* genotype_parser::CGenotypeParser::joint()
+{
+	SJoint *joint = NULL;
+	if (ID != m_Token)
+		return NULL;
+
+	const string tok =m_pScan->GetTokenStringQ(0);
+	if (!boost::iequals(tok, "joint"))
+	{
+		SyntaxError( "must declare %s -> 'joint' ", tok.c_str() );
+		return NULL;
+	}
+
+	joint = new SJoint;
+	Match(ID);
+	Match(LPAREN);
+	joint->type = id();
+	Match(COMMA);
+	joint->orient = quat();
+	Match(COMMA);
+	joint->pos = vec3();
+	Match(COMMA);
+	joint->expr = expression();
+	Match(RPAREN);
+	return joint;
+}
+
+
+/**
+ @brief joint-list -> [ joint {, joint} ];
+ @date 2013-12-07
+*/
+SJointList* genotype_parser::CGenotypeParser::joint_list()
+{
+	SJoint *pjoint = joint();
+	if (!pjoint)
+		return NULL;
+
+	SJointList *plist = new SJointList;
+	plist->joint = pjoint;
+
+	if (COMMA == m_Token)
+		Match(COMMA);
+
+	plist->next = joint_list();
+	return plist;
+}
+
+
+/**
  @brief 
  vec3 -> vec3( num, num, num ) ;
  @date 2013-12-05
@@ -184,7 +230,8 @@ SVec3 genotype_parser::CGenotypeParser::vec3()
 
 	if (ID == m_Token)
 	{
-		if (m_pScan->GetTokenStringQ(0) == "vec3")
+		const string tok = m_pScan->GetTokenStringQ(0);
+		if (boost::iequals(tok, "vec3"))
 		{
 			Match(ID);
 			Match(LPAREN);
@@ -217,7 +264,8 @@ SQuat genotype_parser::CGenotypeParser::quat()
 
 	if (ID == m_Token)
 	{
-		if (m_pScan->GetTokenStringQ(0) == "quat")
+		const string tok = m_pScan->GetTokenStringQ(0);
+		if (boost::iequals(tok, "quat"))
 		{
 			Match(ID);
 			Match(LPAREN);
@@ -331,10 +379,10 @@ void genotype_parser::CGenotypeParser::Build( SExpr *pexpr )
 		return; // already check
 
 	m_RefCount.insert(pexpr->id);
-	SExprList *pnode = pexpr->connection;
+	SJointList *pnode = pexpr->connection;
 	while (pnode)
 	{
-		Build(pnode->expr);
+		Build(pnode->joint->expr);
 		pnode = pnode->next;
 	}
 }

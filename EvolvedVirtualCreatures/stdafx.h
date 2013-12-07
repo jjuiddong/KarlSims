@@ -35,3 +35,11 @@ using std::stringstream;
 
 using namespace physx::shdfnd;
 using namespace physx;
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Global Variabl
+#include "Configure.h"
+extern SDbgConfig *g_pDbgConfig;

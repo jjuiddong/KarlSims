@@ -31,16 +31,14 @@ using namespace SampleFramework;
 
 REGISTER_SAMPLE(CEvc, "Evolved Virtual Creatures")
 
+SDbgConfig *g_pDbgConfig = NULL;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
-,	m_ApplyJoint(true)
-,	m_Force(5000.f)
-,	m_Value1(1)
-,	m_Value2(1)
-,	m_GenerationRecursiveCount(1)
 {
+	g_pDbgConfig = NULL;
 }
 
 CEvc::~CEvc()
@@ -50,6 +48,7 @@ CEvc::~CEvc()
 		delete node;
 	}
 	m_Nodes.clear();
+	SAFE_DELETE(g_pDbgConfig);
 }
 
 
@@ -120,6 +119,13 @@ void CEvc::onInit()
 	PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::R_ARM, false);
 	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::L_ARM, false);
 	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::R_ARM, false);
+
+	g_pDbgConfig = new SDbgConfig;
+	g_pDbgConfig->applyJoint = true;
+	g_pDbgConfig->force = 5000.f;
+	g_pDbgConfig->value1 = 1;
+	g_pDbgConfig->value2 = 1;
+	g_pDbgConfig->generationRecursiveCount = 1;
 
 
 	//PxRigidDynamic* actor1 = NULL;
@@ -196,15 +202,15 @@ void CEvc::spawnNode(const int key)
 	evc::CNode *pnode = new evc::CNode(*this);
 	switch (key)
 	{
-	case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(m_ApplyJoint); break;
-	case SPAWN_DEBUG_OBJECT9: pnode->GenerateHuman9(m_ApplyJoint); break;
+	case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT9: pnode->GenerateHuman9(g_pDbgConfig->applyJoint); break;
 	}
 	m_Nodes.push_back( pnode );
 }
@@ -229,7 +235,7 @@ void CEvc::pickup()
 		const PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
 		const PxVec3 vel = getCamera().getViewDir() * 20.f;
 
-		rigidActor->addForce( getCamera().getViewDir()*m_Force );
+		rigidActor->addForce( getCamera().getViewDir()*g_pDbgConfig->force );
 
 		PxU32 nbShapes = rigidActor->getNbShapes();
 		if(!nbShapes)

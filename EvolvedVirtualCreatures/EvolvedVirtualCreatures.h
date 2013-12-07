@@ -1,5 +1,11 @@
+/**
+ @filename EvolvedVirtualCreatures.h
+ 
+ Evolving Virtual Creature Main class
+*/
 
 #pragma once
+
 #include "PhysXSample.h"
 #include "Node.h"
 
@@ -63,14 +69,6 @@ protected:
 private:
 	list<evc::CNode*> m_Nodes;
 
-
-	// for debugging
-public:
-	bool m_ApplyJoint;
-	float m_Force;
-	float m_Value1;
-	float m_Value2;
-	int m_GenerationRecursiveCount;
 };
 
 

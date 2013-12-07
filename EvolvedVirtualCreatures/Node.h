@@ -35,7 +35,7 @@ namespace evc
 
 
 	protected:
-		void GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt );
+		PxRigidDynamic* GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt );
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
 
 

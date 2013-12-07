@@ -834,7 +834,7 @@ bool CNode::GenerateHuman7(const bool flag)
 		{
 			j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
 			j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
-			j->setDriveVelocity(m_Sample.m_Value1);
+			j->setDriveVelocity(g_pDbgConfig->value1);
 			j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
 		}
 
@@ -1085,7 +1085,7 @@ bool CNode::GenerateHuman9(const bool flag)
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse("genotype.txt");
 
-	GenerateByGenotype(NULL, pexpr, m_Sample.m_GenerationRecursiveCount);
+	GenerateByGenotype(NULL, pexpr, g_pDbgConfig->generationRecursiveCount);
 
 	genotype_parser::RemoveExpression(pexpr);
 	return true;
@@ -1096,84 +1096,119 @@ bool CNode::GenerateHuman9(const bool flag)
  @brief create creature by genotype script
  @date 2013-12-06
 */
-void CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt )
+PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt )
 {
 	if (!pexpr)
-		return;
+		return NULL;
 	if (recursiveCnt < 0)
-		return;
+		return NULL;
 
 	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
 	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
 
-	if (pexpr->isIdOnly)
-	{
+	PxRigidDynamic* rigid = NULL;
+	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
 
+	if (boost::iequals(pexpr->shape, "box"))
+	{
+		rigid = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
 	}
-	else
+	else if (boost::iequals(pexpr->shape, "sphere"))
 	{
-		PxRigidDynamic* rigid = NULL;
-		PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
+		rigid = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+	}
 
-		if (boost::iequals(pexpr->shape, "box"))
-		{
-			rigid = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
-		}
-		else if (boost::iequals(pexpr->shape, "sphere"))
-		{
-			rigid = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
-		}
+	if (parent)
+	{
+		PxJoint* joint = NULL;
+		//PxVec3 dir(pexpr->orient.dir.x, pexpr->orient.dir.y, pexpr->orient.dir.z);
+		//PxVec3 pos(pexpr->pos.x, pexpr->pos.y, pexpr->pos.z);
+		//	
+		//if (boost::iequals(pexpr->joint, "fixed"))
+		//{
+		//	PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
+		//		parent, PxTransform(PxVec3(0,0,0)),
+		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
+		//	joint = j;
+		//}
+		//else if(boost::iequals(pexpr->joint, "spherical"))
+		//{
+		//	if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
+		//		parent, PxTransform(PxVec3(0,0,0)),
+		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+		//	{
+		//		j->setProjectionLinearTolerance(0.0f);
+		//		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+		//		joint = j;
+		//	}
+		//}
+		//else if(boost::iequals(pexpr->joint, "revolute"))
+		//{
+		//	if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
+		//		parent, PxTransform(PxVec3(0,0,0)),
+		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+		//	{
+		//		j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
+		//		j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+		//		j->setProjectionLinearTolerance(0.0f);
+		//		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
+		//		joint = j;
+		//	}
+		//}
 
-		if (parent)
+		//if (!joint)
+		//	return;
+	}
+
+	genotype_parser::SJointList *pnode = pexpr->connection;
+	while (pnode)
+	{
+		PxRigidDynamic *child = GenerateByGenotype( rigid, pnode->joint->expr, recursiveCnt-1 );
+
+		if (child)
 		{
-			PxJoint* joint = NULL;
-			PxVec3 dir(pexpr->orient.dir.x, pexpr->orient.dir.y, pexpr->orient.dir.z);
-			PxVec3 pos(pexpr->pos.x, pexpr->pos.y, pexpr->pos.z);
+			//PxJoint* joint = NULL;
+			genotype_parser::SJoint *joint = pnode->joint;
+			PxVec3 dir(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+			PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
 			
-			if (boost::iequals(pexpr->joint, "fixed"))
+			if (boost::iequals(joint->type, "fixed"))
 			{
 				PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
-					parent, PxTransform(PxVec3(0,0,0)),
-					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
-				joint = j;
+					rigid, PxTransform(PxVec3(0,0,0)),
+					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
+				//joint = j;
 			}
-			else if(boost::iequals(pexpr->joint, "spherical"))
+			else if(boost::iequals(joint->type, "spherical"))
 			{
 				if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
-					parent, PxTransform(PxVec3(0,0,0)),
-					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+					rigid, PxTransform(PxVec3(0,0,0)),
+					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
 				{
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					joint = j;
+					//joint = j;
 				}
 			}
-			else if(boost::iequals(pexpr->joint, "revolute"))
+			else if(boost::iequals(joint->type, "revolute"))
 			{
 				if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
-					parent, PxTransform(PxVec3(0,0,0)),
-					rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+					rigid, PxTransform(PxVec3(0,0,0)),
+					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
 				{
 					j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
 					j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					joint = j;
+					//joint = j;
 				}
 			}
-
-			if (!joint)
-				return;
 		}
 
-		genotype_parser::SExprList *pnode = pexpr->connection;
-		while (pnode)
-		{
-			GenerateByGenotype( rigid, pnode->expr, recursiveCnt-1 );
-			pnode = pnode->next;
-		}
+		pnode = pnode->next;		
 	}
 
+	return rigid;
 }
 
 

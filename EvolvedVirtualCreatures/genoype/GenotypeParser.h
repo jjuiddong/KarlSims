@@ -8,7 +8,6 @@
 
 #include "GenotypeScanner.h"
 
-
 namespace evc { namespace genotype_parser {
 	using std::string;
 	using std::stringstream;
@@ -32,12 +31,18 @@ namespace evc { namespace genotype_parser {
 		//start -> expression_list;
 		SExprList* start();
 
-		//expression -> id ( id, vec3, id, vec3, vec3, expression-list )
+		//expression -> id ( id, vec3, id, quat, vec3, expression-list )
 		//	| id;
 		SExpr* expression();
 
 		//expression-list -> [ expression {, expression } ];
 		SExprList* expression_list();
+
+		// joint -> Joint( id, quat, vec3, expression )
+		SJoint* joint();
+
+		// joint-list -> [ joint {, joint} ];
+		SJointList* joint_list();
 
 		//vec3 -> vec3( num, num, num ) ;
 		SVec3 vec3();

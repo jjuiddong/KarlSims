@@ -36,17 +36,28 @@ namespace evc { namespace genotype_parser {
 		SVec3 dir;
 	};
 
+	struct SExpr;
+	struct SJoint
+	{
+		string type;
+		SQuat orient;
+		SVec3 pos;
+		SExpr *expr;
+	};
+
+	struct SJointList
+	{
+		SJoint *joint;
+		SJointList *next;
+	};
+
 	struct SExprList;
 	struct SExpr
 	{
-		bool isIdOnly;
 		string id;
 		string shape;
 		SVec3 dimension;
-		string joint;
-		SQuat orient;
-		SVec3 pos;
-		SExprList *connection;
+		SJointList *connection;
 		int refCount;
 	};
 
@@ -55,6 +66,7 @@ namespace evc { namespace genotype_parser {
 		SExpr *expr;
 		SExprList *next;
 	};
+
 
 	void RemoveExpression(SExpr *expr);
 	void RemoveExpressoin_OnlyExpr(SExpr *expr);
