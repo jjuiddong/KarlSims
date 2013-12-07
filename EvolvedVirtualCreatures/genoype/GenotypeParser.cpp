@@ -91,7 +91,7 @@ SExprList* genotype_parser::CGenotypeParser::start()
 
 /**
  @brief 
- expression -> id ( id, vec3, joint-list )
+ expression -> id ( id, vec3, material, mass, joint-list )
  	| id;
 
  @date 2013-12-05
@@ -110,6 +110,10 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		pexpr->shape = id();
 		Match(COMMA);
 		pexpr->dimension = vec3();
+		Match(COMMA);
+		pexpr->material = material();
+		Match(COMMA);
+		pexpr->mass = mass();
 
 		if (m_SymTable.find(pexpr->id) == m_SymTable.end())
 		{
@@ -166,7 +170,7 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
- @brief joint -> joint( id, quat, vec3, expression )
+ @brief joint -> joint( id, quat, vec3, limit, expression )
  @date 2013-12-07
 */
 SJoint* genotype_parser::CGenotypeParser::joint()
@@ -190,6 +194,8 @@ SJoint* genotype_parser::CGenotypeParser::joint()
 	joint->orient = quat();
 	Match(COMMA);
 	joint->pos = vec3();
+	Match(COMMA);
+	joint->limit = limit();
 	Match(COMMA);
 	joint->expr = expression();
 	Match(RPAREN);
@@ -285,6 +291,93 @@ SQuat genotype_parser::CGenotypeParser::quat()
 	}
 
 	return quat;
+}
+
+
+/**
+ @brief limit -> limit(num, num, num)
+ @date 2013-12-07
+*/
+SVec3 genotype_parser::CGenotypeParser::limit()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID != m_Token)
+	{
+		SyntaxError( "limit type need limit \n" );
+		return v;
+	}
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "limit"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		v.x = atof(number().c_str());
+		Match(COMMA);
+		v.y = atof(number().c_str());
+		Match(COMMA);
+		v.z = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		SyntaxError( "undeclare token %s, must declare 'limit'\n", m_pScan->GetTokenStringQ(0).c_str() );
+	}
+
+	return v;
+}
+
+
+/**
+ @brief material -> material( id )
+ @date 2013-12-07
+*/
+string genotype_parser::CGenotypeParser::material()
+{
+	if (ID != m_Token)
+		return "";
+
+	string ret;
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "material"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		ret = id();
+		Match(RPAREN);
+	}
+	else
+	{
+		SyntaxError( "undeclare token %s, must declare 'material'\n", m_pScan->GetTokenStringQ(0).c_str() );
+	}
+
+	return ret;
+}
+
+
+// mass -> mass(num)
+float genotype_parser::CGenotypeParser::mass()
+{
+	if (ID != m_Token)
+		return 0.f;
+
+	float ret;
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "mass"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		ret = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		SyntaxError( "undeclare token %s, must declare 'material'\n", m_pScan->GetTokenStringQ(0).c_str() );
+	}
+
+	return ret;
 }
 
 

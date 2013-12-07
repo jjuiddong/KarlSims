@@ -42,6 +42,7 @@ namespace evc { namespace genotype_parser {
 		string type;
 		SQuat orient;
 		SVec3 pos;
+		SVec3 limit;
 		SExpr *expr;
 	};
 
@@ -57,6 +58,8 @@ namespace evc { namespace genotype_parser {
 		string id;
 		string shape;
 		SVec3 dimension;
+		string material;
+		float mass;
 		SJointList *connection;
 		int refCount;
 	};

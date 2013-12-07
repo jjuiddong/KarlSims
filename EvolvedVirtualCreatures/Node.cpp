@@ -1108,56 +1108,16 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 
 	PxRigidDynamic* rigid = NULL;
 	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
+	MaterialIndex material = GetMaterialType(pexpr->material);
+	const float mass = pexpr->mass;
 
 	if (boost::iequals(pexpr->shape, "box"))
 	{
-		rigid = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
+		rigid = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(material), mass);
 	}
 	else if (boost::iequals(pexpr->shape, "sphere"))
 	{
-		rigid = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(MATERIAL_YELLOW), 1.f);
-	}
-
-	if (parent)
-	{
-		PxJoint* joint = NULL;
-		//PxVec3 dir(pexpr->orient.dir.x, pexpr->orient.dir.y, pexpr->orient.dir.z);
-		//PxVec3 pos(pexpr->pos.x, pexpr->pos.y, pexpr->pos.z);
-		//	
-		//if (boost::iequals(pexpr->joint, "fixed"))
-		//{
-		//	PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
-		//		parent, PxTransform(PxVec3(0,0,0)),
-		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
-		//	joint = j;
-		//}
-		//else if(boost::iequals(pexpr->joint, "spherical"))
-		//{
-		//	if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
-		//		parent, PxTransform(PxVec3(0,0,0)),
-		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
-		//	{
-		//		j->setProjectionLinearTolerance(0.0f);
-		//		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-		//		joint = j;
-		//	}
-		//}
-		//else if(boost::iequals(pexpr->joint, "revolute"))
-		//{
-		//	if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
-		//		parent, PxTransform(PxVec3(0,0,0)),
-		//		rigid, PxTransform(PxQuat(pexpr->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
-		//	{
-		//		j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
-		//		j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
-		//		j->setProjectionLinearTolerance(0.0f);
-		//		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-		//		joint = j;
-		//	}
-		//}
-
-		//if (!joint)
-		//	return;
+		rigid = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
 	}
 
 	genotype_parser::SJointList *pnode = pexpr->connection;
@@ -1171,6 +1131,7 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 			genotype_parser::SJoint *joint = pnode->joint;
 			PxVec3 dir(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
 			PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
+			PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
 			
 			if (boost::iequals(joint->type, "fixed"))
 			{
@@ -1185,6 +1146,12 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 					rigid, PxTransform(PxVec3(0,0,0)),
 					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
 				{
+					if (!limit.isZero())
+					{
+						j->setLimitCone(PxJointLimitCone(limit.x, limit.y, PxSpring(0,0)));
+						j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+					}
+
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 					//joint = j;
@@ -1196,8 +1163,14 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 					rigid, PxTransform(PxVec3(0,0,0)),
 					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
 				{
-					j->setLimit(PxJointAngularLimitPair(-PxPi/4, PxPi/4, 0.1f)); // upper, lower, tolerance
-					j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+					if (!limit.isZero())
+					{
+						j->setLimit(PxJointAngularLimitPair(limit.x, limit.y, limit.z)); // upper, lower, tolerance
+						j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+					}
+					//j->setDriveVelocity(g_pDbgConfig->value1);
+					//j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 					//joint = j;
@@ -1335,4 +1308,23 @@ void CNode::Move(float dtime)
 	PxTransform vm3 = qm3 * PxTransform(PxVec3(0,1,0));
 	PxTransform vm4 = qm4 * PxTransform(PxVec3(0,1,0));*/
 
+}
+
+
+/**
+ @brief genotype script material field to MaterialIndex value
+ @date 2013-12-07
+*/
+MaterialIndex CNode::GetMaterialType(const string &materialStr)
+{
+	map<string, MaterialIndex> materialMap;
+	materialMap[ "grey"] = MATERIAL_GREY;
+	materialMap[ "red"] = MATERIAL_RED;
+	materialMap[ "green"] = MATERIAL_GREEN;
+	materialMap[ "blue"] = MATERIAL_BLUE;
+	materialMap[ "yellow"] = MATERIAL_YELLOW;
+
+	if (materialMap.find(materialStr) != materialMap.end())
+		return materialMap[ materialStr];
+	return MATERIAL_GREY;
 }

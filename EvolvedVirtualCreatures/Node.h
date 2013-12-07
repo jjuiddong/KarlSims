@@ -6,7 +6,7 @@
 #pragma once
 
 
-class PhysXSample;
+#include "PhysXSample.h"
 class CEvc;
 
 namespace evc
@@ -37,6 +37,7 @@ namespace evc
 	protected:
 		PxRigidDynamic* GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt );
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
+		MaterialIndex GetMaterialType(const string &materialStr);
 
 
 	private:
