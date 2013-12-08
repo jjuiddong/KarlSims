@@ -11,6 +11,9 @@
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp">
       <Filter>Genotype</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\creature\Joint.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -24,10 +27,16 @@
       <Filter>Genotype</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Configure.h" />
+    <ClInclude Include="..\..\creature\Joint.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Genotype">
       <UniqueIdentifier>{48ec0c98-4ebd-443c-a6a7-94eb4fe32f6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Creature">
+      <UniqueIdentifier>{84e272e5-b4e7-4eee-8f9e-d44572e9118a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

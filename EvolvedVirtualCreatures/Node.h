@@ -1,7 +1,6 @@
 /**
  @filename Node.h
- 
- 
+  
 */
 #pragma once
 
@@ -11,6 +10,7 @@ class CEvc;
 
 namespace evc
 {
+	class CJoint;
 	namespace genotype_parser { struct SExpr; }
 
 	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
@@ -35,21 +35,16 @@ namespace evc
 
 
 	protected:
-		PxRigidDynamic* GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt );
+		PxRigidDynamic* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt );
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
 		MaterialIndex GetMaterialType(const string &materialStr);
 
 
 	private:
 		CEvc &m_Sample;
-		PxRigidDynamic* m_pHead;
 		vector<PxRigidDynamic*> m_Rigids;
-		vector<PxJoint*> m_Joints;
-		PxRevoluteJoint *m_RevJoint;
+		vector<CJoint*> m_Joints;
 		float m_Force;
 		float m_ElapseT;
-		float m_Vel_Joint1;
-		float m_Vel_Joint2;
-
 	};
 }

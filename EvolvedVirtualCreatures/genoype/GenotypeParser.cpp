@@ -170,7 +170,7 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
- @brief joint -> joint( id, quat, vec3, limit, expression )
+ @brief joint -> joint( id, quat, vec3, limit, velocity, period, expression )
  @date 2013-12-07
 */
 SJoint* genotype_parser::CGenotypeParser::joint()
@@ -191,12 +191,21 @@ SJoint* genotype_parser::CGenotypeParser::joint()
 	Match(LPAREN);
 	joint->type = id();
 	Match(COMMA);
+	joint->parentOrient = quat();
+	Match(COMMA);
 	joint->orient = quat();
 	Match(COMMA);
 	joint->pos = vec3();
 	Match(COMMA);
 	joint->limit = limit();
 	Match(COMMA);
+	joint->velocity = velocity();
+	if (COMMA == m_Token)
+		Match(COMMA);
+	joint->period = period();
+	if (COMMA == m_Token)
+		Match(COMMA);
+
 	joint->expr = expression();
 	Match(RPAREN);
 	return joint;
@@ -204,7 +213,7 @@ SJoint* genotype_parser::CGenotypeParser::joint()
 
 
 /**
- @brief joint-list -> [ joint {, joint} ];
+ @brief joint-list -> [joint {, joint}];
  @date 2013-12-07
 */
 SJointList* genotype_parser::CGenotypeParser::joint_list()
@@ -262,11 +271,17 @@ SVec3 genotype_parser::CGenotypeParser::vec3()
 }
 
 
-//quat -> quat(num, vec3);
+/**
+ @brief quat -> quat(num, vec3)
+						| quat()
+						;
+ @date 2013-12-08
+*/
 SQuat genotype_parser::CGenotypeParser::quat()
 {
 	SQuat quat;
 	quat.angle = 0;
+	quat.dir.x = quat.dir.y = quat.dir.z = 0.f;
 
 	if (ID == m_Token)
 	{
@@ -275,9 +290,12 @@ SQuat genotype_parser::CGenotypeParser::quat()
 		{
 			Match(ID);
 			Match(LPAREN);
-			quat.angle = atof(number().c_str());
-			Match(COMMA);
-			quat.dir = vec3();
+			if (RPAREN != m_Token)
+			{
+				quat.angle = atof(number().c_str());
+				Match(COMMA);
+				quat.dir = vec3();
+			}
 			Match(RPAREN);
 		}
 		else
@@ -339,7 +357,7 @@ string genotype_parser::CGenotypeParser::material()
 	if (ID != m_Token)
 		return "";
 
-	string ret;
+	string ret = "";
 	const string tok = m_pScan->GetTokenStringQ(0);
 	if (boost::iequals(tok, "material"))
 	{
@@ -357,13 +375,16 @@ string genotype_parser::CGenotypeParser::material()
 }
 
 
-// mass -> mass(num)
+/**
+ @brief mass -> mass(num)
+ @date 2013-12-07
+*/
 float genotype_parser::CGenotypeParser::mass()
 {
 	if (ID != m_Token)
 		return 0.f;
 
-	float ret;
+	float ret = 0.f;
 	const string tok = m_pScan->GetTokenStringQ(0);
 	if (boost::iequals(tok, "mass"))
 	{
@@ -374,7 +395,60 @@ float genotype_parser::CGenotypeParser::mass()
 	}
 	else
 	{
-		SyntaxError( "undeclare token %s, must declare 'material'\n", m_pScan->GetTokenStringQ(0).c_str() );
+		SyntaxError( "undeclare token %s, must declare 'mass'\n", m_pScan->GetTokenStringQ(0).c_str() );
+	}
+
+	return ret;
+}
+
+
+/**
+ @brief velocity -> velocity( num )
+ @date 2013-12-07
+*/
+SVec3 genotype_parser::CGenotypeParser::velocity()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID != m_Token)
+		return v;
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "velocity"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		v.x = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		// nothing
+	}
+
+	return v;
+}
+
+
+// period -> period(num)
+float genotype_parser::CGenotypeParser::period()
+{
+	if (ID != m_Token)
+		return 0.f;
+
+	float ret = 0.f;
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "period"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		ret = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		// nothing
 	}
 
 	return ret;

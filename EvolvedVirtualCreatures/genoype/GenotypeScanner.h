@@ -40,9 +40,12 @@ namespace evc { namespace genotype_parser {
 	struct SJoint
 	{
 		string type;
+		SQuat parentOrient;
 		SQuat orient;
 		SVec3 pos;
 		SVec3 limit;
+		SVec3 velocity;
+		float period;
 		SExpr *expr;
 	};
 

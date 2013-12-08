@@ -4,6 +4,7 @@
 #include "PhysXSample.h"
 #include "EvolvedVirtualCreatures.h"
 #include "genoype/GenotypeParser.h"
+#include "creature/Joint.h"
 
 
 using namespace evc;
@@ -29,18 +30,17 @@ void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
 CNode::CNode(CEvc &sample) :
 	m_Sample(sample)
 ,	m_Force(1.f)
-,	m_pHead(NULL)
 ,	m_ElapseT(0)
-,	m_RevJoint(NULL)
-,	m_Vel_Joint1(10)
-,	m_Vel_Joint2(-10)
 {
 
 }
 
 CNode::~CNode()
 {
-
+	BOOST_FOREACH (auto joint, m_Joints)
+	{
+		SAFE_DELETE(joint);
+	}
 }
 
 
@@ -135,7 +135,7 @@ bool CNode::GenerateHuman(const bool flag)
 	PxRigidDynamic* right_pelvis_joint2 = m_Sample.createSphere(pos+PxVec3(-.7f,0,-2.0f), 0.3f, NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 	PxRigidDynamic* right_leg_1 = m_Sample.createBox(pos+PxVec3(-1,0,-3.3f), PxVec3(0.3f, 0.3f, 1), NULL, m_Sample.getManageMaterial(MATERIAL_BLUE), 1.f);
 
-	m_pHead = head;
+	//m_pHead = head;
 
 	m_Rigids.push_back(left_shoulder_joint1);
 	m_Rigids.push_back(left_shoulder_joint2);
@@ -666,7 +666,7 @@ bool CNode::GenerateHuman4(const bool flag)
 	//setupFiltering(left_arm_1, FilterGroup::eSUBMARINE, FilterGroup::eMINE_HEAD | FilterGroup::eMINE_LINK);
 	//setupFiltering(body, FilterGroup::eMINE_HEAD, FilterGroup::eSUBMARINE);
 
-	m_pHead = head;
+	//m_pHead = head;
 	m_Rigids.push_back(left_shoulder_joint1);
 	m_Rigids.push_back(left_shoulder_joint2);
 	//m_Joints.push_back(left_pelvis_joint1);
@@ -841,7 +841,7 @@ bool CNode::GenerateHuman7(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 	//// left shoulder - left arm
@@ -935,7 +935,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 	// left shoulder joint 2
@@ -954,7 +954,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 
@@ -973,7 +973,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 
@@ -1021,7 +1021,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 
@@ -1039,7 +1039,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 	if (PxRevoluteJoint* j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
@@ -1056,7 +1056,7 @@ bool CNode::GenerateHuman8(const bool flag)
 		j->setProjectionLinearTolerance(0.0f);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 
-		m_Joints.push_back(j);
+		//m_Joints.push_back(j);
 	}
 
 
@@ -1085,7 +1085,7 @@ bool CNode::GenerateHuman9(const bool flag)
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse("genotype.txt");
 
-	GenerateByGenotype(NULL, pexpr, g_pDbgConfig->generationRecursiveCount);
+	GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount);
 
 	genotype_parser::RemoveExpression(pexpr);
 	return true;
@@ -1096,7 +1096,7 @@ bool CNode::GenerateHuman9(const bool flag)
  @brief create creature by genotype script
  @date 2013-12-06
 */
-PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotype_parser::SExpr *pexpr, const int recursiveCnt )
+PxRigidDynamic* CNode::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt )
 {
 	if (!pexpr)
 		return NULL;
@@ -1123,28 +1123,35 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 	genotype_parser::SJointList *pnode = pexpr->connection;
 	while (pnode)
 	{
-		PxRigidDynamic *child = GenerateByGenotype( rigid, pnode->joint->expr, recursiveCnt-1 );
+		PxRigidDynamic *child = GenerateByGenotype( pnode->joint->expr, recursiveCnt-1 );
 
 		if (child)
 		{
-			//PxJoint* joint = NULL;
 			genotype_parser::SJoint *joint = pnode->joint;
-			PxVec3 dir(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+			PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+			PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
 			PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
 			PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
-			
+			PxVec3 velocity(joint->velocity.x, joint->velocity.y, joint->velocity.z);
+
+			PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
+			PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
+				(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
+
+			PxJoint* newJoint = NULL;
+
 			if (boost::iequals(joint->type, "fixed"))
 			{
 				PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
-					rigid, PxTransform(PxVec3(0,0,0)),
-					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos)) );
-				//joint = j;
+					rigid, tm0, 
+					child, tm1 );
+				newJoint = j;
 			}
 			else if(boost::iequals(joint->type, "spherical"))
 			{
 				if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
-					rigid, PxTransform(PxVec3(0,0,0)),
-					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+					rigid, tm0,
+					child, tm1) )
 				{
 					if (!limit.isZero())
 					{
@@ -1154,160 +1161,40 @@ PxRigidDynamic* CNode::GenerateByGenotype( PxRigidDynamic *parent, const genotyp
 
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					//joint = j;
+					newJoint = j;
 				}
 			}
-			else if(boost::iequals(joint->type, "revolute"))
+			else if (boost::iequals(joint->type, "revolute"))
 			{
 				if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
-					rigid, PxTransform(PxVec3(0,0,0)),
-					child, PxTransform(PxQuat(joint->orient.angle,dir)) * PxTransform(PxVec3(pos))) )
+					rigid, tm0,
+					child, tm1) )
 				{
 					if (!limit.isZero())
 					{
 						j->setLimit(PxJointAngularLimitPair(limit.x, limit.y, limit.z)); // upper, lower, tolerance
 						j->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 					}
-					//j->setDriveVelocity(g_pDbgConfig->value1);
-					//j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+					
+					if (!velocity.isZero())
+					{
+						j->setDriveVelocity(velocity.x);
+						j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+					}
 
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					//joint = j;
+					newJoint = j;
 				}
 			}
+
+			m_Joints.push_back( new CJoint(newJoint, velocity.x, joint->period) );
 		}
 
-		pnode = pnode->next;		
+		pnode = pnode->next;
 	}
 
 	return rigid;
-}
-
-
-/**
- @brief 
- @date 2013-12-03
-*/
-void CNode::Move(float dtime)
-{
-	//if (!m_pHead)
-	//	return;
-
-	//PxTransform m = m_left_pelvis_joint2->getGlobalPose();
-	//m.p.x += (dtime * 40.f);
-	//m_left_pelvis_joint2->setGlobalPose(m);
-	//const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
-	//const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
-
-	//static float elapseT = 0.f;
-	//elapseT += dtime;
-	m_ElapseT += dtime;
-
-	PxVec3 force;
-	if (m_ElapseT < 1.f)
-	{
-		force = PxVec3(0,1,0);//*m_Force*dtime;
-	}
-	else
-	{
-		force = PxVec3(0,-1,0);//*m_Force*dtime;
-
-		//if (m_ElapseT > 2.f)
-		//	elapseT = 0.f;
-	}
-
-	//if (m_Joints.size() < 3)
-	//	return;
-
-	//PxTransform mh = m_pHead->getGlobalPose();
-	//PxTransform m0 = m_Rigids[ 0]->getGlobalPose();
-	//PxTransform m1 = m_Rigids[ 1]->getGlobalPose();
-	//PxTransform m2 = m_Joints[ 2]->getGlobalPose();
-
-	PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
-	//PxTransform qm(q);
-	//PxVec3 v0 = m1.p - m0.p;
-	//PxTransform vm = qm * PxTransform(v0);
-
-	//PxTransform mov(m1.p, q);
-	//m_Joints[ 1]->clearTorque();
-	//m_Joints[ 1]->addTorque(PxVec3(1,0,0)*m_Force);
-	//m_Joints[ 1]->setAngularVelocity(PxVec3(0,1,0)*m_Force);
-
-	//PxVec3 dir = m1.p - m2.p;
-	//dir.normalize();
-
-	//PxVec3 front = dir.cross(PxVec3(0,1,0));
-	//front.normalize();
-
-	//if (PxPi < m_ElapseT)
-	//	front = -front;
-	 
-	//m_Joints[ 1]->addForce(PxVec3(1,0,0)* m_Force);
-
-
-
-
-	//
-	////PxVec3 v0 = m0.p - mh.p;
-	////v0.normalize();
-	////PxVec3 y0(0,1,0);
-	////PxVec3 dir = y0.cross(v0);
-	////dir.normalize();
-
-	//PxQuat q(m_Force*m_ElapseT, PxVec3(1,0,0));
-	////PxQuat q(.0f, PxVec3(1,0,0));
-	//PxTransform qm(q);
-
-	////PxVec3 dist = m1.p - m0.p;
-	//PxVec3 dist(0,.6f,0);
-	//PxTransform m(dist);
-	//PxTransform vm = qm * m;
-
-	//m1.p = m0.p + vm.p;
-	//PxTransform mov(m1.p);
-	//m_Joints[ 1]->clearForce();
-	//m_Joints[ 1]->setGlobalPose(mov);
-	//m_Joints[ 1]->addForce(PxVec3(
-
-	//m_Joints[ 1]->addForce(force);
-	//m_Joints[ 3]->addForce(force);
-	//m_Joints[ 5]->addForce(force);
-	//m_Joints[ 7]->addForce(force);
-
-	if (PxPi*2 < m_ElapseT)
-		m_ElapseT = 0.f;
-
-	BOOST_FOREACH(auto joint, m_Joints)
-	{
-		if (PxJointConcreteType::eREVOLUTE == joint->getType())
-		{
-			if (PxPi < m_ElapseT)
-			{
-				((PxRevoluteJoint*)joint)->setDriveVelocity(m_Vel_Joint1);
-			}
-			else
-			{
-				((PxRevoluteJoint*)joint)->setDriveVelocity(m_Vel_Joint2);
-			}
-		}
-	}
-
-/*
-	PxQuat q2(PxPi, PxVec3(1,0,0));
-	PxTransform qm2(q2);
-
-	PxQuat q3(PxPi/2.f, PxVec3(1,0,0));
-	PxTransform qm3(q3);
-
-	PxQuat q4(PxPi*100 + PxPi/2.f, PxVec3(1,0,0));
-	PxTransform qm4(q4);
-
-	PxTransform vm2 = qm2 * PxTransform(PxVec3(0,1,0));
-	PxTransform vm3 = qm3 * PxTransform(PxVec3(0,1,0));
-	PxTransform vm4 = qm4 * PxTransform(PxVec3(0,1,0));*/
-
 }
 
 
@@ -1328,3 +1215,19 @@ MaterialIndex CNode::GetMaterialType(const string &materialStr)
 		return materialMap[ materialStr];
 	return MATERIAL_GREY;
 }
+
+
+/**
+ @brief 
+ @date 2013-12-03
+*/
+void CNode::Move(float dtime)
+{
+	m_ElapseT += dtime;
+	if (PxPi*2 < m_ElapseT)
+		m_ElapseT = 0.f;
+
+	BOOST_FOREACH(auto joint, m_Joints)
+		joint->Move(dtime);
+}
+

@@ -38,7 +38,7 @@ namespace evc { namespace genotype_parser {
 		//expression-list -> [ expression {, expression } ];
 		SExprList* expression_list();
 
-		// joint -> Joint( id, quat, vec3, limit, expression )
+		// joint -> Joint( id, quat, quat, vec3, limit, velocity, expression )
 		SJoint* joint();
 
 		// joint-list -> [ joint {, joint} ];
@@ -58,6 +58,12 @@ namespace evc { namespace genotype_parser {
 
 		// material -> material( id )
 		string material();
+
+		// velocity -> velocity(num)
+		SVec3 velocity();
+
+		// period -> period(num)
+		float period();
 
 		string number();
 		int num();
