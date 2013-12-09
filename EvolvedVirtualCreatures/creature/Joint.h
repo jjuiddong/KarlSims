@@ -16,9 +16,6 @@ namespace evc
 		void Move(float dtime);
 		
 
-	protected:
-
-
 	private:
 		PxJoint *m_pJoint;
 		float m_Velocity;

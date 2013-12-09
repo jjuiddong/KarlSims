@@ -1,10 +1,9 @@
 
 #include "stdafx.h"
 #include "node.h"
-#include "PhysXSample.h"
-#include "EvolvedVirtualCreatures.h"
-#include "genoype/GenotypeParser.h"
-#include "creature/Joint.h"
+#include "../EvolvedVirtualCreatures.h"
+#include "../genoype/GenotypeParser.h"
+#include "Joint.h"
 
 
 using namespace evc;

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "PhysXSample.h"
-#include "Node.h"
+#include "Creature/Node.h"
 
 
 struct NodeGroup
