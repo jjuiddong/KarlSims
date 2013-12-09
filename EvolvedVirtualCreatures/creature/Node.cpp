@@ -1,9 +1,9 @@
-
 #include "stdafx.h"
 #include "node.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "../genoype/GenotypeParser.h"
 #include "Joint.h"
+#include "NeuralNet.h"
 
 
 using namespace evc;
@@ -28,14 +28,17 @@ void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
 
 CNode::CNode(CEvc &sample) :
 	m_Sample(sample)
-,	m_Force(1.f)
-,	m_ElapseT(0)
+//,	m_Force(1.f)
+//,	m_ElapseT(0)
+,	m_pBrain(NULL)
 {
+	m_pBrain = new CNeuralNet(2, 1, 0, 0); 
 
 }
 
 CNode::~CNode()
 {
+	SAFE_DELETE(m_pBrain);
 	BOOST_FOREACH (auto joint, m_Joints)
 	{
 		SAFE_DELETE(joint);
@@ -1187,7 +1190,7 @@ PxRigidDynamic* CNode::GenerateByGenotype( const genotype_parser::SExpr *pexpr, 
 				}
 			}
 
-			m_Joints.push_back( new CJoint(newJoint, velocity.x, joint->period) );
+			m_Joints.push_back( new CJoint(rigid, child, newJoint, velocity.x, joint->period) );
 		}
 
 		pnode = pnode->next;
@@ -1222,9 +1225,9 @@ MaterialIndex CNode::GetMaterialType(const string &materialStr)
 */
 void CNode::Move(float dtime)
 {
-	m_ElapseT += dtime;
-	if (PxPi*2 < m_ElapseT)
-		m_ElapseT = 0.f;
+	//m_ElapseT += dtime;
+	//if (PxPi*2 < m_ElapseT)
+	//	m_ElapseT = 0.f;
 
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);

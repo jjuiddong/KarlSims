@@ -24,8 +24,6 @@
 
 
 
-
-
 using namespace SampleRenderer;
 using namespace SampleFramework;
 

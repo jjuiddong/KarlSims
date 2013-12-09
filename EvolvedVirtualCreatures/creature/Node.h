@@ -1,6 +1,6 @@
 /**
- @filename Node.h
-  
+@filename Node.h
+
 */
 #pragma once
 
@@ -11,6 +11,7 @@ class CEvc;
 namespace evc
 {
 	class CJoint;
+	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; }
 
 	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
@@ -44,7 +45,8 @@ namespace evc
 		CEvc &m_Sample;
 		vector<PxRigidDynamic*> m_Rigids;
 		vector<CJoint*> m_Joints;
-		float m_Force;
-		float m_ElapseT;
+		CNeuralNet *m_pBrain;
+		//float m_Force;
+		//float m_ElapseT;
 	};
 }
