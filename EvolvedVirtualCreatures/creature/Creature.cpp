@@ -30,11 +30,11 @@ CCreature::~CCreature()
 */
 void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
 {
+	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
-
 	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount);
-
 	genotype_parser::RemoveExpression(pexpr);
 }
 
