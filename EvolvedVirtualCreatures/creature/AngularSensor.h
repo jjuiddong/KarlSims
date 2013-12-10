@@ -35,6 +35,12 @@ namespace evc
 		RETV(!m_pJoint, 0);
 		const PxQuat q = m_pJoint->getRelativeTransform().q;
 		double angle = q.getAngle();
+
+		// scale 0 ~ 1.f
+		angle = angle / PxPi;
+		if (angle >= 1.f)
+			angle = 1.f;
+
 		if (q.x < 0)
 			angle = -angle;
 		return angle;

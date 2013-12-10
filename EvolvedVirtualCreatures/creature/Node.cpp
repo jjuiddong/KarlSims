@@ -90,7 +90,8 @@ void CNode::InitNeuron()
 	m_Nerves.resize(count);
 	
 	SAFE_DELETE(m_pBrain);
-	m_pBrain = new CNeuralNet(count, 1, 0, 0); 
+	const int outputCount = m_Effectors.size();
+	m_pBrain = new CNeuralNet(count, outputCount, 1, 1); 
 }
 
 
@@ -103,7 +104,7 @@ void CNode::Move(float dtime)
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);
 
-	UpdateNeuron();
+	UpdateNeuron(dtime);
 }
 
 
@@ -111,7 +112,7 @@ void CNode::Move(float dtime)
  @brief Update Neuron
  @date 2013-12-10
 */
-void CNode::UpdateNeuron()
+void CNode::UpdateNeuron(float dtime)
 {
 	const int count = GetNeuronCount();
 	RET(count <= 0);
@@ -123,6 +124,8 @@ void CNode::UpdateNeuron()
 	if (m_pBrain)
 	{
 		vector<double> output = m_pBrain->Update(nerves);
+		for (u_int i=0; i < output.size(); ++i)
+			m_Effectors[ i]->Signal(dtime, output[ i]);
 	}
 }
 

@@ -42,14 +42,14 @@ void CJoint::Move(float dtime)
 
 	if (PxJointConcreteType::eREVOLUTE == m_pJoint->getType())
 	{
-		if (PxPi < m_ElapseT)
-		{
-			((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(m_Velocity);
-		}
-		else
-		{
-			((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-m_Velocity);
-		}
+		//if (PxPi < m_ElapseT)
+		//{
+		//	((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(m_Velocity);
+		//}
+		//else
+		//{
+		//	((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-m_Velocity);
+		//}
 
 		const PxQuat q = m_pJoint->getRelativeTransform().q;
 		m_RelativeAngle = q.getAngle();
@@ -67,7 +67,6 @@ void CJoint::GetOutputNerves( OUT vector<double> &out) const
 {
 	if (m_pActor1)
 		m_pActor1->GetOutputNerves(out);
-	out.push_back(m_RelativeAngle);
 }
 
 
@@ -77,7 +76,7 @@ void CJoint::GetOutputNerves( OUT vector<double> &out) const
 */
 int CJoint::GetNeuronCount() const
 {
-	int count = 1; // angular sensor
+	int count = 0;
 	if (m_pActor1)
 		count += m_pActor1->GetNeuronCount();
 	return count;

@@ -4,14 +4,3 @@
 
 using namespace evc;
 
-
-CEffector::CEffector()
-{
-
-}
-
-CEffector::~CEffector()
-{
-
-}
-

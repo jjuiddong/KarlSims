@@ -29,7 +29,7 @@ namespace evc
 
 	protected:
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
-		void UpdateNeuron();
+		void UpdateNeuron(float dtime);
 
 
 	public:
