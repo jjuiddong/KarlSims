@@ -8,6 +8,7 @@
 
 #include "PhysXSample.h"
 #include "Creature/Node.h"
+#include "Creature/Creature.h"
 
 
 struct NodeGroup
@@ -20,7 +21,6 @@ struct NodeGroup
 		R_ARM		= (1 << 3),
 	};
 };
-
 
 
 DECLARE_TYPE_NAME(CEvc)
@@ -60,6 +60,7 @@ public:
 	PxRigidDynamic*	createJointSphere(const PxVec3& pos, PxReal radius, const PxVec3* linVel=NULL, 
 		RenderMaterial* material=NULL, PxReal density=1.0f);
 
+
 protected:
 	void spawnNode(const int key);
 	void pickup();
@@ -67,7 +68,7 @@ protected:
 
 
 private:
-	list<evc::CNode*> m_Nodes;
+	list<evc::CCreature*> m_Creatures;
 
 };
 

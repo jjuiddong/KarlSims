@@ -31,6 +31,7 @@ CNode::CNode(CEvc &sample) :
 //,	m_Force(1.f)
 //,	m_ElapseT(0)
 ,	m_pBrain(NULL)
+,	m_pBody(NULL)
 {
 	m_pBrain = new CNeuralNet(2, 1, 0, 0); 
 
@@ -1225,10 +1226,6 @@ MaterialIndex CNode::GetMaterialType(const string &materialStr)
 */
 void CNode::Move(float dtime)
 {
-	//m_ElapseT += dtime;
-	//if (PxPi*2 < m_ElapseT)
-	//	m_ElapseT = 0.f;
-
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);
 }

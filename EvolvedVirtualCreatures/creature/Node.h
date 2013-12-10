@@ -14,8 +14,7 @@ namespace evc
 	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; }
 
-	DECLARE_TYPE_NAME_SCOPE(evc, CNode)
-	class CNode : public memmonitor::Monitor<CNode, TYPE_NAME(CNode)>
+	class CNode
 	{
 	public:
 		CNode(CEvc &sample);
@@ -41,8 +40,10 @@ namespace evc
 		MaterialIndex GetMaterialType(const string &materialStr);
 
 
-	private:
+	//private:
+	public:
 		CEvc &m_Sample;
+		PxRigidDynamic *m_pBody;
 		vector<PxRigidDynamic*> m_Rigids;
 		vector<CJoint*> m_Joints;
 		CNeuralNet *m_pBrain;

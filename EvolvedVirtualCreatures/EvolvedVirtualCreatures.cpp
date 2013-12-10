@@ -41,11 +41,11 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 
 CEvc::~CEvc()
 {
-	BOOST_FOREACH(auto &node, m_Nodes)
+	BOOST_FOREACH(auto &creature, m_Creatures)
 	{
-		delete node;
+		delete creature;
 	}
-	m_Nodes.clear();
+	m_Creatures.clear();
 	SAFE_DELETE(g_pDbgConfig);
 }
 
@@ -176,6 +176,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT7, WKEY_7,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT8, WKEY_8,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT9, WKEY_9,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT0, WKEY_0,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
@@ -186,6 +187,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT7,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT8,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT9,	"Throw Object", ABUTTON_5,	IBUTTON_5);
+	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT0,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
 }
 
@@ -197,20 +199,21 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
-	evc::CNode *pnode = new evc::CNode(*this);
+	evc::CCreature *pnode = new evc::CCreature(*this);
 	switch (key)
 	{
-	case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT9: pnode->GenerateHuman9(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT6: pnode->GenerateHuman6(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(g_pDbgConfig->applyJoint); break;
+	//case SPAWN_DEBUG_OBJECT9: pnode->GenerateHuman9(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT0: pnode->GenerateByGenotype("genotype.txt"); break;
 	}
-	m_Nodes.push_back( pnode );
+	m_Creatures.push_back( pnode );
 }
 
 
@@ -274,6 +277,7 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		case SPAWN_DEBUG_OBJECT7:
 		case SPAWN_DEBUG_OBJECT8:
 		case SPAWN_DEBUG_OBJECT9:
+		case SPAWN_DEBUG_OBJECT0:
 			spawnNode(ie.m_Id);
 			break;
 
@@ -293,9 +297,9 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 {
 	PhysXSample::onSubstepSetup(dtime, cont);
 
-	BOOST_FOREACH (auto &node, m_Nodes)
+	BOOST_FOREACH (auto &creature, m_Creatures)
 	{
-		node->Move(dtime);
+		creature->Move(dtime);
 	}
 }
 

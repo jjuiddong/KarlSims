@@ -88,9 +88,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\creature\Creature.cpp" />
     <ClCompile Include="..\..\creature\Joint.cpp" />
     <ClCompile Include="..\..\creature\NeuralNet.cpp" />
     <ClCompile Include="..\..\creature\Node.cpp" />
+    <ClCompile Include="..\..\creature\Sensor.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeParser.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp" />
@@ -101,9 +103,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Configure.h" />
+    <ClInclude Include="..\..\creature\Creature.h" />
     <ClInclude Include="..\..\creature\Joint.h" />
     <ClInclude Include="..\..\creature\NeuralNet.h" />
     <ClInclude Include="..\..\creature\Node.h" />
+    <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />

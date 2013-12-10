@@ -19,6 +19,12 @@
     <ClCompile Include="..\..\creature\Node.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\creature\Sensor.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\Creature.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -38,6 +44,12 @@
       <Filter>Creature</Filter>
     </ClInclude>
     <ClInclude Include="..\..\creature\Node.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Sensor.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Creature.h">
       <Filter>Creature</Filter>
     </ClInclude>
   </ItemGroup>
