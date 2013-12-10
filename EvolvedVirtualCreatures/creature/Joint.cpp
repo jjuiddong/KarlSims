@@ -1,12 +1,16 @@
 
 #include "stdafx.h"
 #include "Joint.h"
+#include "Node.h"
+#include "AngularSensor.h"
+#include "MuscleEffector.h"
+
 
 
 using namespace evc;
 
 // joint=NULL, velocity=1.f, period=1.f
-CJoint::CJoint(PxRigidDynamic *actor0, PxRigidDynamic *actor1, PxJoint *joint, float velocity, float period) :
+CJoint::CJoint(CNode *actor0, CNode *actor1, PxJoint *joint, float velocity, float period) :
 	m_pJoint(joint)
 ,	m_pActor0(actor0)
 ,	m_pActor1(actor1)
@@ -52,5 +56,50 @@ void CJoint::Move(float dtime)
 		if (q.x < 0)
 			m_RelativeAngle = -m_RelativeAngle;
 	}
+}
+
+
+/**
+ @brief 
+ @date 2013-12-10
+*/
+void CJoint::GetOutputNerves( OUT vector<double> &out) const
+{
+	if (m_pActor1)
+		m_pActor1->GetOutputNerves(out);
+	out.push_back(m_RelativeAngle);
+}
+
+
+/**
+ @brief return total neuron count
+ @date 2013-12-10
+*/
+int CJoint::GetNeuronCount() const
+{
+	int count = 1; // angular sensor
+	if (m_pActor1)
+		count += m_pActor1->GetNeuronCount();
+	return count;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-10
+*/
+void CJoint::ApplySensor(CAngularSensor &sensor)
+{
+	sensor.SetJoint(m_pJoint);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-10
+*/
+void CJoint::ApplyEffector(CMuscleEffector &effector)
+{
+	effector.SetJoint(m_pJoint);
 }
 

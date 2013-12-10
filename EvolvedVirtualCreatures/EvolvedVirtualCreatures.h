@@ -7,8 +7,6 @@
 #pragma once
 
 #include "PhysXSample.h"
-#include "Creature/Node.h"
-#include "Creature/Creature.h"
 
 
 struct NodeGroup
@@ -23,9 +21,10 @@ struct NodeGroup
 };
 
 
-DECLARE_TYPE_NAME(CEvc)
+namespace evc { class CCreature; }
 
 // Evc, Evolved Virtual Creatures
+DECLARE_TYPE_NAME(CEvc)
 class CEvc : public PhysXSample
 				, public PxSimulationEventCallback
 				, public memmonitor::Monitor<CEvc, TYPE_NAME(CEvc)>

@@ -19,10 +19,10 @@
     <ClCompile Include="..\..\creature\Node.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\creature\Sensor.cpp">
+    <ClCompile Include="..\..\creature\Creature.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\creature\Creature.cpp">
+    <ClCompile Include="..\..\creature\Effector.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,6 +50,15 @@
       <Filter>Creature</Filter>
     </ClInclude>
     <ClInclude Include="..\..\creature\Creature.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Effector.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\AngularSensor.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\MuscleEffector.h">
       <Filter>Creature</Filter>
     </ClInclude>
   </ItemGroup>

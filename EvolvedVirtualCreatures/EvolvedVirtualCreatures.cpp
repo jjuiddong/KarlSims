@@ -21,7 +21,7 @@
 #include <SampleUserInputDefines.h>
 
 #include "Picking.h"
-
+#include "Creature/Creature.h"
 
 
 using namespace SampleRenderer;
@@ -199,10 +199,10 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
-	evc::CCreature *pnode = new evc::CCreature(*this);
+	evc::CCreature *pnode = NULL;
 	switch (key)
 	{
-	//case SPAWN_DEBUG_OBJECT: pnode->GenerateHuman(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT: pnode = new evc::CCreature(*this); pnode->GenerateByGenotype("genotype.txt"); break;
 	//case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
@@ -211,9 +211,11 @@ void CEvc::spawnNode(const int key)
 	//case SPAWN_DEBUG_OBJECT7: pnode->GenerateHuman7(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT8: pnode->GenerateHuman8(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT9: pnode->GenerateHuman9(g_pDbgConfig->applyJoint); break;
-	case SPAWN_DEBUG_OBJECT0: pnode->GenerateByGenotype("genotype.txt"); break;
+	//case SPAWN_DEBUG_OBJECT0: pnode->GenerateByGenotype("genotype.txt"); break;
 	}
-	m_Creatures.push_back( pnode );
+
+	if (pnode)
+		m_Creatures.push_back( pnode );
 }
 
 

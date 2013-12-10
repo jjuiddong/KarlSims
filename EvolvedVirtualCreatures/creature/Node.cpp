@@ -3,6 +3,8 @@
 #include "../EvolvedVirtualCreatures.h"
 #include "Joint.h"
 #include "NeuralNet.h"
+#include "AngularSensor.h"
+#include "MuscleEffector.h"
 
 
 using namespace evc;
@@ -32,7 +34,6 @@ CNode::CNode(CEvc &sample) :
 ,	m_pBrain(NULL)
 ,	m_pBody(NULL)
 {
-	m_pBrain = new CNeuralNet(2, 1, 0, 0); 
 
 }
 
@@ -42,6 +43,14 @@ CNode::~CNode()
 	BOOST_FOREACH (auto joint, m_Joints)
 	{
 		SAFE_DELETE(joint);
+	}
+	BOOST_FOREACH (auto p, m_Sensors)
+	{
+		SAFE_DELETE(p);
+	}
+	BOOST_FOREACH (auto p, m_Effectors)
+	{
+		SAFE_DELETE(p);
 	}
 }
 
@@ -71,11 +80,84 @@ void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
 
 /**
  @brief 
+ @date 2013-12-10
+*/
+void CNode::InitNeuron()
+{
+	const int count = GetNeuronCount();
+	RET(count <= 0);
+
+	m_Nerves.resize(count);
+	
+	SAFE_DELETE(m_pBrain);
+	m_pBrain = new CNeuralNet(count, 1, 0, 0); 
+}
+
+
+/**
+ @brief 
  @date 2013-12-03
 */
 void CNode::Move(float dtime)
 {
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);
+
+	UpdateNeuron();
+}
+
+
+/**
+ @brief Update Neuron
+ @date 2013-12-10
+*/
+void CNode::UpdateNeuron()
+{
+	const int count = GetNeuronCount();
+	RET(count <= 0);
+
+	vector<double> nerves;
+	nerves.reserve(count);
+	GetOutputNerves(nerves);
+
+	if (m_pBrain)
+	{
+		vector<double> output = m_pBrain->Update(nerves);
+	}
+}
+
+
+/**
+ @brief return total neuron count
+ @date 2013-12-10
+*/
+int CNode::GetNeuronCount() const
+{
+	int count = 0;
+	BOOST_FOREACH(auto &joint, m_Joints)
+	{
+		count += joint->GetNeuronCount();
+	}
+
+	count += m_Sensors.size();
+	return count;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-10
+*/
+void CNode::GetOutputNerves(OUT vector<double> &out) const
+{
+	BOOST_FOREACH(auto &joint, m_Joints)
+	{
+		joint->GetOutputNerves(out);
+	}
+
+	BOOST_FOREACH (auto &sensor, m_Sensors)
+	{
+		out.push_back( sensor->GetOutput() );
+	}
 }
 

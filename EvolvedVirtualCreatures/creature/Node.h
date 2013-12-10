@@ -10,6 +10,8 @@ class CEvc;
 
 namespace evc
 {
+	class CEffector;
+	class CSensor;
 	class CJoint;
 	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; }
@@ -19,22 +21,24 @@ namespace evc
 	public:
 		CNode(CEvc &sample);
 		virtual ~CNode();
+		void InitNeuron();
+		void GetOutputNerves(OUT vector<double> &out) const;
+		int GetNeuronCount() const;
 		void Move(float dtime);
 
 
 	protected:
 		void setCollisionGroup(PxRigidActor* actor, PxU32 group);
+		void UpdateNeuron();
 
 
 	public:
 		CEvc &m_Sample;
 		PxRigidDynamic *m_pBody;
-		vector<CJoint*> m_Joints;
 		CNeuralNet *m_pBrain;
-		vector<float> m_OutputNeuron;
-
-		//float m_Force;
-		//float m_ElapseT;
-		vector<PxRigidDynamic*> m_Rigids;
+		vector<CJoint*> m_Joints;
+		vector<CSensor*> m_Sensors;
+		vector<CEffector*> m_Effectors;
+		vector<double> m_Nerves;
 	};
 }

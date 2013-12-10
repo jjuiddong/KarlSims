@@ -6,6 +6,9 @@
 #include "../genoype/GenotypeParser.h"
 #include "Joint.h"
 #include "NeuralNet.h"
+#include "AngularSensor.h"
+#include "MuscleEffector.h"
+
 
 
 using namespace evc;
@@ -20,7 +23,11 @@ CCreature::CCreature(CEvc &sample) :
 
 CCreature::~CCreature()
 {
-
+	m_pRoot = NULL;
+	BOOST_FOREACH (auto &p, m_Nodes)
+	{
+		SAFE_DELETE(p);
+	}
 }
 
 
@@ -88,14 +95,14 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 			PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
 				(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
-			PxJoint* newJoint = NULL;
+			PxJoint* pxJoint = NULL;
 
 			if (boost::iequals(joint->type, "fixed"))
 			{
 				PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
 					body, tm0, 
 					child, tm1 );
-				newJoint = j;
+				pxJoint = j;
 			}
 			else if(boost::iequals(joint->type, "spherical"))
 			{
@@ -111,7 +118,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					newJoint = j;
+					pxJoint = j;
 				}
 			}
 			else if (boost::iequals(joint->type, "revolute"))
@@ -134,16 +141,25 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 
 					j->setProjectionLinearTolerance(0.0f);
 					j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
-					newJoint = j;
+					pxJoint = j;
 				}
 			}
 
-			pNode->m_Joints.push_back( new CJoint(body, child, newJoint, velocity.x, joint->period) );
+			CJoint *pJoint = new CJoint(pNode, pChildNode, pxJoint, velocity.x, joint->period);
+			CAngularSensor *pSensor = new CAngularSensor();
+			CMuscleEffector *pEffector = new CMuscleEffector();
+			pJoint->ApplySensor(*pSensor);
+			pJoint->ApplyEffector(*pEffector);
+
+			pNode->m_Joints.push_back( pJoint );
+			pNode->m_Sensors.push_back(pSensor);
+			pNode->m_Effectors.push_back(pEffector);
 		}
 
 		pConnect = pConnect->next;
 	}
 
+	pNode->InitNeuron();
 	m_Nodes.push_back(pNode);
 	return pNode;
 }

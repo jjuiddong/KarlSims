@@ -34,7 +34,6 @@ namespace evc
 		CEvc &m_Sample;
 		CNode *m_pRoot;
 		vector<CNode*> m_Nodes;
-		// sensor list
 		// output neuron
 	};
 }

@@ -1,7 +1,7 @@
 /**
  @filename Sensor.h
  
- 
+ sensor interface 
 */
 #pragma once
 
@@ -11,13 +11,8 @@ namespace evc
 	class CSensor
 	{
 	public:
-		CSensor();
-		virtual ~CSensor();
-
-
-	protected:
-
-
-	private:
+		CSensor() {}
+		virtual ~CSensor() {}
+		virtual double GetOutput() = 0;
 	};
 }
