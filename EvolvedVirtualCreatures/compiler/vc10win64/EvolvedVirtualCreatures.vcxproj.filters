@@ -25,6 +25,9 @@
     <ClCompile Include="..\..\creature\Effector.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp">
+      <Filter>Genetic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -61,6 +64,9 @@
     <ClInclude Include="..\..\creature\MuscleEffector.h">
       <Filter>Creature</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\genetic\GeneticAlgorithm.h">
+      <Filter>Genetic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Genotype">
@@ -68,6 +74,9 @@
     </Filter>
     <Filter Include="Creature">
       <UniqueIdentifier>{84e272e5-b4e7-4eee-8f9e-d44572e9118a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Genetic">
+      <UniqueIdentifier>{845a6c7c-8b15-46d7-8cc7-f4b57de8a10c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

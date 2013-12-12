@@ -15,6 +15,7 @@ namespace evc
 	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; }
 
+
 	DECLARE_TYPE_NAME_SCOPE(evc, CCreature)
 	class CCreature : public memmonitor::Monitor<CCreature, TYPE_NAME(CCreature)>
 	{
