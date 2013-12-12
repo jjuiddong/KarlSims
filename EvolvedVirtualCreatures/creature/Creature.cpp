@@ -28,6 +28,7 @@ CCreature::~CCreature()
 	{
 		SAFE_DELETE(p);
 	}
+	m_Nodes.clear();
 }
 
 
@@ -42,6 +43,26 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
 	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount);
+
+	m_Genome.fitness = 0;
+	m_Genome.chromo.clear();
+	m_Genome.chromo.reserve(64);
+	GetChromo(pexpr, m_Genome.chromo);
+
+	{
+		//SAFE_DELETE(m_pRoot);
+		BOOST_FOREACH (auto &p, m_Nodes)
+		{
+			SAFE_DELETE(p);
+		}
+		m_Nodes.clear();
+
+		int next;
+		genotype_parser::SExpr *p = BuildExpr(m_Genome.chromo);
+		m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount);
+		genotype_parser::RemoveExpression(p);
+	}
+
 	genotype_parser::RemoveExpression(pexpr);
 }
 

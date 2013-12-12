@@ -5,6 +5,7 @@
 #pragma once
 
 #include "PhysXSample.h"
+#include "../genetic/Genome.h"
 
 
 class CEvc;
@@ -35,6 +36,7 @@ namespace evc
 		CEvc &m_Sample;
 		CNode *m_pRoot;
 		vector<CNode*> m_Nodes;
+		SGenome m_Genome;
 		// output neuron
 	};
 }

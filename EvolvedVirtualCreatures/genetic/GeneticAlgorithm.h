@@ -5,14 +5,24 @@
 */
 #pragma once
 
+#include "genome.h"
+
 
 namespace evc
 {
-	namespace genotype_parser { struct SExpr; }
-	
-	vector<double> ConvertChromo(genotype_parser::SExpr *pexpr);
-	void Mutate(vector<double> &chromo);
-	
+	class CGeneticAlgorithm : public common::CSingleton<CGeneticAlgorithm>
+	{
+	public:
+		CGeneticAlgorithm();
+		virtual ~CGeneticAlgorithm();
 
 
+
+
+	protected:
+		
+
+	private:
+		//vector<SGenome> m_Genomes;
+	};
 }

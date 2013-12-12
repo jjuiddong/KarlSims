@@ -4,12 +4,84 @@
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\stdafx.cpp" />
-    <ClCompile Include="..\..\Node.cpp" />
+    <ClCompile Include="..\..\creature\Creature.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\Effector.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\Joint.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\NeuralNet.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\Node.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genoype\GenotypeParser.cpp">
+      <Filter>Genotype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genoype\GenotypeScanner.cpp">
+      <Filter>Genotype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp">
+      <Filter>Genetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genetic\Genome.cpp">
+      <Filter>Genetic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
-    <ClInclude Include="..\..\Node.h" />
+    <ClInclude Include="..\..\creature\AngularSensor.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Creature.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Effector.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Joint.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\MuscleEffector.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\NeuralNet.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Node.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\Sensor.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genoype\GenotypeParser.h">
+      <Filter>Genotype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genoype\GenotypeScanner.h">
+      <Filter>Genotype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genetic\GeneticAlgorithm.h">
+      <Filter>Genetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genetic\Genome.h">
+      <Filter>Genetic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Creature">
+      <UniqueIdentifier>{44a6245d-f8f3-46f1-84d8-b76b57bfd707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Genotype">
+      <UniqueIdentifier>{b5efef14-7cd3-4528-9c29-87b07ac6cb02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Genetic">
+      <UniqueIdentifier>{47d12792-b50d-43ed-9b84-37a89c2b730a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
