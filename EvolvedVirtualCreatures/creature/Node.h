@@ -39,6 +39,7 @@ namespace evc
 		vector<CJoint*> m_Joints;
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;
+		CSensor *m_pParentJointSensor;
 		vector<double> m_Nerves;
 	};
 }

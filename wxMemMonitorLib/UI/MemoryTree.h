@@ -41,5 +41,6 @@ namespace memmonitor
 		enum { ID_TREE };
 		wxTreeCtrl *m_pTree;
 		wxTimer	m_Timer;
+		bool m_IsUpdate;
 	};
 }

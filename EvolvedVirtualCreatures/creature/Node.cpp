@@ -10,29 +10,11 @@
 using namespace evc;
 
 
-void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
-{
-	PxFilterData filterData;
-	filterData.word0 = filterGroup; // word0 = own ID
-	filterData.word1 = filterMask;	// word1 = ID mask to filter pairs that trigger a contact callback;
-	const PxU32 numShapes = actor->getNbShapes();
-	PxShape** shapes = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*numShapes);
-	actor->getShapes(shapes, numShapes);
-	for(PxU32 i = 0; i < numShapes; i++)
-	{
-		PxShape* shape = shapes[i];
-		shape->setSimulationFilterData(filterData);
-	}
-	SAMPLE_FREE(shapes);
-}
-
-
 CNode::CNode(CEvc &sample) :
 	m_Sample(sample)
-//,	m_Force(1.f)
-//,	m_ElapseT(0)
 ,	m_pBrain(NULL)
 ,	m_pBody(NULL)
+,	m_pParentJointSensor(NULL)
 {
 
 }
@@ -52,6 +34,7 @@ CNode::~CNode()
 	{
 		SAFE_DELETE(p);
 	}
+	SAFE_DELETE(m_pParentJointSensor);
 }
 
 
@@ -84,8 +67,11 @@ void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
 */
 void CNode::InitNeuron()
 {
-	const int count = GetNeuronCount();
+	int count = GetNeuronCount();
 	RET(count <= 0);
+
+	if (m_pParentJointSensor)
+		++count;
 
 	m_Nerves.resize(count);
 	
@@ -114,11 +100,18 @@ void CNode::Move(float dtime)
 */
 void CNode::UpdateNeuron(float dtime)
 {
-	const int count = GetNeuronCount();
+	int count = GetNeuronCount();
 	RET(count <= 0);
+
+	if (m_pParentJointSensor)
+		++count;
 
 	vector<double> nerves;
 	nerves.reserve(count);
+
+	if (m_pParentJointSensor) // get parent joint sensor output
+		nerves.push_back(m_pParentJointSensor->GetOutput());
+
 	GetOutputNerves(nerves);
 
 	if (m_pBrain)
@@ -143,6 +136,7 @@ int CNode::GetNeuronCount() const
 	}
 
 	count += m_Sensors.size();
+
 	return count;
 }
 

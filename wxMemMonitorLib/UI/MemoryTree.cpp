@@ -22,7 +22,10 @@ CMemoryTree::CMemoryTree(wxWindow *parent) :
 	wxPanel(parent, -1, wxDefaultPosition, wxSize(200, 400) )
 {
 	m_pTree = new wxTreeCtrl(this, ID_TREE, wxDefaultPosition, wxSize(200,400),
-		wxTR_HAS_BUTTONS |wxTR_LINES_AT_ROOT|wxTR_ROW_LINES|wxTR_SINGLE |
+		wxTR_HAS_BUTTONS 
+		|wxTR_LINES_AT_ROOT
+		|wxTR_HIDE_ROOT
+		|wxTR_ROW_LINES|wxTR_SINGLE |
 		wxTR_FULL_ROW_HIGHLIGHT
 		);
 	m_pTree->SetBackgroundColour(wxColour(237,237,237));
@@ -48,6 +51,8 @@ bool CMemoryTree::UpdateMemoryMap()
 {
 	RETV(!m_pTree, false);
 
+	m_IsUpdate = true;
+
 	const wxTreeItemId selectId = m_pTree->GetSelection();
 	wxString selectItemName;
 	if (selectId.IsOk())
@@ -56,6 +61,8 @@ bool CMemoryTree::UpdateMemoryMap()
 	m_pTree->DeleteAllItems();
 
 	wxTreeItemId rootId = m_pTree->AddRoot(wxT("@Root"));
+	m_pTree->AppendItem( rootId, "--- Memory List ---" ); // empty item
+
 	MemoryList memList;
 	EnumerateMemoryInfo(memList);
 	BOOST_FOREACH(SMemInfo &info, memList)
@@ -69,8 +76,9 @@ bool CMemoryTree::UpdateMemoryMap()
 		if (selectItemName == info.name)
 			m_pTree->SelectItem(itemId);
 	}
-	m_pTree->SortChildren(rootId);
-	m_pTree->Expand(rootId);
+	//m_pTree->SortChildren(rootId);
+	//m_pTree->Expand(rootId);
+	m_IsUpdate = false;
 
 	return true;
 }
@@ -90,6 +98,9 @@ void CMemoryTree::OnRefreshTimer(wxTimerEvent& event)
 //------------------------------------------------------------------------
 void CMemoryTree::OnTreectrlSelChanged( wxTreeEvent& event )
 {
+	if (m_IsUpdate)
+		return;
+
 	m_pTree->SetItemTextColour( event.GetItem(), wxColour(0,0,255) );
 	if (event.GetOldItem())
 		m_pTree->SetItemTextColour( event.GetOldItem(), wxColour(0,0,0) );

@@ -156,11 +156,12 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 			pNode->m_Effectors.push_back(pEffector);
 
 			{ // add child
-				CJoint *pChildJoint = new CJoint(pNode, NULL, pxJoint, velocity.x, joint->period);
+				//CJoint *pChildJoint = new CJoint(pNode, NULL, pxJoint, velocity.x, joint->period);
 				CAngularSensor *pChildSensor = new CAngularSensor();
-				pChildJoint->ApplySensor(*pChildSensor);
-				pChildNode->m_Joints.push_back(pChildJoint);
-				pChildNode->m_Sensors.push_back(pChildSensor);
+				pJoint->ApplySensor(*pChildSensor);
+				//pChildNode->m_Joints.push_back(pChildJoint);
+				//pChildNode->m_Sensors.push_back(pChildSensor);
+				pChildNode->m_pParentJointSensor = pChildSensor;
 				pChildNode->InitNeuron();
 			}
 		}

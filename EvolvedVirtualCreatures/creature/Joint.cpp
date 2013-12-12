@@ -51,10 +51,10 @@ void CJoint::Move(float dtime)
 		//	((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-m_Velocity);
 		//}
 
-		const PxQuat q = m_pJoint->getRelativeTransform().q;
-		m_RelativeAngle = q.getAngle();
-		if (q.x < 0)
-			m_RelativeAngle = -m_RelativeAngle;
+		//const PxQuat q = m_pJoint->getRelativeTransform().q;
+		//m_RelativeAngle = q.getAngle();
+		//if (q.x < 0)
+		//	m_RelativeAngle = -m_RelativeAngle;
 	}
 }
 
