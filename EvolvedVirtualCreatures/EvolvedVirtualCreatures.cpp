@@ -123,6 +123,7 @@ void CEvc::onInit()
 	g_pDbgConfig->value2 = 1;
 	g_pDbgConfig->generationRecursiveCount = 1;
 
+	srand(timeGetTime());
 
 	//PxRigidDynamic* actor1 = NULL;
 	//const PxVec3 pos = getCamera().getPos();

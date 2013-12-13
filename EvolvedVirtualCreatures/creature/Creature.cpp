@@ -83,6 +83,12 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 
 	CNode *pNode = new CNode(m_Sample);
 	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
+	PxVec3 dimRand(RandFloat()-.5f, RandFloat()-.5f, RandFloat()-.5f);
+	dimension += dimRand * 0.3f;
+	dimension.x = max(dimension.x, 0.1f);
+	dimension.y = max(dimension.y, 0.1f);
+	dimension.z = max(dimension.z, 0.1f);
+
 	MaterialIndex material = GetMaterialType(pexpr->material);
 	const float mass = pexpr->mass;
 
@@ -226,16 +232,3 @@ void CCreature::Move(float dtime)
 		node->Move(dtime);
 }
 
-
-/**
- @brief 
- @date 2013-12-13
-*/
-const SGenome& CCreature::GetGenome()
-{
-	if (m_Genome.chromo.empty())
-	{
-
-	}
-	return m_Genome; 
-}

@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\etc\MemProtect.h" />
     <ClInclude Include="..\..\etc\parser.h" />
     <ClInclude Include="..\..\etc\RandNoDuplicate.h" />
+    <ClInclude Include="..\..\etc\Random.h" />
     <ClInclude Include="..\..\etc\Reference.h" />
     <ClInclude Include="..\..\etc\Singleton.h" />
     <ClInclude Include="..\..\etc\String.h" />

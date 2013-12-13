@@ -110,6 +110,7 @@ typedef unsigned short u_short;
 #include "etc/Dbg.h"
 #include "etc/Log.h"
 #include "etc/Dump.h"
+#include "etc/random.h"
 #include "CodeGen.h"
 #include "container/VectorMap.h"
 #include "container/VectorSet.h"

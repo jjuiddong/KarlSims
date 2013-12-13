@@ -3,8 +3,9 @@
 #include "GeneticAlgorithm.h"
 #include "../genoype/GenotypeParser.h"
 
-
 using namespace evc;
+
+
 
 
 
@@ -87,5 +88,7 @@ void CGeneticAlgorithm::Epoch()
 */
 SGenome CGeneticAlgorithm::GetChromoRoulette()
 {
-	return m_Genomes[ 0];
+	 //int idx = physx::Rand(0, );
+	const int idx = (int)(m_Genomes.size() * RandFloat());
+	return m_Genomes[ idx];
 }

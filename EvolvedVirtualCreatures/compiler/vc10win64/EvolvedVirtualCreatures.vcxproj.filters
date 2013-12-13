@@ -28,6 +28,9 @@
     <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp">
       <Filter>Genetic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\genetic\Genome.cpp">
+      <Filter>Genetic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -65,6 +68,9 @@
       <Filter>Creature</Filter>
     </ClInclude>
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h">
+      <Filter>Genetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genetic\Genome.h">
       <Filter>Genetic</Filter>
     </ClInclude>
   </ItemGroup>

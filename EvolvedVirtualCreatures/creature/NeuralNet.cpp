@@ -9,13 +9,6 @@ const double dActivationResponse = 1.f;
 const double dBias = 1.f;
 
 
-//returns a random float between zero and 1
-inline double RandFloat()		   {return (rand())/(RAND_MAX+1.0);}
-
-//returns a random float in the range -1 < n < 1
-inline double RandomClamped()	   {return RandFloat() - RandFloat();}
-
-
 
 //*************************** methods for Neuron **********************
 SNeuron::SNeuron(int NumInputs): m_NumInputs(NumInputs+1)

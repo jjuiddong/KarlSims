@@ -95,6 +95,7 @@
     <ClCompile Include="..\..\creature\Node.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp" />
+    <ClCompile Include="..\..\genetic\Genome.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeParser.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp" />
     <ClCompile Include="..\..\main.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
+    <ClInclude Include="..\..\genetic\Genome.h" />
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
     <ClInclude Include="..\..\stdafx.h" />

@@ -26,7 +26,8 @@ namespace evc
 		void GenerateByGenotype(const string &genotypeScriptFileName);
 		void GenerateByGenome(const SGenome &genome);
 		void Move(float dtime);
-		const SGenome& GetGenome();
+		const SGenome& GetGenome() const;
+
 
 	protected:
 		CNode* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt );
@@ -40,4 +41,7 @@ namespace evc
 		SGenome m_Genome;
 		// output neuron
 	};
+
+
+	inline const SGenome& CCreature::GetGenome() const { return m_Genome; }
 }
