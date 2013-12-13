@@ -55,15 +55,13 @@ public:
 	virtual	void descriptionRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
 	virtual PxU32 getDebugObjectTypes() const;
 
-	// test
-	PxRigidDynamic*	createJointSphere(const PxVec3& pos, PxReal radius, const PxVec3* linVel=NULL, 
-		RenderMaterial* material=NULL, PxReal density=1.0f);
-
 
 protected:
 	void spawnNode(const int key);
 	void pickup();
+	void gotoNextGenration();
 	virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val);
+	void RemoveAllCreatures();
 
 
 private:

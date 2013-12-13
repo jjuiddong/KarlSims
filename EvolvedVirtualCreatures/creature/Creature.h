@@ -24,8 +24,9 @@ namespace evc
 		CCreature(CEvc &sample);
 		virtual ~CCreature();
 		void GenerateByGenotype(const string &genotypeScriptFileName);
+		void GenerateByGenome(const SGenome &genome);
 		void Move(float dtime);
-
+		const SGenome& GetGenome();
 
 	protected:
 		CNode* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt );

@@ -22,6 +22,7 @@
 
 #include "Picking.h"
 #include "Creature/Creature.h"
+#include "genetic/GeneticAlgorithm.h"
 
 
 using namespace SampleRenderer;
@@ -41,12 +42,9 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 
 CEvc::~CEvc()
 {
-	BOOST_FOREACH(auto &creature, m_Creatures)
-	{
-		delete creature;
-	}
-	m_Creatures.clear();
+	RemoveAllCreatures();
 	SAFE_DELETE(g_pDbgConfig);
+	evc::CGeneticAlgorithm::Release();
 }
 
 
@@ -151,15 +149,6 @@ void CEvc::onInit()
 }
 
 
-PxRigidDynamic*	createJointSphere(const PxVec3& pos, PxReal radius, const PxVec3* linVel, 
-	RenderMaterial* material, PxReal density )
-{
-
-
-	return NULL;
-}
-
-
 void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& inputEvents)
 {
 	PhysXSample::collectInputEvents(inputEvents);
@@ -178,7 +167,8 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT9, WKEY_9,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT0, WKEY_0,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(STEP_ONE_FRAME, WKEY_SPACE,				XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
-	DIGITAL_INPUT_EVENT_DEF(RELEASE_CURSOR, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	//DIGITAL_INPUT_EVENT_DEF(RELEASE_CURSOR, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(GOTO_NEXT_GENERATION, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
@@ -192,6 +182,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT9,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT0,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
+	TOUCH_INPUT_EVENT_DEF(GOTO_NEXT_GENERATION,	"Goto next generation", ABUTTON_0, ABUTTON_0);
 	
 }
 
@@ -260,7 +251,7 @@ void CEvc::pickup()
 			}
 		}
 		SAMPLE_FREE(shapes);
-	}	
+	}
 }
 
 
@@ -295,6 +286,8 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 			{ // nothing~
 			}
 			break;
+
+		case GOTO_NEXT_GENERATION: gotoNextGenration(); break;
 
 		default:
 			PhysXSample::onDigitalInputEvent(ie,val);
@@ -349,4 +342,50 @@ void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
 	//sceneDesc.filterShader = SampleSubmarineFilterShader;
 	//sceneDesc.simulationEventCallback = this;
 	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-13
+*/
+void CEvc::gotoNextGenration()
+{
+	PxSceneWriteLock scopedLock(*mScene);
+
+	evc::CGeneticAlgorithm::Get()->InitGenome();
+	BOOST_FOREACH (auto &creature, m_Creatures)
+	{
+		evc::CGeneticAlgorithm::Get()->AddGenome( creature->GetGenome() );
+	}
+
+	evc::CGeneticAlgorithm::Get()->Epoch();
+
+	RemoveAllCreatures();
+
+	const vector<PxRigidActor*> actors = mPhysicsActors;
+	BOOST_FOREACH (auto &actor, actors)
+		removeActor(actor);
+
+	const vector<evc::SGenome> &genomes = evc::CGeneticAlgorithm::Get()->GetGenomes();
+	BOOST_FOREACH (auto &genome, genomes)
+	{
+		evc::CCreature *pCreature = new evc::CCreature(*this);
+		pCreature->GenerateByGenome(genome);
+		m_Creatures.push_back(pCreature);
+	}
+}
+
+
+/**
+ @brief 
+ @date 2013-12-13
+*/
+void CEvc::RemoveAllCreatures()
+{
+	BOOST_FOREACH(auto &creature, m_Creatures)
+	{
+		delete creature;
+	}
+	m_Creatures.clear();
 }

@@ -19,10 +19,7 @@ namespace evc
 }
 
 
-
 using namespace evc;
-
-
 
 
 /**
@@ -76,6 +73,22 @@ string GetShapeType(const int index) {
 
 
 /**
+ @brief 
+ @date 2013-12-12
+*/
+const string g_MaterialTypeStrings[] = {"grey", "red", "green", "blue", "yellow"};
+const int g_MaterialTypeStrings_Size = sizeof(g_MaterialTypeStrings) / sizeof(string);
+int GetMaterialTypeIndex(const string &type) {
+	return GetStringTypeIndex(g_MaterialTypeStrings, g_MaterialTypeStrings_Size, type);
+}
+string GetMaterialType(const int index) {
+	return GetTypeString(g_MaterialTypeStrings, g_MaterialTypeStrings_Size, index);
+}
+
+
+
+
+/**
  @brief convert pexpr to chromo
  @date 2013-12-12
 */
@@ -108,6 +121,9 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 
 	// mass
 	chromo.push_back( pexpr->mass );
+
+	// material
+	chromo.push_back( GetMaterialTypeIndex(pexpr->material) );
 
 	// connection count
 	int connectCount = 0;
@@ -227,6 +243,7 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 	pexpr->dimension.y = chromo[ index++];
 	pexpr->dimension.z = chromo[ index++];
 	pexpr->mass = chromo[ index++];
+	pexpr->material = GetMaterialType(chromo[ index++]);
 
 	SJointList *pPrevConnection = NULL;
 	const int connectionCount = (int)chromo[ index++];
@@ -310,4 +327,15 @@ void evc::Mutate_Sub(INOUT vector<double> &chromo, const int startIndex, OUT int
 {
 
 
+}
+
+
+/**
+ @brief cross over chromo
+ @date 2013-12-13
+*/
+void evc::Crossover(const vector<double> &mum, const vector<double> &dad, OUT vector<double> &baby1, OUT vector<double> &baby2)
+{
+	baby1 = mum;
+	baby2 = mum;
 }

@@ -1,7 +1,7 @@
 /**
  @filename GeneticAlgorithm.h
  
- 
+ Mat Buckland 2002 Idea
 */
 #pragma once
 
@@ -15,14 +15,20 @@ namespace evc
 	public:
 		CGeneticAlgorithm();
 		virtual ~CGeneticAlgorithm();
-
-
+		void InitGenome();
+		void AddGenome(const SGenome &genome);
+		const vector<SGenome>& GetGenomes() const;
+		void Epoch();
 
 
 	protected:
-		
+		SGenome GetChromoRoulette();
+
 
 	private:
-		//vector<SGenome> m_Genomes;
+		vector<SGenome> m_Genomes;
 	};
+
+
+	inline const vector<SGenome>& CGeneticAlgorithm::GetGenomes() const { return m_Genomes; }
 }

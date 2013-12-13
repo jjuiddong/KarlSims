@@ -26,6 +26,7 @@ namespace evc
 
 	inline void CMuscleEffector::SetJoint(PxJoint *joint) 
 	{
+		RET(!joint);
 		m_pJoint = joint;
 		if (PxJointConcreteType::eREVOLUTE == m_pJoint->getType())
 		{

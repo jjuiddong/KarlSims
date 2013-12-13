@@ -49,21 +49,21 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
 	m_Genome.chromo.reserve(64);
 	GetChromo(pexpr, m_Genome.chromo);
 
-	{
-		//SAFE_DELETE(m_pRoot);
-		BOOST_FOREACH (auto &p, m_Nodes)
-		{
-			SAFE_DELETE(p);
-		}
-		m_Nodes.clear();
-
-		int next;
-		genotype_parser::SExpr *p = BuildExpr(m_Genome.chromo);
-		m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount);
-		genotype_parser::RemoveExpression(p);
-	}
-
 	genotype_parser::RemoveExpression(pexpr);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-13
+*/
+void CCreature::GenerateByGenome(const SGenome &genome)
+{
+	m_Genome = genome;
+
+	genotype_parser::SExpr *p = BuildExpr(genome.chromo);
+	m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount);
+	genotype_parser::RemoveExpression(p);
 }
 
 
@@ -224,4 +224,18 @@ void CCreature::Move(float dtime)
 {
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-13
+*/
+const SGenome& CCreature::GetGenome()
+{
+	if (m_Genome.chromo.empty())
+	{
+
+	}
+	return m_Genome; 
 }

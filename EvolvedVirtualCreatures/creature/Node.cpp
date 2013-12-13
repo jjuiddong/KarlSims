@@ -21,6 +21,7 @@ CNode::CNode(CEvc &sample) :
 
 CNode::~CNode()
 {
+	m_pBody = NULL;
 	SAFE_DELETE(m_pBrain);
 	BOOST_FOREACH (auto joint, m_Joints)
 	{
