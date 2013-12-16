@@ -901,9 +901,17 @@ _variant_t visualizer::Eval_Expression( SExpression *pexp, const SMakerData &mak
 			SSymbolInfo lhsSymbol;
 			SSymbolInfo rhsSymbol;
 			if (pexp->op == PLUS)
-				reval = ((float)Eval_Expression(pexp->lhs, makerData, &lhsSymbol) + (float)Eval_Expression(pexp->rhs, makerData, &rhsSymbol));
+			{
+				const int left = (int)Eval_Expression(pexp->lhs, makerData, &lhsSymbol);
+				const int right = (int)Eval_Expression(pexp->rhs, makerData, &rhsSymbol);
+				reval = left + right;
+			}
 			else if(pexp->op == MINUS)
-				reval = ((float)Eval_Expression(pexp->lhs, makerData, &lhsSymbol) - (float)Eval_Expression(pexp->rhs, makerData, &rhsSymbol));
+			{
+				const int left = (int)Eval_Expression(pexp->lhs, makerData, &lhsSymbol);
+				const int right = (int)Eval_Expression(pexp->rhs, makerData, &rhsSymbol);
+				reval = left - right;
+			}
 
 			// pointer 계산시 데이타크기를 감안해서 계산되어야 한다.
 			if (lhsSymbol.pSym && rhsSymbol.pSym)
