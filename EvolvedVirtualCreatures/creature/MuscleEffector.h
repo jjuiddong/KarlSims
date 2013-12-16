@@ -41,6 +41,8 @@ namespace evc
 	*/
 	inline void CMuscleEffector::Signal(const double dtime, const double signal)
 	{
+		m_Signal = signal;
+
 		m_ElapseT += (dtime*m_Period);
 		if (PxPi*2 < m_ElapseT)
 			m_ElapseT = 0.f;
@@ -50,14 +52,14 @@ namespace evc
 		{
 			float velocity = signal * 5.f;
 
-			//if (PxPi < m_ElapseT)
-			//{
+			if (PxPi < m_ElapseT)
+			{
 				((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(velocity);
-			//}
-			//else
-			//{
-			//	((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-velocity);
-			//}
+			}
+			else
+			{
+				((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-velocity);
+			}
 		}
 	}
 }

@@ -78,7 +78,7 @@ void CNode::InitNeuron()
 	
 	SAFE_DELETE(m_pBrain);
 	const int outputCount = m_Effectors.size();
-	m_pBrain = new CNeuralNet(count, outputCount, 1, 1); 
+	m_pBrain = new CNeuralNet(count, outputCount, 1, count+1); 
 }
 
 

@@ -20,6 +20,7 @@ namespace evc
 	protected:
 		double m_Period;
 		double m_ElapseT;
+		double m_Signal;
 	};
 
 
