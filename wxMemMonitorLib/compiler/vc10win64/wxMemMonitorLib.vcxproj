@@ -99,6 +99,7 @@
     </ClCompile>
     <ClCompile Include="..\..\UI\App.cpp" />
     <ClCompile Include="..\..\UI\Frame.cpp" />
+    <ClCompile Include="..\..\UI\GraphWindow.cpp" />
     <ClCompile Include="..\..\UI\LogWindow.cpp" />
     <ClCompile Include="..\..\UI\MemoryTree.cpp" />
     <ClCompile Include="..\..\UI\PropertyItemAdapter.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
     <ClInclude Include="..\..\UI\Frame.h" />
+    <ClInclude Include="..\..\UI\GraphWindow.h" />
     <ClInclude Include="..\..\UI\LogWindow.h" />
     <ClInclude Include="..\..\UI\MemoryTree.h" />
     <ClInclude Include="..\..\UI\PropertyItemAdapter.h" />

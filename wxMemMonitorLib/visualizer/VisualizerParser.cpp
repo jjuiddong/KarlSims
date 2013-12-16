@@ -118,6 +118,7 @@ SVisualizer* parser::CParser::visualizer()
 		p->preview = NULL;
 		p->stringview = NULL;
 		p->children = NULL;
+		p->graph = NULL;
 
 		bool loop = true;
 		while (RBRACE != m_Token && loop)
@@ -127,6 +128,7 @@ SVisualizer* parser::CParser::visualizer()
 			case PREVIEW: p->preview = preview(); break;
 			case STRINGVIEW: p->stringview = stringview(); break;
 			case CHILDREN: p->children = children(); break;
+			case GRAPH: p->graph = graph(); break;
 			default: loop = false; break;
 			}
 		}
@@ -170,6 +172,20 @@ SStatements* parser::CParser::children()
 	if ( CHILDREN == m_Token)
 	{
 		Match(CHILDREN);
+		Match(LPAREN);
+		p = statements();
+		Match(RPAREN);
+	}
+	return p;
+}
+
+// graph '(' text-visualizer-expression  ')'
+SStatements* parser::CParser::graph()
+{
+	SStatements*p = NULL;
+	if (GRAPH == m_Token)
+	{
+		Match(GRAPH);
 		Match(LPAREN);
 		p = statements();
 		Match(RPAREN);
@@ -328,6 +344,8 @@ bool parser::CParser::IsVisCommand(Tokentype tok)
 	case ARRAY:
 	case LIST:
 	case TREE:
+	case VERTICAL:
+	case HORIZONTAL:
 		return true;
 	}
 	return false;
@@ -364,7 +382,7 @@ SSimpleExp* parser::CParser::simple_exp()
 	return p;
 }
 
-// 		vis_command ->	if_stmt | array_stmt | list_stmt | tree_stmt
+// 		vis_command ->	if_stmt | array_stmt | list_stmt | tree_stmt | vert_stmt | horz_stmt
 // 			;
 SStatements* parser::CParser::viscommand() 
 {
@@ -383,6 +401,12 @@ SStatements* parser::CParser::viscommand()
 			p = NewStatement(Stmt_Bracket_Iterator);
 			p->itor_stmt = visbracketiterator_stmt();
 		}
+		break;
+
+	case VERTICAL:
+	case HORIZONTAL:
+		p = NewStatement(Stmt_GVis);
+		p->gvis_stmt = gvis_stmts();
 		break;
 
 	default:
@@ -560,6 +584,35 @@ SBracket_Inner_Stmts* parser::CParser::bracket_inner_stmts()
 		}
 	}
 	Match(RPAREN);
+	return p;
+}
+
+
+/**
+ @brief 
+	gvis_stmt -> 'expr' : expression
+ @date 2013-12-16
+*/
+SGVis_Stmt *parser::CParser::gvis_stmts()
+{
+	SGVis_Stmt *p = NULL;
+
+	if ((VERTICAL == m_Token) || (HORIZONTAL == m_Token))
+	{
+		p = new SGVis_Stmt;
+		p->kind = (VERTICAL==m_Token)? GVis_Vertivcal : GVis_Horizontal;
+
+		Match(m_Token);
+		Match(LPAREN);
+		if (std::string("expr") == m_pScan->GetTokenStringQ(0))
+		{
+			Match(ID);
+			Match(COLON);
+			p->expr = expression();
+		}
+		Match(RPAREN);
+	}
+
 	return p;
 }
 

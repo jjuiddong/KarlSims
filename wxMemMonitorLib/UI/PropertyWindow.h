@@ -21,9 +21,12 @@ namespace memmonitor
 	{
 		enum  {
 			MENU_OPEN_PROPERTY=500,
+			MENU_OPEN_GRAPH,
+
 			ID_REFRESH_TIMER = 100,
 			REFRESH_INTERVAL = 1000,
 		};
+
 
 	public:
 		struct SPropItem
@@ -36,13 +39,11 @@ namespace memmonitor
 
 		CPropertyWindow(wxWindow *parent);
 		virtual ~CPropertyWindow();
-
 		void UpdateSymbol( const wxString &symbolName );
-
-		wxPGProperty*	AddProperty(wxPGProperty *pParentProp, CPropertyItemAdapter &propAdapter, 
+		wxPGProperty* AddProperty(wxPGProperty *pParentProp, CPropertyItemAdapter &propAdapter, 
 			const visualizer::SSymbolInfo *pSymbol, STypeData *pTypeData);
-
 		void	RemoveChildProperty( wxPGProperty *pParentProp );
+
 
 	protected:
 		void CheckSymbol( const wxString &symbolName );
@@ -58,13 +59,14 @@ namespace memmonitor
 		void OnPropertyGridSelect( wxPropertyGridEvent& event );
 		void OnContextMenu(wxContextMenuEvent& event);
 		void OnMenuOpenProperty(wxCommandEvent& event);
+		void OnMenuOpenGraph(wxCommandEvent& event);
 		void OnRefreshTimer(wxTimerEvent& event);
 		void OnKeyDown(wxKeyEvent& event);
+
 
 	private:
 		wxString	m_CurrentSymbolName;
 		wxTimer	m_Timer;
 		PropList	m_PropList;
-
 	};
 }

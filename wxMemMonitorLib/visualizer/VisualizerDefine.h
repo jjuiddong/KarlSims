@@ -30,7 +30,7 @@ namespace visualizer { namespace parser {
 		LT/* < */, RT/* > */, LTEQ/* <= */, RTEQ/* >= */, NEQ/* != */, EQ/* == */, LOGIC_OR/* | */, OR/* || */, AND/* && */, NEG/* ! */, SCOPE/*::*/,
 
 		// special
-		IF, ELIF, ELSE, ARRAY, LIST,  TREE, CHILDREN, PREVIEW, STRINGVIEW,
+		IF, ELIF, ELSE, ARRAY, LIST,  TREE, VERTICAL, HORIZONTAL, CHILDREN, PREVIEW, STRINGVIEW, GRAPH,
 		SHARP_BRACKET, 
 
 	};
@@ -159,6 +159,18 @@ namespace visualizer { namespace parser {
 		SStatements *disp_stmt;			/// bracket outer statement
 	};
 
+	enum GVisKind
+	{
+		GVis_Vertivcal,
+		GVis_Horizontal,
+	};
+	
+	struct SGVis_Stmt
+	{
+		GVisKind kind;
+		SExpression *expr;
+	};
+
 	struct SSimpleExp
 	{
 		SExpression *text;
@@ -173,6 +185,7 @@ namespace visualizer { namespace parser {
 		Stmt_SimpleExpression,
 		Stmt_If,
 		Stmt_Bracket_Iterator,
+		Stmt_GVis,
 	};
 
 	struct SStatements
@@ -183,6 +196,7 @@ namespace visualizer { namespace parser {
 			SSimpleExp *simple_exp;
 			SIf_Stmt *if_stmt;
 			SVisBracketIterator_Stmt *itor_stmt;
+			SGVis_Stmt *gvis_stmt;
 		};
 		SStatements *next;
 	};
@@ -193,6 +207,7 @@ namespace visualizer { namespace parser {
 		SStatements *preview;
 		SStatements *stringview;
 		SStatements *children;
+		SStatements *graph;
 	};
 
 	enum VisualizerScriptKind

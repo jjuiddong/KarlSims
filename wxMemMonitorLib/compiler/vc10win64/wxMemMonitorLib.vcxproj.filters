@@ -93,6 +93,9 @@
     <ClCompile Include="..\..\stdafx.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UI\GraphWindow.cpp">
+      <Filter>Src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\Log.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="..\..\wxMemMonitor.h">
       <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UI\GraphWindow.h">
+      <Filter>Src\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

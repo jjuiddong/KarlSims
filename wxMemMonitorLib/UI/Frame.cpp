@@ -4,6 +4,7 @@
 #include "MemoryTree.h"
 #include "LogWindow.h"
 #include "PropertyWindow.h"
+#include "GraphWindow.h"
 #include "../Control/Global.h"
 #include "../dia/DiaWrapper.h"
 #include "../visualizer/PropertyMaker.h"
@@ -122,6 +123,29 @@ bool CFrame::AddPropertyWindow( const wxString &symbolName )
 	CPropertyWindow *propWnd = new CPropertyWindow(pframe);
 	itemBoxSizer->Add(propWnd);
 	propWnd->UpdateSymbol(symbolName);
+	pframe->Show();
+
+	pframe->Bind(wxEVT_CLOSE_WINDOW, &CFrame::OnPropertyFrameClose, this);
+
+	m_PropFrames.push_back(pframe);
+	return true;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-16
+*/
+bool CFrame::AddGraphWindow(const wxString &symbolName )
+{
+	wxMiniFrame *pframe = new wxMiniFrame(this, -1, symbolName);
+	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
+	wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
+	pframe->SetSizer(itemBoxSizer);
+
+	CGraphWindow *pWnd = new CGraphWindow(pframe);
+	itemBoxSizer->Add(pWnd);
+	pWnd->UpdateSymbol(symbolName);
 	pframe->Show();
 
 	pframe->Bind(wxEVT_CLOSE_WINDOW, &CFrame::OnPropertyFrameClose, this);

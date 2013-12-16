@@ -24,7 +24,10 @@ namespace visualizer
 		{"#array", ARRAY },
 		{"#list", LIST },
 		{"#tree", TREE},
+		{"#vert", VERTICAL},
+		{"#horz", HORIZONTAL},
 		{"children", CHILDREN},
+		{"graph", GRAPH},
 		{"preview", PREVIEW},
 		{"stringview", STRINGVIEW},
 		{"#", SHARP_BRACKET}, // 가장 낮은 우선순위로 검색해야한다.

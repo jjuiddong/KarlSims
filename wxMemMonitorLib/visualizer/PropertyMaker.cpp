@@ -178,7 +178,7 @@ bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd,
 {
 	const std::string str = ParseObjectName(symbolName);
 	SVisualizerScript *pVisScript = FindVisualizer(str);
-	if (pVisScript)
+	if (pVisScript && pVisScript->vis && pVisScript->vis->preview)
 	{
 		IDiaSymbol *pSymbol = dia::FindType(str);
 		RETV(!pSymbol, false);

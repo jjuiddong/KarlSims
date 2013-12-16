@@ -40,6 +40,7 @@ namespace visualizer { namespace parser
 		SStatements* preview();
 		SStatements* stringview();
 		SStatements* children();
+		SStatements* graph();
 		SStatements* statements();
 		SSimpleExp* simple_exp();
 		SStatements* viscommand();
@@ -47,6 +48,7 @@ namespace visualizer { namespace parser
 		SElif_Stmt* elif_stmt();
 		SVisBracketIterator_Stmt* visbracketiterator_stmt();
 		SBracket_Inner_Stmts* bracket_inner_stmts();
+		SGVis_Stmt *gvis_stmts();
 		SAutoExp* autoexpand();
 		SDisp_Format* disp_format();
 		Display_Format display_format();

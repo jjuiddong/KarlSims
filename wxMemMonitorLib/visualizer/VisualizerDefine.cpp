@@ -60,6 +60,13 @@ void RemoveElif_Stmt( SElif_Stmt *p)
 	delete p;
 }
 
+void RemoveGVis_Stmt( SGVis_Stmt *p)
+{
+	if (!p) return;
+	RemoveExpression(p->expr);
+	delete p;
+}
+
 void RemoveExpression( SExpression*p )
 {
 	if (!p) return;
@@ -149,6 +156,10 @@ void RemoveStatements( SStatements *p)
 		RemoveStatements(p->itor_stmt->disp_stmt );
 		delete p->itor_stmt;
 		break;
+
+	case Stmt_GVis:
+		RemoveGVis_Stmt(p->gvis_stmt);
+		break;
 	}	
 
 	RemoveStatements(p->next);
@@ -170,6 +181,7 @@ void RemoveVisualizer( SVisualizer *vis )
 	RemoveStatements(vis->preview);
 	RemoveStatements(vis->stringview);
 	RemoveStatements(vis->children);
+	RemoveStatements(vis->graph);
 	delete vis;
 }
 

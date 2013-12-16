@@ -6,6 +6,7 @@
 #include "../dia/DiaWrapper.h"
 #include "../visualizer/DefaultPropertyMaker.h"
 #include "../visualizer/PropertyMaker.h"
+#include "Frame.h"
 
 
 using namespace memmonitor;
@@ -16,6 +17,7 @@ BEGIN_EVENT_TABLE( memmonitor::CPropertyWindow, wxPropertyGridManager )
 	EVT_SIZE(CPropertyWindow::OnSize)
 	EVT_CONTEXT_MENU(CPropertyWindow::OnContextMenu)
 	EVT_MENU(MENU_OPEN_PROPERTY, CPropertyWindow::OnMenuOpenProperty)
+	EVT_MENU(MENU_OPEN_GRAPH, CPropertyWindow::OnMenuOpenGraph)
 	EVT_TIMER(ID_REFRESH_TIMER, CPropertyWindow::OnRefreshTimer)
 END_EVENT_TABLE()
 
@@ -63,7 +65,7 @@ void CPropertyWindow::UpdateSymbol( const wxString &symbolName )
 {
 	if (m_CurrentSymbolName == symbolName)
 		return;
-	if (symbolName == "@Root")
+	if ((symbolName == "@Root") || (symbolName == "--- Memory List ---"))
 		return;
 
 	GetLogWindow()->PrintText( "UpdateSymbol = " +  symbolName  + "\n" );
@@ -359,6 +361,7 @@ void CPropertyWindow::OnContextMenu(wxContextMenuEvent& event)
 	point = ScreenToClient(point);
 	wxMenu menu;
 	menu.Append(MENU_OPEN_PROPERTY, wxT("&Open Property"));
+	menu.Append(MENU_OPEN_GRAPH, wxT("&Open Graph"));
 	PopupMenu(&menu, point);
 }
 
@@ -369,6 +372,17 @@ void CPropertyWindow::OnContextMenu(wxContextMenuEvent& event)
 void CPropertyWindow::OnMenuOpenProperty(wxCommandEvent& event)
 {
 
+}
+
+
+/**
+ @brief 
+ @date 2013-12-16
+*/
+void CPropertyWindow::OnMenuOpenGraph(wxCommandEvent& event)
+{
+	//const wxString text = m_pTree->GetItemText(m_pTree->GetSelection());
+	GetFrame()->AddGraphWindow( "ss" );
 }
 
 
