@@ -1,4 +1,44 @@
 
+evc::SNeuron{
+	graph
+	(
+		#(
+			NumInputs : [$e.m_NumInputs],
+			#vert(
+				expr: $e.m_vecWeight
+			)			
+		)
+	)
+}
+
+
+evc::SNeuronLayer{
+	graph
+	(
+		#(
+			NumNeurons : [$e.m_NumNeurons],
+			#horz(
+				expr: $e.m_vecNeurons
+			)			
+		)
+	)
+}
+
+
+evc::CNeuralNet{
+	graph
+	(
+		#(
+			Input : [$e.m_NumInputs],
+			#vert(
+				expr: $e.m_vecLayers
+			)			
+		)
+	)
+}
+
+
+
 CLobbyServer{
 	preview
 	(

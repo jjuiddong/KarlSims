@@ -49,6 +49,8 @@ namespace visualizer
 		enum DISP_MODE {
 			DISP_T_N_V,	// type, name, value
 			DISP_V, // value
+			DISP_SMALL_V,	// small graph value
+			DISP_MAX,
 		};
 
 	public:

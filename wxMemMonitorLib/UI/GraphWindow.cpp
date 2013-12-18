@@ -197,6 +197,7 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 	{
 	case DISP_T_N_V: dc.DrawText("- TabKey Down to Change Display Mode : Type, Name, Value", wxPoint(10, 17)); break;
 	case DISP_V: dc.DrawText("- TabKey Down to Change Display Mode : Value", wxPoint(10, 17)); break;
+	case DISP_SMALL_V: dc.DrawText("- TabKey Down to Change Display Mode : Small Graph Value", wxPoint(10, 17)); break;
 	}
 
 	DrawCircle(&dc, m_pRoot, wxPoint(10,10), wxPoint(0,0), true);
@@ -232,14 +233,19 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 		if (!circle->m_Value.empty())
 			ss << " : " << circle->m_Value;
 		break;
+	case DISP_SMALL_V:
 	case DISP_V:
 		ss << circle->m_Value;
 		break;
 	}
 
+	wxSize CircleSize(RECT_W, RECT_H);
+	if (m_DispMode == DISP_SMALL_V)
+		CircleSize = wxSize(5,5);
+
 	wxSize textSize;
 	pdc->GetTextExtent(ss.str(), &textSize.x, &textSize.y);
-	textSize.x = max(RECT_W, textSize.x+5);
+	textSize.x = max(CircleSize.x, textSize.x+5);
 	textSize.y = RECT_H;
 	circle->m_Size = textSize;
 	//
@@ -255,7 +261,7 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 	wxPoint nextPos = pos;
 	if (!circle->m_Children.empty())
 	{
-		nextPos += wxPoint(RECT_W/2+GAP_W, RECT_H+GAP_H);
+		nextPos += wxPoint(CircleSize.x/2+GAP_W, CircleSize.y+GAP_H);
 	}
 
 	boundary.x = max(nextPos.x+textSize.x, boundary.x);
@@ -266,7 +272,7 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 	{
 		if (isLineDraw)
 		{
-			const wxPoint offset(RECT_W/2, RECT_H/2);
+			const wxPoint offset(CircleSize.x/2, CircleSize.y/2);
 			pdc->DrawLine(oldPos+offset, nextPos+offset);
 			oldPos = nextPos;
 		}
@@ -317,12 +323,15 @@ void CGraphWindow::OnKeyDown(wxKeyEvent& event)
 
 	case WXK_TAB:
 		{
-			if (DISP_T_N_V == m_DispMode)
-				m_DispMode = DISP_V;
-			else
-				m_DispMode = DISP_T_N_V;
+			int val = (int)m_DispMode;
+			++val;
+			m_DispMode = (DISP_MODE)(val % DISP_MAX);
 			Refresh();
 		}
+		break;
+
+	default:
+		event.Skip();
 		break;
 	}
 }
