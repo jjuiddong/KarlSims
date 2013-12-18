@@ -9,13 +9,6 @@ Date:    1/30/2013
 
 #include "VisualizerGlobal.h"
 
-namespace memmonitor 
-{
-	class CPropertyWindow; 
-	class CPropertyItemAdapter;
-	class CGraphWindow;
-}
-
 
 class wxPGProperty;
 namespace visualizer
@@ -23,32 +16,22 @@ namespace visualizer
 	using namespace memmonitor;
 
 
-	struct SVisExpr
-	{
-		wxPGProperty *prop;
-		CGraphWindow *graph;
-
-		SVisExpr() : prop(NULL), graph(NULL) { }
-		SVisExpr(wxPGProperty *prop0, CGraphWindow *graph0) : prop(prop0), graph(graph0) { }
-	};
-
-
 	// Make Property
-	bool	MakeProperty_DefaultForm( CPropertyWindow *pProperties,  wxPGProperty *pParentProp,
+	bool	MakeProperty_DefaultForm( SVisDispDesc parentDispdesc, 
 		const std::string &symbolName, const bool IsApplyVisualizer, const int depth );
 
-	bool	MakeProperty_DefaultForm(  CPropertyWindow *pProperties, wxPGProperty *pParentProp,  
+	bool	MakeProperty_DefaultForm(  SVisDispDesc parentDispdesc, 
 		const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth );
 
-	bool	MakePropertyChild_DefaultForm(  CPropertyWindow *pProperties, wxPGProperty *pParentProp,  
+	bool	MakePropertyChild_DefaultForm(  SVisDispDesc parentDispdesc, 
 		const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth );
 
 
 	// Make Graph
-	bool	MakeGraph_DefaultForm( CGraphWindow *pGraphWindow,  CGraphWindow *pParentWnd,
+	bool	MakeGraph_DefaultForm( SVisDispDesc parentDispdesc, 
 		const std::string &symbolName, const bool IsApplyVisualizer, const int depth );
 
-	bool	MakeGraph_DefaultForm(  CPropertyWindow *pProperties, wxPGProperty *pParentProp,  
+	bool	MakeGraph_DefaultForm(  SVisDispDesc parentDispdesc, 
 		const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth );
 
 }

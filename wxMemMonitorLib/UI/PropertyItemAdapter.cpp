@@ -7,6 +7,7 @@
 #include "../Control/Global.h"
 
 using namespace memmonitor;
+using namespace visualizer;
 
 CPropertyItemAdapter::CPropertyItemAdapter() :
 	m_pProperty(NULL)

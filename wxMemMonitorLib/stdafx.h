@@ -90,18 +90,29 @@
 #include "common/Singleton.h"
 
 
+namespace visualizer
+{
+	class CPropertyWindow;
+}
+
+
 namespace memmonitor
 {
 	class CMemoryTree;
 	class CLogWindow;
-	class CPropertyWindow;
 	class CFrame;
 
 	typedef ReferencePtr<CMemoryTree> MemTreePtr;
 	typedef ReferencePtr<CLogWindow> LogWindowPtr;
-	typedef ReferencePtr<CPropertyWindow> PropWindowPtr;
+	typedef ReferencePtr<visualizer::CPropertyWindow> PropWindowPtr;
 	typedef ReferencePtr<CFrame> FramePtr;
 
 }
 
+
 #include "wxMemMonitor.h"
+
+using std::map;
+using std::vector;
+using std::list;
+using std::string;

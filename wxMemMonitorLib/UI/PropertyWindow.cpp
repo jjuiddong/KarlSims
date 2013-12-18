@@ -13,7 +13,8 @@ using namespace memmonitor;
 using namespace dia;
 using namespace visualizer;
 
-BEGIN_EVENT_TABLE( memmonitor::CPropertyWindow, wxPropertyGridManager )
+
+BEGIN_EVENT_TABLE( CPropertyWindow, wxPropertyGridManager )
 	EVT_SIZE(CPropertyWindow::OnSize)
 	EVT_CONTEXT_MENU(CPropertyWindow::OnContextMenu)
 	EVT_MENU(MENU_OPEN_PROPERTY, CPropertyWindow::OnMenuOpenProperty)
@@ -78,11 +79,11 @@ void CPropertyWindow::UpdateSymbol( const wxString &symbolName )
 
 	std::string tmpStr = symbolName;
 	std::string str = ParseObjectName(tmpStr);
-	const bool result = visualizer::MakeProperty_DefaultForm(this, NULL, tmpStr, true, 2);
+	const bool result = visualizer::MakeProperty_DefaultForm(visualizer::SVisDispDesc(this,NULL), tmpStr, true, 2);
 
 	// root node expand
 	wxPGVIterator it;
-	for ( it = pPropGrid->GetVIterator( wxPG_ITERATE_FIXED_CHILDREN ); !it.AtEnd(); it.Next() )
+	for (it = pPropGrid->GetVIterator( wxPG_ITERATE_FIXED_CHILDREN ); !it.AtEnd(); it.Next())
 	{
 		it.GetProperty()->SetExpanded( true );
 		break;
@@ -256,7 +257,7 @@ void CPropertyWindow::OnPropertyGridSelect( wxPropertyGridEvent& event )
 			ptr = visualizer::Point2PointValue((DWORD)pItemData->typeData.ptr);
 
 		SSymbolInfo symbol( pSym, memmonitor::SMemInfo("*", (void*)ptr, 0) );
-		visualizer::MakePropertyChild_DefaultForm( this, pProp, symbol, true, 2 );
+		visualizer::MakePropertyChild_DefaultForm( visualizer::SVisDispDesc(this,pProp), symbol, true, 2 );
 
 			
 		//if (!FindSymbolUpward( pProp, &symbol ))
@@ -381,8 +382,29 @@ void CPropertyWindow::OnMenuOpenProperty(wxCommandEvent& event)
 */
 void CPropertyWindow::OnMenuOpenGraph(wxCommandEvent& event)
 {
-	//const wxString text = m_pTree->GetItemText(m_pTree->GetSelection());
-	GetFrame()->AddGraphWindow( "ss" );
+	wxPGProperty* pProp = GetSelectedProperty();
+	RET(!pProp);
+	wxString name = pProp->GetName();
+
+	SPropItem *pItemData = (SPropItem*)pProp->GetClientData();
+	if (!pItemData)
+		return;
+
+	//if (pItemData && pItemData->typeData.vt == VT_EMPTY &&
+	//	pProp->GetChildCount() <= 0)
+	{
+		IDiaSymbol *pSym = dia::FindType(pItemData->symbolTypeName);
+		if (!pSym)
+			return;
+
+		DWORD ptr = (DWORD)pItemData->typeData.ptr;
+		if (SymTagPointerType == pItemData->typeData.symtag)
+			ptr = visualizer::Point2PointValue((DWORD)pItemData->typeData.ptr);
+
+		SSymbolInfo symbol( pSym, memmonitor::SMemInfo("*", (void*)ptr, 0) );
+		GetFrame()->AddGraphWindow( pItemData->symbolTypeName, symbol );
+	}
+
 }
 
 
@@ -424,7 +446,7 @@ void CPropertyWindow::OnKeyDown(wxKeyEvent& event)
 		if (pRoot)
 		{
 			const std::string symbolName = m_CurrentSymbolName;
-			const bool result = visualizer::MakeProperty_DefaultForm(this, pRoot, symbolName, true, 2);
+			const bool result = visualizer::MakeProperty_DefaultForm(visualizer::SVisDispDesc(this,pRoot), symbolName, true, 2);
 			Refresh();
 		}
 

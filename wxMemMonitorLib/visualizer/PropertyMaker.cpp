@@ -23,6 +23,10 @@ namespace visualizer
 		int count; ///
 		CPropertyWindow *propertyWindow;
 		wxPGProperty *parentProperty;
+		CGraphWindow *graphWindow;
+		CStructureCircle *circle;
+		GVisKind graphAlign;
+
 		SSymbolInfo symbol; /// current symbol
 		int depth;
 
@@ -38,6 +42,9 @@ namespace visualizer
 
 				propertyWindow = rhs.propertyWindow;
 				parentProperty = rhs.parentProperty;
+				graphWindow = rhs.graphWindow;
+				circle = rhs.circle;
+				graphAlign = rhs.graphAlign;
 				symbol = rhs.symbol;
 				symbol.isNotRelease = true; /// 한번만 release 시키기위한 임시방편 코드다.
 			}
@@ -77,6 +84,8 @@ namespace visualizer
 		const SMakerData &makerData );
 
 	bool MakePropertyElifStmt( SElif_Stmt *pelif_stmt, const SMakerData &makerData );
+
+	bool MakePropertyGVisStmt( SGVis_Stmt *pGVis_stmt, const SMakerData &makerData );
 
 
 	// evaluate
@@ -172,13 +181,12 @@ void visualizer::Release()
 // Property 생성
 // symbolName : 공유메모리에 저장된 심볼이름
 //------------------------------------------------------------------------
-bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd, 
-											   wxPGProperty *pParentProp, 
-											   const SMemInfo &memInfo, const string &symbolName, const int depth )
+bool	visualizer::MakeVisualizerProperty( SVisDispDesc visDispdesc, const SMemInfo &memInfo, 
+	const string &symbolName, const int depth )
 {
 	const std::string str = ParseObjectName(symbolName);
 	SVisualizerScript *pVisScript = FindVisualizer(str);
-	if (pVisScript && pVisScript->vis && pVisScript->vis->preview)
+	if (pVisScript && pVisScript->vis)
 	{
 		IDiaSymbol *pSymbol = dia::FindType(str);
 		RETV(!pSymbol, false);
@@ -186,8 +194,10 @@ bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd,
 		SMakerData makerData;
 		makerData.origSymbolName = str;
 		makerData.origMem = memInfo;
-		makerData.propertyWindow = pPropertiesWnd;
-		makerData.parentProperty = pParentProp;
+		makerData.propertyWindow = visDispdesc.propWindow;
+		makerData.parentProperty = visDispdesc.prop;
+		makerData.graphWindow = visDispdesc.graph;
+		makerData.circle = visDispdesc.circle;
 		makerData.symbol.pSym = pSymbol;
 		makerData.symbol.mem = SMemInfo(symbolName.c_str(), memInfo.ptr,0);
 		makerData.depth = depth;
@@ -216,8 +226,7 @@ bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd,
 //------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------
-bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd, 
-	wxPGProperty *pParentProp, const SSymbolInfo &symbol, const int depth )
+bool	visualizer::MakeVisualizerProperty( SVisDispDesc visDispdesc, const SSymbolInfo &symbol, const int depth )
 {
 	// 타입심볼을 얻는다.
 	dia::SymbolState symState;
@@ -225,8 +234,7 @@ bool	visualizer::MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd,
 	RETV(!pBaseType, false);
 
 	string typeName = dia::GetSymbolName(pBaseType);
-	const bool result = MakeVisualizerProperty(pPropertiesWnd, pParentProp, 
-		symbol.mem, typeName, depth);
+	const bool result = MakeVisualizerProperty(visDispdesc, symbol.mem, typeName, depth);
 
 	if (dia::NEW_SYMBOL == symState)
 		pBaseType->Release();
@@ -251,8 +259,17 @@ void visualizer::MakeProperty_Visualizer( SVisualizer *pvis, const SMakerData &m
 			makerData.propertyWindow->RemoveChildProperty(makerData.parentProperty);		
 	}
 
-	// 일단 preview만 출력 	
-	MakePropertyStatements( pvis->preview, makerData );
+	if (makerData.propertyWindow)
+	{
+		MakePropertyStatements( pvis->preview, makerData );
+	}
+	else if (makerData.graphWindow)
+	{
+		if (pvis->graph)
+			MakePropertyStatements( pvis->graph, makerData );
+		else
+			MakePropertyStatements( pvis->preview, makerData );
+	}
 }
 
 
@@ -282,7 +299,8 @@ void visualizer::MakePropertyStatements( SStatements *pstmt, const SMakerData &m
 		case Stmt_SimpleExpression: MakePropertySimpleExpression(node->simple_exp, makerData); break;
 		case Stmt_If: MakePropertyIfStmt(node->if_stmt, makerData); break;
 		case Stmt_Bracket_Iterator: MakePropertyIteratorStmt(node->itor_stmt, makerData); break;
-		}	
+		case Stmt_GVis: MakePropertyGVisStmt(node->gvis_stmt, makerData); break;
+		}
 		node = node->next;
 	}
 }
@@ -303,7 +321,8 @@ void visualizer::MakePropertySimpleExpression( SSimpleExp *pexp, const SMakerDat
 	
 	const bool isApplyVisualizer = (pexp->format != Disp_Auto);
 	findVar.mem.name = pexp->text->str;
-	MakeProperty_DefaultForm( makerData.propertyWindow, makerData.parentProperty, findVar, isApplyVisualizer, makerData.depth );
+	MakeProperty_DefaultForm( SVisDispDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle), 
+		findVar, isApplyVisualizer, makerData.depth );
 }
 
 
@@ -609,6 +628,22 @@ bool visualizer::MakePropertyElifStmt( SElif_Stmt *pelif_stmt, const SMakerData 
 
 /**
  @brief 
+ @date 2013-12-17
+*/
+bool visualizer::MakePropertyGVisStmt( SGVis_Stmt *pGVis_stmt, const SMakerData &makerData )
+{
+	RETV(!pGVis_stmt, false);
+	
+	SMakerData newMakerData = makerData;
+	newMakerData.graphAlign = pGVis_stmt->kind; // save align type
+	newMakerData.symbol.isNotRelease = true;
+	MakePropertyExpression(pGVis_stmt->expr, newMakerData);
+	return true;
+}
+
+
+/**
+ @brief 
  */
 void visualizer::MakePropertyExpression( SExpression *pexp, const SMakerData &makerData, 
 	const std::string &title ) // title = ""
@@ -633,7 +668,8 @@ void visualizer::MakePropertyExpression( SExpression *pexp, const SMakerData &ma
 			CheckError(result, makerData, " variable expression error!!, undetected" );
 			if (!title.empty())
 				findSymbol.mem.name = title;
-			MakeProperty_DefaultForm( makerData.propertyWindow, makerData.parentProperty, findSymbol, true, makerData.depth );
+			MakeProperty_DefaultForm( SVisDispDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle),
+				findSymbol, true, makerData.depth );
 		}
 		break;
 

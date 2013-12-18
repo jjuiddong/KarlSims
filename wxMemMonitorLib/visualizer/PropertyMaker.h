@@ -11,10 +11,7 @@ Date:    1/29/2013
 #include "VisualizerDefine.h"
 #include "VisualizerGlobal.h"
 
-namespace memmonitor { 
-	class CPropertyWindow; 
-	class CPropertyItemAdapter;
-}
+
 
 struct IDiaSymbol;
 class wxPGProperty;
@@ -22,17 +19,16 @@ namespace visualizer
 {
 	using namespace memmonitor;
 
+
 	 // init
 	bool OpenVisualizerScript( const std::string &fileName );
 	void Release();
 
 	// make property
-	bool	MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd, 
-		wxPGProperty *pParentProp, 
+	bool	MakeVisualizerProperty( SVisDispDesc visDispdesc, 
 		const SMemInfo &memInfo, const std::string &symbolName, const int depth );
 
-	bool	MakeVisualizerProperty( CPropertyWindow *pPropertiesWnd, 
-		wxPGProperty *pParentProp, const SSymbolInfo &symbol, const int depth );
+	bool	MakeVisualizerProperty( SVisDispDesc visDispdesc, const SSymbolInfo &symbol, const int depth );
 
 	// find
 	bool Find_ChildSymbol(  const std::string findSymbolName, 

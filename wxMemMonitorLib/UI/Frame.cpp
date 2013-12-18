@@ -42,7 +42,7 @@ CFrame::CFrame(wxWindow* parent) : wxFrame(parent, -1, _("wxMemMonitor"),
 
 	CMemoryTree* memTree = new CMemoryTree(this);
 	CLogWindow *logWnd = new CLogWindow(this);
-	CPropertyWindow *propWnd = new CPropertyWindow(this);
+	visualizer::CPropertyWindow *propWnd = new visualizer::CPropertyWindow(this);
 
 	// add the panes to the manager
 	m_mgr.AddPane(logWnd, wxBOTTOM, wxT("Log Window"));
@@ -120,7 +120,7 @@ bool CFrame::AddPropertyWindow( const wxString &symbolName )
 	wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
 	pframe->SetSizer(itemBoxSizer);
 
-	CPropertyWindow *propWnd = new CPropertyWindow(pframe);
+	visualizer::CPropertyWindow *propWnd = new visualizer::CPropertyWindow(pframe);
 	itemBoxSizer->Add(propWnd);
 	propWnd->UpdateSymbol(symbolName);
 	pframe->Show();
@@ -136,18 +136,21 @@ bool CFrame::AddPropertyWindow( const wxString &symbolName )
  @brief 
  @date 2013-12-16
 */
-bool CFrame::AddGraphWindow(const wxString &symbolName )
+bool CFrame::AddGraphWindow(const string &symbolName, const visualizer::SSymbolInfo &symbol)
 {
 	wxMiniFrame *pframe = new wxMiniFrame(this, -1, symbolName);
-	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
-	wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
-	pframe->SetSizer(itemBoxSizer);
+	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxMAXIMIZE);
+	//wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
+	//pframe->SetSizer(itemBoxSizer);
 
-	CGraphWindow *pWnd = new CGraphWindow(pframe);
-	itemBoxSizer->Add(pWnd);
-	pWnd->UpdateSymbol(symbolName);
+	//wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+	//CGraphWindow *pWnd = new CGraphWindow(pframe);
+	//sizer->Add(pWnd, 1, wxGROW, 0);
+	//itemBoxSizer->Add(sizer, 1, wxGROW, 0);
+	visualizer::CGraphWindow *pWnd = new visualizer::CGraphWindow(pframe);
+
+	pWnd->UpdateSymbol(symbolName, symbol);
 	pframe->Show();
-
 	pframe->Bind(wxEVT_CLOSE_WINDOW, &CFrame::OnPropertyFrameClose, this);
 
 	m_PropFrames.push_back(pframe);

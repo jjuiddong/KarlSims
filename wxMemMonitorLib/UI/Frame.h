@@ -9,6 +9,8 @@
 
 #include <wx/aui/aui.h>
 
+namespace visualizer { struct SSymbolInfo; }
+
 namespace memmonitor
 {
 	class CFrame : public wxFrame 
@@ -20,7 +22,7 @@ namespace memmonitor
 		virtual ~CFrame();
 
 		bool AddPropertyWindow(const wxString &symbolName );
-		bool AddGraphWindow(const wxString &symbolName );
+		bool AddGraphWindow(const string &symbolName, const visualizer::SSymbolInfo &symbol );
 		void UpdatePaneSize(wxWindow *pWindow, int w, int h);
 
 		MemTreePtr GetMemTree() const;

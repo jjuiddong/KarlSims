@@ -12,7 +12,7 @@
 #include <wx/propgrid/property.h>
 
 class wxPGProperty;
-namespace memmonitor
+namespace visualizer
 {
 	class CPropertyItemAdapter
 	{

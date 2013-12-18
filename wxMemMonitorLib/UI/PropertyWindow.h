@@ -9,14 +9,15 @@
 #include <wx/propgrid/manager.h>
 #include "../Control/Global.h"
 
-namespace visualizer {
-	struct SSymbolInfo;
-}
 
 
-namespace memmonitor
+namespace visualizer
 {
+	using namespace memmonitor;
+	struct SSymbolInfo;
 	class CPropertyItemAdapter;
+
+
 	class CPropertyWindow : public wxPropertyGridManager
 	{
 		enum  {

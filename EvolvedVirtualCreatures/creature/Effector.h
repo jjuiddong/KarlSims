@@ -1,7 +1,6 @@
 /**
  @filename Effector.h
  
- 
 */
 #pragma once
 

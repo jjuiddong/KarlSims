@@ -5,16 +5,31 @@
 // 
 // visualizer 에서 사용하는 전역 정의들 모음
 //------------------------------------------------------------------------
-#ifndef __VISUALIZERGLOBAL_H__
-#define __VISUALIZERGLOBAL_H__
-
+#pragma once
 #include "../wxMemMonitor.h"
+#include "VisualizerDefine.h"
+
+
 
 struct IDiaSymbol;
+class wxPGProperty;
 namespace visualizer
 {
 	using namespace memmonitor;
+	class CGraphWindow;
+	class CStructureCircle;
+	class CPropertyWindow; 
+	class CPropertyItemAdapter;
 
+
+	enum GRAPH_ALIGN_TYPE {
+		GRAPH_ALIGN_VERT,	// grow vertical
+		GRAPH_ALIGN_HORZ, // grow horizontal
+	};
+
+
+
+	// Symbol Infomation
 	struct SSymbolInfo
 	{
 		IDiaSymbol *pSym;
@@ -41,6 +56,38 @@ namespace visualizer
 		
 	};
 
-}
 
-#endif // __VISUALIZERGLOBAL_H__
+
+	// Visualizer Display Description
+	struct SVisDispDesc
+	{
+		wxPGProperty *prop;
+		CPropertyWindow *propWindow;
+		CGraphWindow *graph;
+		CStructureCircle *circle;
+		GRAPH_ALIGN_TYPE graphAlign;
+
+		SVisDispDesc() : prop(NULL), graph(NULL), propWindow(NULL), circle(NULL), graphAlign(GRAPH_ALIGN_HORZ) { }
+
+		explicit SVisDispDesc(CPropertyWindow *pwnd, wxPGProperty *prop0=NULL, 
+			CGraphWindow *graph0=NULL, CStructureCircle *circle0=NULL, GRAPH_ALIGN_TYPE kind0=GRAPH_ALIGN_HORZ) : 
+			propWindow(pwnd), prop(prop0), graph(graph0), circle(circle0), graphAlign(kind0) { }
+
+		SVisDispDesc(const SVisDispDesc &rhs) {
+			operator=(rhs);
+		}
+
+		const SVisDispDesc& operator=(const SVisDispDesc &rhs) {
+			if (this != &rhs) {
+				prop = rhs.prop;;
+				propWindow = rhs.propWindow;
+				graph = rhs.graph;
+				circle = rhs.circle;
+				graphAlign = rhs.graphAlign;
+			}
+			return *this;
+		}
+
+	};
+
+}
