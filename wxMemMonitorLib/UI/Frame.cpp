@@ -139,7 +139,7 @@ bool CFrame::AddPropertyWindow( const wxString &symbolName )
 bool CFrame::AddGraphWindow(const string &symbolName, const visualizer::SSymbolInfo &symbol)
 {
 	wxMiniFrame *pframe = new wxMiniFrame(this, -1, symbolName);
-	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxMAXIMIZE);
+	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxMAXIMIZE_BOX);
 	//wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
 	//pframe->SetSizer(itemBoxSizer);
 

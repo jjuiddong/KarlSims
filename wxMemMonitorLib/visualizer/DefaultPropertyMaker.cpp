@@ -283,8 +283,9 @@ SVisDispDesc visualizer::MakeProperty_BaseClassData( SVisDispDesc parentDispdesc
 	const SSymbolInfo &symbol)
 {
 	CPropertyItemAdapter prop( symbol.mem.name );
-	AddProperty(parentDispdesc, prop, &symbol, &STypeData(SymTagBaseClass, VT_EMPTY, NULL));
-	return SVisDispDesc(NULL, prop.GetProperty());
+	SVisDispDesc newPropDesc = AddProperty(parentDispdesc, prop, &symbol, &STypeData(SymTagBaseClass, VT_EMPTY, NULL));
+	return newPropDesc;
+	//return SVisDispDesc(NULL, prop.GetProperty());
 }
 
 
@@ -518,9 +519,9 @@ SVisDispDesc visualizer::MakeProperty_ArrayData(SVisDispDesc parentDispdesc,
 	}
 
 	CPropertyItemAdapter prop( ss.str(), CPropertyItemAdapter::PROPERTY_STRING, 0, stringVal );
-	AddProperty(parentDispdesc, prop, &symbol,  &STypeData(SymTagArrayType, VT_EMPTY, NULL) );
-
-	return SVisDispDesc(NULL, prop.GetProperty());
+	SVisDispDesc newPropDesc = AddProperty(parentDispdesc, prop, &symbol,  &STypeData(SymTagArrayType, VT_EMPTY, NULL) );
+	return newPropDesc;
+	//return SVisDispDesc(NULL, prop.GetProperty());
 }
 
 
@@ -559,7 +560,7 @@ SVisDispDesc visualizer::MakeProperty_Pointer_Preview( SVisDispDesc parentDispde
 	if (SymTagUDT == baseSymTag)
 	{
 		ss << symbol.mem.name;// << " 0x" << newPtr;
-		ss << (char*)(CheckValidAddress(newPtr)? " " : " not shared memory");
+		ss << (char*)(CheckValidAddress(newPtr)? " " : " memory access deny");
 		//ss << " (" << typeName << ")";
 	}
 	else if (SymTagBaseType == baseSymTag)
@@ -572,21 +573,21 @@ SVisDispDesc visualizer::MakeProperty_Pointer_Preview( SVisDispDesc parentDispde
 		if (btChar == btype)
 		{
 			ss << symbol.mem.name;// << " 0x" << newPtr << " {\"";
-			ss << (char*)(CheckValidAddress(newPtr)? newPtr : " not shared memory")  << "\"}";
+			ss << (char*)(CheckValidAddress(newPtr)? newPtr : " memory access deny")  << "\"}";
 		}
 	}
 
 	if (ss.str().empty()) // default pointer 작업
 	{
 		ss << symbol.mem.name;// << " 0x" << newPtr;
-		ss << (char*)(CheckValidAddress(newPtr)? " " : " not shared memory");
+		ss << (char*)(CheckValidAddress(newPtr)? " " : " memory access deny");
 		//ss << " (" << typeName << ")";
 	}
 
 	CPropertyItemAdapter prop( ss.str(), CPropertyItemAdapter::PROPTYPE_POINTER, (DWORD)newPtr );
-	AddProperty( parentDispdesc, prop, &symbol, &STypeData(SymTagPointerType, VT_EMPTY, NULL));
-
-	return SVisDispDesc(NULL, prop.GetProperty());
+	SVisDispDesc newPropDesc = AddProperty( parentDispdesc, prop, &symbol, &STypeData(SymTagPointerType, VT_EMPTY, NULL));
+	return newPropDesc;
+	//return SVisDispDesc(NULL, prop.GetProperty());
 }
 
 
@@ -603,7 +604,7 @@ SVisDispDesc visualizer::MakeProperty_UDTData( SVisDispDesc parentDispdesc,
 	ss << symbol.mem.name;
 
 	CPropertyItemAdapter prop( ss.str());
-	AddProperty(parentDispdesc, prop, &symbol, &STypeData(SymTagUDT, VT_EMPTY, symbol.mem.ptr));
+	SVisDispDesc newPropDesc = AddProperty(parentDispdesc, prop, &symbol, &STypeData(SymTagUDT, VT_EMPTY, symbol.mem.ptr));
 
 	const bool isExpand = (prop.GetProperty() && (prop.GetProperty()->GetChildCount() > 0)
 		&& prop.GetProperty()->IsExpanded());
@@ -612,17 +613,18 @@ SVisDispDesc visualizer::MakeProperty_UDTData( SVisDispDesc parentDispdesc,
 	// todo: visualizer preview 작업이 끝나면 없애야한다.
 	if (option.isApplyVisualizer && !strncmp(typeName.c_str(),  "std::basic_string",17 ))
 	{
-		isVisualizerType = visualizer::MakeVisualizerProperty( SVisDispDesc(g_pProperty, prop.GetProperty(), g_pGraphWnd, NULL), symbol, option.depth );
+		isVisualizerType = visualizer::MakeVisualizerProperty( newPropDesc, symbol, option.depth );
 	}
 	else if(option.isApplyVisualizer)
 	{
-		isVisualizerType = visualizer::MakeVisualizerProperty( SVisDispDesc(g_pProperty, prop.GetProperty(), g_pGraphWnd, NULL), symbol, option.depth );
+		isVisualizerType = visualizer::MakeVisualizerProperty( newPropDesc, symbol, option.depth );
 	}
 
 	if (!isExpand)
 		prop.GetProperty()->SetExpanded(false);
 
-	return SVisDispDesc(NULL, (isVisualizerType)? NULL : prop.GetProperty());
+	return newPropDesc;
+	//return SVisDispDesc(NULL, (isVisualizerType)? NULL : prop.GetProperty());
 }
 
 
@@ -701,10 +703,11 @@ SVisDispDesc visualizer ::MakeProperty_BaseType( SVisDispDesc parentDispdesc,
 	_variant_t value = dia::GetValueFromSymbol(symbol.mem.ptr, symbol.pSym);
 
 	CPropertyItemAdapter prop( valueName, symbol, value );
-	AddProperty(parentDispdesc, prop, &symbol, 
+	SVisDispDesc newPropDesc = AddProperty(parentDispdesc, prop, &symbol, 
 		&STypeData(SymTagData, (prop.IsEnabled()? value.vt : VT_EMPTY), symbol.mem.ptr));
 
-	return SVisDispDesc(NULL, prop.GetProperty());
+	return newPropDesc;
+	//return SVisDispDesc(NULL, prop.GetProperty());
 }
 
 
@@ -724,8 +727,9 @@ SVisDispDesc visualizer::AddProperty( SVisDispDesc parentDispdesc,
 	}
 	else if (g_pGraphWnd)
 	{
-		CStructureCircle *circle = g_pGraphWnd->AddDataGraph(parentDispdesc.circle,  pSymbol->mem.name, pSymbol, typeData, GRAPH_ALIGN_HORZ);
-		return SVisDispDesc(NULL, NULL, g_pGraphWnd, circle);
+		CStructureCircle *circle = g_pGraphWnd->AddDataGraph(parentDispdesc.circle,  pSymbol->mem.name, 
+			propAdapter, pSymbol, typeData, parentDispdesc.alignGraph);
+		return SVisDispDesc(NULL, NULL, g_pGraphWnd, circle, parentDispdesc.alignGraph);
 	}
 
 	return SVisDispDesc();

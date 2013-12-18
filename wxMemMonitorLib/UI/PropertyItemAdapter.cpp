@@ -21,6 +21,7 @@ CPropertyItemAdapter::CPropertyItemAdapter( std::string label,  PROPERTY_TYPE ty
 	{
 	case PROPERTY_STRING:
 		m_pProperty = new wxStringProperty(label, wxPG_LABEL, strVal );
+		m_Value = strVal;
 		break;
 	case PROPTYPE_CATEGORY:
 		m_pProperty = new wxPropertyCategory(label, wxPG_LABEL );
@@ -30,8 +31,11 @@ CPropertyItemAdapter::CPropertyItemAdapter( std::string label,  PROPERTY_TYPE ty
 		break;
 	case PROPTYPE_POINTER:
 		m_pProperty = new wxIntProperty( label, wxPG_LABEL, (int)ptr);
+		m_Value = format("0x%x", ptr);
 		break;
 	}
+
+	m_ValueName = label;
 }
 
 CPropertyItemAdapter::CPropertyItemAdapter(wxPGProperty *pProperty) :
@@ -102,6 +106,10 @@ bool CPropertyItemAdapter::CreateProperty( const std::string &valueName,
 	if (IsNotPrint)
 		pProp->Enable(false);
 
+	m_ValueName = valueName;
+	m_ValueType = dia::GetSymbolTypeName(symbol.pSym);
+	if (m_ValueType == "NoType") m_ValueType = "";
+	m_Value = pProp->GetValueAsString();	
 	m_pProperty = pProp;
 	return true;
 }
@@ -163,4 +171,34 @@ bool CPropertyItemAdapter::IsEnabled()
 {
 	RETV(!m_pProperty, false);
 	return m_pProperty->IsEnabled();
+}
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+string CPropertyItemAdapter::GetValueName() const
+{
+	return m_ValueName;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+string CPropertyItemAdapter::GetValue() const
+{
+	return m_Value;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+string CPropertyItemAdapter::GetValueType() const
+{
+	return m_ValueType;
 }

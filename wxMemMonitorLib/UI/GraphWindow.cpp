@@ -5,6 +5,7 @@
 #include "../dia/DiaWrapper.h"
 #include "../visualizer/DefaultPropertyMaker.h"
 #include "../visualizer/PropertyMaker.h"
+#include "PropertyItemAdapter.h"
 #include "Frame.h"
 #include "../Control/Global.h"
 
@@ -48,6 +49,13 @@ bool CStructureCircle::AddChild(CStructureCircle *circle)
 // CGraphWindow
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+const int RECT_W = 50;
+const int RECT_H = 30;
+const int GAP_W = 10;
+const int GAP_H = 10;
+
+
 BEGIN_EVENT_TABLE(CGraphWindow, wxScrolledWindow)
 	EVT_PAINT  (CGraphWindow::OnPaint)
 END_EVENT_TABLE()
@@ -56,6 +64,7 @@ CGraphWindow::CGraphWindow(wxWindow *parent) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition,wxDefaultSize)
 ,	m_DrawPosBoundary(20,20)
 ,	m_pRoot(NULL)
+,	m_oldBoundary(0,0)
 {
 	//SetBackgroundColour(wxColour(0,100,0));
 }
@@ -84,21 +93,21 @@ void CGraphWindow::UpdateSymbol( const string &symbolName, const visualizer::SSy
 	// test code
 	if (0)
 	{
-		visualizer::SSymbolInfo sym;
-		AddDataGraph( NULL, "test",  &sym, NULL, GRAPH_ALIGN_VERT);
-		CStructureCircle *circle0 = AddDataGraph( NULL, "test1",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		AddDataGraph( circle0, "test10",  &sym, NULL, GRAPH_ALIGN_VERT);
-		CStructureCircle *circle01 = AddDataGraph( circle0, "test11",  &sym, NULL, GRAPH_ALIGN_VERT);
-		AddDataGraph( circle01, "test110",  &sym, NULL, GRAPH_ALIGN_VERT);
-		CStructureCircle *circle010 = AddDataGraph( circle01, "test111",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		AddDataGraph( circle010, "test1110",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		AddDataGraph( circle01, "test112",  &sym, NULL, GRAPH_ALIGN_VERT);
-		AddDataGraph( circle01, "test113",  &sym, NULL, GRAPH_ALIGN_VERT);
-		CStructureCircle *circle02 = AddDataGraph( circle0, "test12",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//visualizer::SSymbolInfo sym;
+		//AddDataGraph( NULL, "test",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//CStructureCircle *circle0 = AddDataGraph( NULL, "test1",  &sym, NULL, GRAPH_ALIGN_HORZ);
+		//AddDataGraph( circle0, "test10",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//CStructureCircle *circle01 = AddDataGraph( circle0, "test11",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//AddDataGraph( circle01, "test110",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//CStructureCircle *circle010 = AddDataGraph( circle01, "test111",  &sym, NULL, GRAPH_ALIGN_HORZ);
+		//AddDataGraph( circle010, "test1110",  &sym, NULL, GRAPH_ALIGN_HORZ);
+		//AddDataGraph( circle01, "test112",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//AddDataGraph( circle01, "test113",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//CStructureCircle *circle02 = AddDataGraph( circle0, "test12",  &sym, NULL, GRAPH_ALIGN_VERT);
 
-		AddDataGraph( NULL, "test2",  &sym, NULL, GRAPH_ALIGN_VERT);
-		CStructureCircle *circle1 = AddDataGraph( NULL, "test3",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		AddDataGraph( circle1, "test30",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//AddDataGraph( NULL, "test2",  &sym, NULL, GRAPH_ALIGN_VERT);
+		//CStructureCircle *circle1 = AddDataGraph( NULL, "test3",  &sym, NULL, GRAPH_ALIGN_HORZ);
+		//AddDataGraph( circle1, "test30",  &sym, NULL, GRAPH_ALIGN_VERT);
 	}
 }
 
@@ -108,7 +117,8 @@ void CGraphWindow::UpdateSymbol( const string &symbolName, const visualizer::SSy
  @date 2013-12-17
  */
 CStructureCircle* CGraphWindow::AddDataGraph( CStructureCircle *parent, const std::string &valueName, 
-	const visualizer::SSymbolInfo *pSymbol, STypeData *pTypeData, const GRAPH_ALIGN_TYPE align )
+	CPropertyItemAdapter &propAdapter, 
+	const SSymbolInfo *pSymbol, STypeData *pTypeData, const GRAPH_ALIGN_TYPE align )
 {
 	CStructureCircle *circle = new CStructureCircle();
 
@@ -118,7 +128,9 @@ CStructureCircle* CGraphWindow::AddDataGraph( CStructureCircle *parent, const st
 	case GRAPH_ALIGN_HORZ: m_DrawPosBoundary.x += 40; break;
 	}
 
-	circle->m_Name = valueName;
+	circle->m_Name = propAdapter.GetValueName();
+	circle->m_TypeName = propAdapter.GetValueType();
+	circle->m_Value = propAdapter.GetValue();
 	circle->m_Pos = m_DrawPosBoundary;
 	circle->m_ChildAlignType = align;
 	m_Circles.push_back(circle);
@@ -155,13 +167,12 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 	wxPoint maxBoundary;
 	DrawCircle(&dc, m_pRoot, wxPoint(10,10), maxBoundary);
 
-	static wxPoint oldBoundary;
-	if (oldBoundary != maxBoundary)
+	if (m_oldBoundary != maxBoundary)
 	{
-		SetVirtualSize(maxBoundary.x, maxBoundary.y);
+		SetVirtualSize(maxBoundary.x+RECT_W+30, maxBoundary.y+RECT_H+30);
 		SetScrollRate(10,10);
 		Layout();
-		oldBoundary = maxBoundary;
+		m_oldBoundary = maxBoundary;
 	}
 }
 
@@ -173,45 +184,45 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wxPoint &pos, OUT wxPoint &boundary, const bool isLineDraw)
 {
 	RET(!circle);
+	const bool IsCircleDraw = !isLineDraw;
 
-	const int RECT_W = 50;
-	const int RECT_H = 30;
-	const int GAP_W = 10;
-	const int GAP_H = 10;
+	// circle size, and text setting
+	std::stringstream ss;
+	ss << circle->m_TypeName << " " << circle->m_Name;
+	if (!circle->m_Value.empty())
+		ss << " : " << circle->m_Value;
 
-	if (!isLineDraw && ("root" != circle->m_Name))
+	wxSize textSize;
+	pdc->GetTextExtent(ss.str(), &textSize.x, &textSize.y);
+	textSize.x = max(RECT_W, textSize.x+5);
+	textSize.y = RECT_H;
+	circle->m_Size = textSize;
+	//
+
+	if (IsCircleDraw && ("root" != circle->m_Name))
 	{
-		wxRect rect(0,0,RECT_W,RECT_H);//circle->m_Radian, circle->m_Radian);
+		wxRect rect(0,0,textSize.x,textSize.y);
 		rect.Offset(pos);
 		pdc->DrawRoundedRectangle(rect, 5);
-		pdc->DrawText(circle->m_Name, pos+wxPoint(2,5));
+		pdc->DrawText(ss.str(), pos+wxPoint(2,5));
 	}
 
 	wxPoint nextPos = pos;
 	if (!circle->m_Children.empty())
 	{
-		switch (circle->m_ChildAlignType)
-		{
-		case GRAPH_ALIGN_VERT: nextPos += wxPoint(15,0); break;
-		case GRAPH_ALIGN_HORZ: nextPos += wxPoint(0,15); break;
-		}
+		nextPos += wxPoint(RECT_W/2+GAP_W, RECT_H+GAP_H);
 	}
 
-	boundary.x = max(nextPos.x, boundary.x);
-	boundary.y = max(nextPos.y, boundary.y);
+	boundary.x = max(nextPos.x+textSize.x, boundary.x);
+	boundary.y = max(nextPos.y+textSize.y, boundary.y);
 
 	wxPoint oldPos = pos;
 	BOOST_FOREACH (auto &child, circle->m_Children)
 	{
-		switch (circle->m_ChildAlignType)
-		{
-		case GRAPH_ALIGN_VERT: nextPos.y = boundary.y + RECT_H+GAP_H; break;
-		case GRAPH_ALIGN_HORZ: nextPos.x = boundary.x + RECT_W+GAP_W; break;
-		}
-
 		if (isLineDraw)
 		{
-			pdc->DrawLine(oldPos+wxPoint(15,15), nextPos+wxPoint(15,15));
+			const wxPoint offset(RECT_W/2, RECT_H/2);
+			pdc->DrawLine(oldPos+offset, nextPos+offset);
 			oldPos = nextPos;
 		}
 
@@ -220,5 +231,11 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 
 		boundary.x = max(maxBoundary.x, boundary.x);
 		boundary.y = max(maxBoundary.y, boundary.y);
+
+		switch (circle->m_ChildAlignType)
+		{
+		case GRAPH_ALIGN_VERT: nextPos.y = boundary.y + GAP_H; break;
+		case GRAPH_ALIGN_HORZ: nextPos.x = boundary.x + GAP_W; break;
+		}
 	}
 }

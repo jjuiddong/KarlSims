@@ -11,6 +11,7 @@
 #include "../visualizer/VisualizerGlobal.h"
 #include <wx/propgrid/property.h>
 
+
 class wxPGProperty;
 namespace visualizer
 {
@@ -42,17 +43,23 @@ namespace visualizer
 		void Enable(bool enable);
 		bool IsEnabled();
 		void AddChoice(const std::string &name, const int value=wxPG_INVALID_VALUE );
+		string GetValueName() const;
+		string GetValue() const;
+		string GetValueType() const;
+
 
 	protected:
-		bool CreateProperty( const std::string &valueName, 
-			const visualizer::SSymbolInfo &symbol, _variant_t value );
+		bool CreateProperty( const std::string &valueName, const SSymbolInfo &symbol, _variant_t value );
+
 
 	protected:
 		wxPGProperty *m_pProperty;
+		string m_ValueType;
+		string m_ValueName;
+		string m_Value;
 	};
 
 
 	inline void CPropertyItemAdapter::SetProperty(wxPGProperty* prop) { m_pProperty = prop; }
 	inline wxPGProperty* CPropertyItemAdapter::GetProperty() { return m_pProperty; }
-
 }

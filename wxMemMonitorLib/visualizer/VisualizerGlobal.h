@@ -65,13 +65,13 @@ namespace visualizer
 		CPropertyWindow *propWindow;
 		CGraphWindow *graph;
 		CStructureCircle *circle;
-		GRAPH_ALIGN_TYPE graphAlign;
+		GRAPH_ALIGN_TYPE alignGraph;
 
-		SVisDispDesc() : prop(NULL), graph(NULL), propWindow(NULL), circle(NULL), graphAlign(GRAPH_ALIGN_HORZ) { }
+		SVisDispDesc() : prop(NULL), graph(NULL), propWindow(NULL), circle(NULL), alignGraph(GRAPH_ALIGN_VERT) { }
 
 		explicit SVisDispDesc(CPropertyWindow *pwnd, wxPGProperty *prop0=NULL, 
-			CGraphWindow *graph0=NULL, CStructureCircle *circle0=NULL, GRAPH_ALIGN_TYPE kind0=GRAPH_ALIGN_HORZ) : 
-			propWindow(pwnd), prop(prop0), graph(graph0), circle(circle0), graphAlign(kind0) { }
+			CGraphWindow *graph0=NULL, CStructureCircle *circle0=NULL, GRAPH_ALIGN_TYPE kind0=GRAPH_ALIGN_VERT) : 
+			propWindow(pwnd), prop(prop0), graph(graph0), circle(circle0), alignGraph(kind0) { }
 
 		SVisDispDesc(const SVisDispDesc &rhs) {
 			operator=(rhs);
@@ -79,11 +79,11 @@ namespace visualizer
 
 		const SVisDispDesc& operator=(const SVisDispDesc &rhs) {
 			if (this != &rhs) {
-				prop = rhs.prop;;
+				prop = rhs.prop;
 				propWindow = rhs.propWindow;
 				graph = rhs.graph;
 				circle = rhs.circle;
-				graphAlign = rhs.graphAlign;
+				alignGraph = rhs.alignGraph;
 			}
 			return *this;
 		}

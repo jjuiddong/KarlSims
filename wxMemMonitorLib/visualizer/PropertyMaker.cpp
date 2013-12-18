@@ -9,6 +9,7 @@
 #include "../ui/LogWindow.h"
 #include "../ui/PropertyWindow.h"
 
+
 namespace visualizer
 {
 	using namespace parser;
@@ -25,7 +26,7 @@ namespace visualizer
 		wxPGProperty *parentProperty;
 		CGraphWindow *graphWindow;
 		CStructureCircle *circle;
-		GVisKind graphAlign;
+		GRAPH_ALIGN_TYPE alignGraph;
 
 		SSymbolInfo symbol; /// current symbol
 		int depth;
@@ -44,7 +45,7 @@ namespace visualizer
 				parentProperty = rhs.parentProperty;
 				graphWindow = rhs.graphWindow;
 				circle = rhs.circle;
-				graphAlign = rhs.graphAlign;
+				alignGraph = rhs.alignGraph;
 				symbol = rhs.symbol;
 				symbol.isNotRelease = true; /// 한번만 release 시키기위한 임시방편 코드다.
 			}
@@ -197,6 +198,7 @@ bool	visualizer::MakeVisualizerProperty( SVisDispDesc visDispdesc, const SMemInf
 		makerData.propertyWindow = visDispdesc.propWindow;
 		makerData.parentProperty = visDispdesc.prop;
 		makerData.graphWindow = visDispdesc.graph;
+		makerData.alignGraph = visDispdesc.alignGraph;
 		makerData.circle = visDispdesc.circle;
 		makerData.symbol.pSym = pSymbol;
 		makerData.symbol.mem = SMemInfo(symbolName.c_str(), memInfo.ptr,0);
@@ -266,7 +268,7 @@ void visualizer::MakeProperty_Visualizer( SVisualizer *pvis, const SMakerData &m
 	else if (makerData.graphWindow)
 	{
 		if (pvis->graph)
-			MakePropertyStatements( pvis->graph, makerData );
+			MakePropertyStatements( pvis->graph, makerData);
 		else
 			MakePropertyStatements( pvis->preview, makerData );
 	}
@@ -321,8 +323,9 @@ void visualizer::MakePropertySimpleExpression( SSimpleExp *pexp, const SMakerDat
 	
 	const bool isApplyVisualizer = (pexp->format != Disp_Auto);
 	findVar.mem.name = pexp->text->str;
-	MakeProperty_DefaultForm( SVisDispDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle), 
-		findVar, isApplyVisualizer, makerData.depth );
+	SVisDispDesc visDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle,
+		makerData.alignGraph);
+	MakeProperty_DefaultForm( visDesc, findVar, isApplyVisualizer, makerData.depth );
 }
 
 
@@ -415,6 +418,7 @@ void visualizer::MakePropertyIteratorStmt_List( SVisBracketIterator_Stmt *pitor_
 	CheckError( result, makerData, "#list head expression error, $e not found" );
 
 	eachMakerData.symbol = head;
+	eachMakerData.alignGraph = GRAPH_ALIGN_VERT;
 	head.isNotRelease = true;
 
 	int count = 0;
@@ -465,6 +469,7 @@ void visualizer::MakePropertyIteratorStmt_Array( SVisBracketIterator_Stmt *pitor
 	SMakerData arrayMakeData = makerData;
 	arrayMakeData.index = 0;
 	arrayMakeData.symbol.isNotRelease = true;
+	arrayMakeData.alignGraph = GRAPH_ALIGN_VERT;
 
 	for(arrayMakeData.index=0; arrayMakeData.index < size; ++arrayMakeData.index)
 	{
@@ -506,6 +511,7 @@ void MakePropertyTree_Traverse(SVisBracketIterator_Stmt *pitor_stmt, SMakerData 
 	SMakerData leftMakerData = makerData;
 	leftMakerData.symbol = left;
 	leftMakerData.symbol.isNotRelease = true;
+	leftMakerData.alignGraph = GRAPH_ALIGN_VERT;
 	MakePropertyTree_Traverse(pitor_stmt, leftMakerData, skipPtr, displaySize);
 
 
@@ -517,6 +523,7 @@ void MakePropertyTree_Traverse(SVisBracketIterator_Stmt *pitor_stmt, SMakerData 
 	rightMakerData.count = leftMakerData.count;
 	rightMakerData.symbol = right;
 	rightMakerData.symbol.isNotRelease = true;
+	rightMakerData.alignGraph = GRAPH_ALIGN_VERT;
 	MakePropertyTree_Traverse(pitor_stmt, rightMakerData, skipPtr, displaySize);
 
 	makerData.count = rightMakerData.count;
@@ -635,7 +642,7 @@ bool visualizer::MakePropertyGVisStmt( SGVis_Stmt *pGVis_stmt, const SMakerData 
 	RETV(!pGVis_stmt, false);
 	
 	SMakerData newMakerData = makerData;
-	newMakerData.graphAlign = pGVis_stmt->kind; // save align type
+	newMakerData.alignGraph = (GVis_Horizontal==pGVis_stmt->kind)? GRAPH_ALIGN_HORZ : GRAPH_ALIGN_VERT; // save align type
 	newMakerData.symbol.isNotRelease = true;
 	MakePropertyExpression(pGVis_stmt->expr, newMakerData);
 	return true;
@@ -668,8 +675,10 @@ void visualizer::MakePropertyExpression( SExpression *pexp, const SMakerData &ma
 			CheckError(result, makerData, " variable expression error!!, undetected" );
 			if (!title.empty())
 				findSymbol.mem.name = title;
-			MakeProperty_DefaultForm( SVisDispDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle),
-				findSymbol, true, makerData.depth );
+
+			SVisDispDesc visDesc(makerData.propertyWindow, makerData.parentProperty, makerData.graphWindow, makerData.circle,
+				makerData.alignGraph);
+			MakeProperty_DefaultForm( visDesc, findSymbol, true, makerData.depth );
 		}
 		break;
 
