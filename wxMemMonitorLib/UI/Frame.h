@@ -36,6 +36,7 @@ namespace memmonitor
 		// Event Handler
 		DECLARE_EVENT_TABLE()
 		void OnMenuOpenAutoExp(wxCommandEvent& event);
+		void OnMenuReloadAutoExp(wxCommandEvent& event);
 		void OnMenuExit(wxCommandEvent& event);
 		void OnMenuHelp(wxCommandEvent& event);
 		void OnPropertyFrameClose(wxCloseEvent& event);

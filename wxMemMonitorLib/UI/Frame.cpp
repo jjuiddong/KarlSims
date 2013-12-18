@@ -18,12 +18,14 @@ using namespace memmonitor;
 enum MAINFRAME_MENU
 {
 	MENU_OPEN_AUTOEXP=100,
+	MENU_RELOAD_AUTOEXP,
 	MENU_EXIT,
 	MENU_HELP,
 };
 
 BEGIN_EVENT_TABLE(CFrame, wxFrame)
 	 EVT_MENU (MENU_OPEN_AUTOEXP, CFrame::OnMenuOpenAutoExp)
+	 EVT_MENU (MENU_RELOAD_AUTOEXP, CFrame::OnMenuReloadAutoExp)
 	 EVT_MENU (MENU_EXIT, CFrame::OnMenuExit)
 	 EVT_MENU (MENU_HELP, CFrame::OnMenuHelp)
 END_EVENT_TABLE()
@@ -96,6 +98,7 @@ void CFrame::CreateMenuBar()
 	// file Menu
 	wxMenu *fileMenu = new wxMenu;
 	fileMenu->Append( MENU_OPEN_AUTOEXP, "&Open AutoExp" );
+	fileMenu->Append( MENU_RELOAD_AUTOEXP, "&Reload AutoExp" );
 	fileMenu->Append( MENU_EXIT, "&Exit" );
 
 	// help menu
@@ -177,6 +180,17 @@ void CFrame::OnPropertyFrameClose(wxCloseEvent& event)
 void CFrame::OnMenuOpenAutoExp(wxCommandEvent& event)
 {
 	::WinExec( "notepad.exe autoexp.txt", SW_SHOW);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+void CFrame::OnMenuReloadAutoExp(wxCommandEvent& event)
+{
+	GetLogWindow()->PrintText( "Reload autoexp.txt\n" );
+	visualizer::OpenVisualizerScript( "autoexp.txt" );
 }
 
 
