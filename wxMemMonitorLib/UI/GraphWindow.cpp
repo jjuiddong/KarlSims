@@ -241,7 +241,7 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 
 	wxSize CircleSize(RECT_W, RECT_H);
 	if (m_DispMode == DISP_SMALL_V)
-		CircleSize = wxSize(5,5);
+		CircleSize = wxSize(5,10);
 
 	wxSize textSize;
 	pdc->GetTextExtent(ss.str(), &textSize.x, &textSize.y);

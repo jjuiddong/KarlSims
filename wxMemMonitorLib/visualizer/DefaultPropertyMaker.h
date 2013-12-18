@@ -25,13 +25,4 @@ namespace visualizer
 
 	bool	MakePropertyChild_DefaultForm(  SVisDispDesc parentDispdesc, 
 		const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth );
-
-
-	// Make Graph
-	bool	MakeGraph_DefaultForm( SVisDispDesc parentDispdesc, 
-		const std::string &symbolName, const bool IsApplyVisualizer, const int depth );
-
-	bool	MakeGraph_DefaultForm(  SVisDispDesc parentDispdesc, 
-		const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth );
-
 }

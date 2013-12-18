@@ -230,19 +230,19 @@ void visualizer::MakeProperty_Preview(SVisDispDesc parentDispdesc, const SSymbol
 
 	case SymTagPointerType:
 		visDispDesc = MakeProperty_Pointer_Preview(parentDispdesc, symbol);
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, symbol, IsUdtExpand, option);
 		break;
 
 	case SymTagBaseClass:
 		visDispDesc = MakeProperty_BaseClassData(parentDispdesc, symbol);
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, symbol, IsUdtExpand, option);
 		break;
 
 	case SymTagUDT:
 		visDispDesc = MakeProperty_UDTData(parentDispdesc, symbol, option);
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, symbol, IsUdtExpand, option);
 		break;
 
@@ -296,8 +296,7 @@ void visualizer::MakeProperty_UDTChild(SVisDispDesc parentDispdesc,  const SSymb
 										const bool IsUdtExpand, const SVisOption &option)
 {
 	wxPGProperty *pParentProp = parentDispdesc.prop;
-
-	RET (!pParentProp);
+	RET(!pParentProp);
 	
 	const bool IsChildExpand = (pParentProp && pParentProp->GetChildCount() > 0);
 	if (option.depth > 0 || IsChildExpand)
@@ -351,8 +350,10 @@ void visualizer::MakeProperty_UDTChild(SVisDispDesc parentDispdesc,  const SSymb
 			}
 		}
 	}
-	if (!IsChildExpand || (IsChildExpand && !pParentProp->IsExpanded()))
-		pParentProp->SetExpanded(false);
+
+	if (pParentProp &&
+		(!IsChildExpand || (IsChildExpand && !pParentProp->IsExpanded())))
+			pParentProp->SetExpanded(false);
 }
 
 
@@ -377,9 +378,23 @@ void	visualizer::MakeProperty_Pointer_Children(SVisDispDesc parentDispdesc, cons
 	{
 		if (newPtr) 
 		{
+			const string typeName = dia::GetSymbolTypeName(symbol.pSym);
+
 			SMemInfo ptrMemInfo(symbol.mem.name.c_str(), newPtr, (size_t)0);
-			MakeProperty_Child(parentDispdesc, SSymbolInfo(pBaseType, ptrMemInfo, false), 
-				IsUdtExpand, option);
+			//MakeProperty_Child(parentDispdesc, SSymbolInfo(pBaseType, ptrMemInfo, false), 
+			//	IsUdtExpand, option);
+			//MakeProperty_UDTData(parentDispdesc, SSymbolInfo(pBaseType, ptrMemInfo, false), option);
+
+			bool isVisualizerType = false;
+			// todo: visualizer preview 작업이 끝나면 없애야한다.
+			if (option.isApplyVisualizer && !strncmp(typeName.c_str(),  "std::basic_string",17 ))
+			{
+				isVisualizerType = visualizer::MakeVisualizerProperty( parentDispdesc,  SSymbolInfo(pBaseType, ptrMemInfo, false), option.depth );
+			}
+			else if(option.isApplyVisualizer)
+			{
+				isVisualizerType = visualizer::MakeVisualizerProperty( parentDispdesc,  SSymbolInfo(pBaseType, ptrMemInfo, false), option.depth );
+			}
 		}
 	}
 	pBaseType->Release();
@@ -442,19 +457,19 @@ void visualizer::MakeProperty_Data(SVisDispDesc parentDispdesc, const SSymbolInf
 
 	case SymTagUDT:
 		visDispDesc = MakeProperty_UDTData(parentDispdesc, symbol, option);
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, SSymbolInfo(pBaseType, symbol.mem), IsUdtExpand, SVisOption(option.depth-1, option.isApplyVisualizer));
 		break;
 
 	case SymTagArrayType:
 		visDispDesc = MakeProperty_ArrayData(parentDispdesc, symbol);
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, SSymbolInfo(pBaseType, symbol.mem), IsUdtExpand, SVisOption(option.depth-1, option.isApplyVisualizer));
 		break;
 
 	case SymTagPointerType:
 		visDispDesc = MakeProperty_Pointer_Preview(parentDispdesc, SSymbolInfo(pBaseType, symbol.mem));
-		if (visDispDesc.prop)
+		if (visDispDesc.prop || visDispDesc.circle)
 			MakeProperty_Child(visDispDesc, SSymbolInfo(pBaseType, symbol.mem, false), IsUdtExpand, SVisOption(option.depth-1, option.isApplyVisualizer));
 		break;
 
@@ -733,45 +748,5 @@ SVisDispDesc visualizer::AddProperty( SVisDispDesc parentDispdesc,
 	}
 
 	return SVisDispDesc();
-}
-
-
-/**
- @brief 
- @date 2013-12-16
-*/
-bool	visualizer::MakeGraph_DefaultForm( SVisDispDesc parentDispdesc, 
-	const std::string &symbolName, const bool IsApplyVisualizer, const int depth )
-{
-	const std::string str = ParseObjectName(symbolName);
-	IDiaSymbol *pSymbol = dia::FindType(str);
-	RETV(!pSymbol, false);
-
-	SMemInfo memInfo;
-	if (!FindMemoryInfo(symbolName, memInfo))
-	{
-		pSymbol->Release();
-		return false;
-	}
-
-	memInfo.name = symbolName;
-	//MakeProperty_DefaultForm(pProperties, pParentProp, SSymbolInfo(pSymbol, memInfo), IsApplyVisualizer, depth);
-	return true;
-}
-
-
-/**
- @brief 
- @date 2013-12-16
-*/
-bool	visualizer::MakeGraph_DefaultForm( SVisDispDesc parentDispdesc, 
-	const SSymbolInfo &symbol, const bool IsApplyVisualizer, const int depth )
-{
-	if (!symbol.mem.ptr)
-		return true;
-
-	g_pProperty = parentDispdesc.propWindow;
-	//MakeProperty_Preview(pParentProp, symbol, true, SVisOption(depth, IsApplyVisualizer));
-	return true;
 }
 
