@@ -173,32 +173,3 @@ bool CPropertyItemAdapter::IsEnabled()
 	return m_pProperty->IsEnabled();
 }
 
-
-/**
- @brief 
- @date 2013-12-18
-*/
-string CPropertyItemAdapter::GetValueName() const
-{
-	return m_ValueName;
-}
-
-
-/**
- @brief 
- @date 2013-12-18
-*/
-string CPropertyItemAdapter::GetValue() const
-{
-	return m_Value;
-}
-
-
-/**
- @brief 
- @date 2013-12-18
-*/
-string CPropertyItemAdapter::GetValueType() const
-{
-	return m_ValueType;
-}

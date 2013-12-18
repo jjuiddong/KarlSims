@@ -43,6 +43,33 @@ bool CStructureCircle::AddChild(CStructureCircle *circle)
 }
 
 
+/**
+ @brief refresh
+ @date 2013-12-18
+*/
+void CStructureCircle::Refresh()
+{
+	if ( (SymTagData == m_TypeData.symtag 
+		|| SymTagBaseType == m_TypeData.symtag 
+		||  SymTagEnum == m_TypeData.symtag 
+		)
+		&& m_TypeData.ptr
+		&& m_TypeData.vt != VT_EMPTY )
+	{
+		_variant_t var = dia::GetValue(m_TypeData.ptr, m_TypeData.vt);
+		wxVariant wxVar = memmonitor::Variant2wxVariant(var);
+		// bool 형일 때, enum 형태의 값으로 바꿔주어야 한다. 
+		if (var.vt == VT_BOOL)
+			wxVar = wxVariant((int)(var.bVal? true : false)); // bool 값은 widgets에서는 0/1 값이어야 한다.
+		wxString str = wxVar;
+		m_Value = str;
+	}
+
+	BOOST_FOREACH (auto &child, m_Children)
+		child->Refresh();
+}
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,15 +85,19 @@ const int GAP_H = 10;
 
 BEGIN_EVENT_TABLE(CGraphWindow, wxScrolledWindow)
 	EVT_PAINT  (CGraphWindow::OnPaint)
+	EVT_TIMER(ID_REFRESH_TIMER, CGraphWindow::OnRefreshTimer)
 END_EVENT_TABLE()
 
 CGraphWindow::CGraphWindow(wxWindow *parent) : 
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition,wxDefaultSize)
-,	m_DrawPosBoundary(20,20)
 ,	m_pRoot(NULL)
 ,	m_oldBoundary(0,0)
+,	m_DispMode(DISP_T_N_V)
 {
-	//SetBackgroundColour(wxColour(0,100,0));
+	m_Timer.SetOwner(this, ID_REFRESH_TIMER);
+	m_Timer.Start( REFRESH_INTERVAL );
+
+	Connect(wxID_ANY, wxEVT_KEY_DOWN, wxKeyEventHandler(CGraphWindow::OnKeyDown), (wxObject*)0, this);
 }
 
 CGraphWindow::~CGraphWindow()
@@ -117,22 +148,20 @@ void CGraphWindow::UpdateSymbol( const string &symbolName, const visualizer::SSy
  @date 2013-12-17
  */
 CStructureCircle* CGraphWindow::AddDataGraph( CStructureCircle *parent, const std::string &valueName, 
-	CPropertyItemAdapter &propAdapter, 
-	const SSymbolInfo *pSymbol, STypeData *pTypeData, const GRAPH_ALIGN_TYPE align )
+	CPropertyItemAdapter &propAdapter, const SSymbolInfo *pSymbol, STypeData *pTypeData, const GRAPH_ALIGN_TYPE align )
 {
 	CStructureCircle *circle = new CStructureCircle();
-
-	switch (align)
-	{
-	case GRAPH_ALIGN_VERT: m_DrawPosBoundary.y += 40; break;
-	case GRAPH_ALIGN_HORZ: m_DrawPosBoundary.x += 40; break;
-	}
 
 	circle->m_Name = propAdapter.GetValueName();
 	circle->m_TypeName = propAdapter.GetValueType();
 	circle->m_Value = propAdapter.GetValue();
-	circle->m_Pos = m_DrawPosBoundary;
 	circle->m_ChildAlignType = align;
+	
+	if (pTypeData)
+		circle->m_TypeData = *pTypeData;
+	if (pSymbol)
+		circle->m_TypeData.ptr = pSymbol->mem.ptr;
+
 	m_Circles.push_back(circle);
 
 	if (parent)
@@ -163,6 +192,13 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 	wxPaintDC dc(this);
 	PrepareDC(dc);
 
+	dc.DrawText("- F5 Key Down to Refresh Graph", wxPoint(10, 0));
+	switch (m_DispMode)
+	{
+	case DISP_T_N_V: dc.DrawText("- TabKey Down to Change Display Mode : Type, Name, Value", wxPoint(10, 17)); break;
+	case DISP_V: dc.DrawText("- TabKey Down to Change Display Mode : Value", wxPoint(10, 17)); break;
+	}
+
 	DrawCircle(&dc, m_pRoot, wxPoint(10,10), wxPoint(0,0), true);
 	wxPoint maxBoundary;
 	DrawCircle(&dc, m_pRoot, wxPoint(10,10), maxBoundary);
@@ -188,9 +224,18 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 
 	// circle size, and text setting
 	std::stringstream ss;
-	ss << circle->m_TypeName << " " << circle->m_Name;
-	if (!circle->m_Value.empty())
-		ss << " : " << circle->m_Value;
+
+	switch (m_DispMode)
+	{
+	case DISP_T_N_V: 
+		ss << circle->m_TypeName << " " << circle->m_Name;
+		if (!circle->m_Value.empty())
+			ss << " : " << circle->m_Value;
+		break;
+	case DISP_V:
+		ss << circle->m_Value;
+		break;
+	}
 
 	wxSize textSize;
 	pdc->GetTextExtent(ss.str(), &textSize.x, &textSize.y);
@@ -237,5 +282,47 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 		case GRAPH_ALIGN_VERT: nextPos.y = boundary.y + GAP_H; break;
 		case GRAPH_ALIGN_HORZ: nextPos.x = boundary.x + GAP_W; break;
 		}
+	}
+}
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+void CGraphWindow::OnRefreshTimer(wxTimerEvent& event)
+{
+	if (m_pRoot)
+		m_pRoot->Refresh();
+	Refresh();
+}
+
+
+
+/**
+ @brief 
+ @date 2013-12-18
+*/
+void CGraphWindow::OnKeyDown(wxKeyEvent& event)
+{
+	switch (event.GetKeyCode())
+	{
+	case WXK_F5:
+		{
+			if (m_pRoot)
+				m_pRoot->Refresh();
+			Refresh();
+		}
+		break;
+
+	case WXK_TAB:
+		{
+			if (DISP_T_N_V == m_DispMode)
+				m_DispMode = DISP_V;
+			else
+				m_DispMode = DISP_T_N_V;
+			Refresh();
+		}
+		break;
 	}
 }

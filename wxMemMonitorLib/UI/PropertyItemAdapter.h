@@ -62,4 +62,7 @@ namespace visualizer
 
 	inline void CPropertyItemAdapter::SetProperty(wxPGProperty* prop) { m_pProperty = prop; }
 	inline wxPGProperty* CPropertyItemAdapter::GetProperty() { return m_pProperty; }
+	inline string CPropertyItemAdapter::GetValueName() const { return m_ValueName; }
+	inline string CPropertyItemAdapter::GetValue() const { return m_Value; }
+	inline string CPropertyItemAdapter::GetValueType() const { return m_ValueType; }
 }

@@ -140,15 +140,8 @@ bool CFrame::AddGraphWindow(const string &symbolName, const visualizer::SSymbolI
 {
 	wxMiniFrame *pframe = new wxMiniFrame(this, -1, symbolName);
 	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxMAXIMIZE_BOX);
-	//wxBoxSizer* itemBoxSizer = new wxBoxSizer(wxVERTICAL);
-	//pframe->SetSizer(itemBoxSizer);
 
-	//wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
-	//CGraphWindow *pWnd = new CGraphWindow(pframe);
-	//sizer->Add(pWnd, 1, wxGROW, 0);
-	//itemBoxSizer->Add(sizer, 1, wxGROW, 0);
 	visualizer::CGraphWindow *pWnd = new visualizer::CGraphWindow(pframe);
-
 	pWnd->UpdateSymbol(symbolName, symbol);
 	pframe->Show();
 	pframe->Bind(wxEVT_CLOSE_WINDOW, &CFrame::OnPropertyFrameClose, this);

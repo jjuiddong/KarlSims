@@ -13,35 +13,44 @@ namespace visualizer
 	class CPropertyItemAdapter;
 
 
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// CStructureCircle
 	class CStructureCircle
 	{
 	public:
-		CStructureCircle() : m_pParent(NULL), m_Radian(15) {}
+		CStructureCircle() : m_pParent(NULL) {}
 		virtual ~CStructureCircle();
 		bool AddChild(CStructureCircle *circle);
-
-		
-	protected:
+		void Refresh();
 
 
-	private:
 	public:
 		CStructureCircle *m_pParent;
 		string m_Name;
 		string m_Value;
 		string m_TypeName;
-		wxPoint m_Pos;
-		float m_Radian;
+		STypeData m_TypeData;
 		wxSize m_Size;
 		list<CStructureCircle*> m_Children;
 		GRAPH_ALIGN_TYPE m_ChildAlignType;
 	};
 
 
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// CGraphWindow
 	class CGraphWindow : public wxScrolledWindow
 	{
+		enum  {
+			ID_REFRESH_TIMER = 100,
+			REFRESH_INTERVAL = 1000,
+		};
+
+		enum DISP_MODE {
+			DISP_T_N_V,	// type, name, value
+			DISP_V, // value
+		};
+
 	public:
 		CGraphWindow(wxWindow *parent);
 		virtual ~CGraphWindow();
@@ -56,6 +65,8 @@ namespace visualizer
 		DECLARE_EVENT_TABLE()
 		void OnPaint(wxPaintEvent &event);
 		void DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wxPoint &pos, OUT wxPoint &boundary, const bool isLineDraw=false);
+		void OnRefreshTimer(wxTimerEvent& event);
+		void OnKeyDown(wxKeyEvent& event);
 
 
 	private:
@@ -65,6 +76,7 @@ namespace visualizer
 		wxPoint m_DrawPosBoundary;
 		CStructureCircle *m_pRoot;
 		wxPoint m_oldBoundary;
+		DISP_MODE m_DispMode;
 	};
 
 }

@@ -187,7 +187,16 @@ bool	visualizer::MakeVisualizerProperty( SVisDispDesc visDispdesc, const SMemInf
 {
 	const std::string str = ParseObjectName(symbolName);
 	SVisualizerScript *pVisScript = FindVisualizer(str);
-	if (pVisScript && pVisScript->vis)
+	RETV(!pVisScript, false);
+	RETV(!pVisScript->vis, false);
+
+	const bool IsOutputProperty = (visDispdesc.propWindow)? true : false;
+	const bool IsOutputGraph = (visDispdesc.graph)? true : false;
+	const bool IsFindVisScript = (IsOutputProperty && pVisScript->vis->preview) ||
+		(IsOutputGraph && pVisScript->vis->graph) ||
+		(IsOutputGraph && pVisScript->vis->preview);
+
+	if (IsFindVisScript)
 	{
 		IDiaSymbol *pSymbol = dia::FindType(str);
 		RETV(!pSymbol, false);
