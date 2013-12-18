@@ -5,7 +5,7 @@
 using namespace evc;
 
 
-const double dActivationResponse = 1.f;
+//const double dActivationResponse = 1.f;
 const double dBias = 1.f;
 
 
@@ -47,6 +47,7 @@ SNeuronLayer::SNeuronLayer(int NumNeurons, int NumInputsPerNeuron):	m_NumNeurons
 */
 CNeuralNet::CNeuralNet(const int iNumInputs, const  int iNumOutputs, const  int iNumHidden, const int iNeuronsPerHiddenLayer) 
 {
+	m_dActivationResponse = 1.f;
 	m_NumInputs = iNumInputs;
 	m_NumOutputs = iNumOutputs;
 	m_NumHiddenLayers = iNumHidden;
@@ -214,7 +215,9 @@ vector<double> CNeuralNet::Update(vector<double> &inputs)
 			//we can store the outputs from each layer as we generate them. 
 			//The combined activation is first filtered through the sigmoid 
 			//function
-			outputs.push_back(Sigmoid(netinput, dActivationResponse));
+			const double val = Sigmoid(netinput, m_dActivationResponse) - 0.5f;
+			outputs.push_back(val);
+			m_vecLayers[i].m_vecNeurons[j].m_Output = val;
 
 			cWeight = 0;
 		}
@@ -230,5 +233,5 @@ vector<double> CNeuralNet::Update(vector<double> &inputs)
 */
 double CNeuralNet::Sigmoid(double netinput, double response)
 {
-	return ( 1 / ( 1 + exp(-netinput / response)));
+	return (1 / ( 1 + exp(-netinput / response)));
 }

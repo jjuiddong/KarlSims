@@ -139,13 +139,13 @@ bool CFrame::AddPropertyWindow( const wxString &symbolName )
  @brief 
  @date 2013-12-16
 */
-bool CFrame::AddGraphWindow(const string &symbolName, const visualizer::SSymbolInfo &symbol)
+bool CFrame::AddGraphWindow(const string &symbolName, const string &varName, const visualizer::SSymbolInfo &symbol)
 {
-	wxMiniFrame *pframe = new wxMiniFrame(this, -1, symbolName);
+	wxMiniFrame *pframe = new wxMiniFrame(this, -1, varName);
 	pframe->SetWindowStyle(wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxMAXIMIZE_BOX);
 
 	visualizer::CGraphWindow *pWnd = new visualizer::CGraphWindow(pframe);
-	pWnd->UpdateSymbol(symbolName, symbol);
+	pWnd->UpdateSymbol(symbolName, varName, symbol);
 	pframe->Show();
 	pframe->Bind(wxEVT_CLOSE_WINDOW, &CFrame::OnPropertyFrameClose, this);
 

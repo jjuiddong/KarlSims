@@ -384,27 +384,22 @@ void CPropertyWindow::OnMenuOpenGraph(wxCommandEvent& event)
 {
 	wxPGProperty* pProp = GetSelectedProperty();
 	RET(!pProp);
-	wxString name = pProp->GetName();
+	const string name = pProp->GetName();
 
 	SPropItem *pItemData = (SPropItem*)pProp->GetClientData();
 	if (!pItemData)
 		return;
 
-	//if (pItemData && pItemData->typeData.vt == VT_EMPTY &&
-	//	pProp->GetChildCount() <= 0)
-	{
-		IDiaSymbol *pSym = dia::FindType(pItemData->symbolTypeName);
-		if (!pSym)
-			return;
+	IDiaSymbol *pSym = dia::FindType(pItemData->symbolTypeName);
+	if (!pSym)
+		return;
 
-		DWORD ptr = (DWORD)pItemData->typeData.ptr;
-		if (SymTagPointerType == pItemData->typeData.symtag)
-			ptr = visualizer::Point2PointValue((DWORD)pItemData->typeData.ptr);
+	DWORD ptr = (DWORD)pItemData->typeData.ptr;
+	if (SymTagPointerType == pItemData->typeData.symtag)
+		ptr = visualizer::Point2PointValue((DWORD)pItemData->typeData.ptr);
 
-		SSymbolInfo symbol( pSym, memmonitor::SMemInfo("*", (void*)ptr, 0) );
-		GetFrame()->AddGraphWindow( pItemData->symbolTypeName, symbol );
-	}
-
+	SSymbolInfo symbol( pSym, memmonitor::SMemInfo("*", (void*)ptr, 0) );
+	GetFrame()->AddGraphWindow( pItemData->symbolTypeName, name, symbol );
 }
 
 

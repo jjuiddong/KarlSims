@@ -22,7 +22,7 @@ namespace memmonitor
 		virtual ~CFrame();
 
 		bool AddPropertyWindow(const wxString &symbolName );
-		bool AddGraphWindow(const string &symbolName, const visualizer::SSymbolInfo &symbol );
+		bool AddGraphWindow(const string &symbolName, const string &varName, const visualizer::SSymbolInfo &symbol );
 		void UpdatePaneSize(wxWindow *pWindow, int w, int h);
 
 		MemTreePtr GetMemTree() const;

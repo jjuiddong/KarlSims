@@ -14,5 +14,8 @@ namespace evc
 		CSensor() {}
 		virtual ~CSensor() {}
 		virtual double GetOutput() = 0;
+
+	protected:
+		double m_Output;
 	};
 }

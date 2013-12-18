@@ -93,9 +93,10 @@ CGraphWindow::CGraphWindow(wxWindow *parent) :
 ,	m_pRoot(NULL)
 ,	m_oldBoundary(0,0)
 ,	m_DispMode(DISP_T_N_V)
+,	m_TimerInterval(REFRESH_INTERVAL)
 {
 	m_Timer.SetOwner(this, ID_REFRESH_TIMER);
-	m_Timer.Start( REFRESH_INTERVAL );
+	m_Timer.Start( m_TimerInterval );
 
 	Connect(wxID_ANY, wxEVT_KEY_DOWN, wxKeyEventHandler(CGraphWindow::OnKeyDown), (wxObject*)0, this);
 }
@@ -110,13 +111,14 @@ CGraphWindow::~CGraphWindow()
  @brief UpdateSymbol
  @date 2013-12-16
 */
-void CGraphWindow::UpdateSymbol( const string &symbolName, const visualizer::SSymbolInfo &symbol )
+void CGraphWindow::UpdateSymbol( const string &symbolName, const string &varName, const visualizer::SSymbolInfo &symbol )
 {
 	if (m_CurrentSymbolName == symbolName)
 		return;
 	if ((symbolName == "@Root") || (symbolName == "--- Memory List ---"))
 		return;
 
+	m_VariableName = varName;
 	GetLogWindow()->PrintText( "GVis UpdateSymbol = " +  symbolName  + "\n" );
 
 	visualizer::MakePropertyChild_DefaultForm( visualizer::SVisDispDesc(NULL, NULL, this, NULL), symbol, true, 2 );
@@ -162,8 +164,6 @@ CStructureCircle* CGraphWindow::AddDataGraph( CStructureCircle *parent, const st
 	if (pSymbol)
 		circle->m_TypeData.ptr = pSymbol->mem.ptr;
 
-	m_Circles.push_back(circle);
-
 	if (parent)
 	{
 		parent->AddChild(circle);
@@ -192,17 +192,20 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 	wxPaintDC dc(this);
 	PrepareDC(dc);
 
-	dc.DrawText("- F5 Key Down to Refresh Graph", wxPoint(10, 0));
+	int y = 0;
+	dc.DrawText(m_VariableName, wxPoint(10,y));
+	dc.DrawText(format("Refresh Timer Interval : %d", m_TimerInterval), wxPoint(10,y+=17));
+	dc.DrawText("- F5 Key Refresh, -,< Key Refresh Timer Fast, -.> Key Refresh Timer Slow", wxPoint(10, y+=17));
 	switch (m_DispMode)
 	{
-	case DISP_T_N_V: dc.DrawText("- TabKey Down to Change Display Mode : Type, Name, Value", wxPoint(10, 17)); break;
-	case DISP_V: dc.DrawText("- TabKey Down to Change Display Mode : Value", wxPoint(10, 17)); break;
-	case DISP_SMALL_V: dc.DrawText("- TabKey Down to Change Display Mode : Small Graph Value", wxPoint(10, 17)); break;
+	case DISP_T_N_V: dc.DrawText("- Tab Key Change Display Mode : Type, Name, Value", wxPoint(10, y+=17)); break;
+	case DISP_V: dc.DrawText("- Tab Key Change Display Mode : Value", wxPoint(10, y+=17)); break;
+	case DISP_SMALL_V: dc.DrawText("- Tab Key Change Display Mode : Small Graph Value", wxPoint(10, y+=17)); break;
 	}
 
-	DrawCircle(&dc, m_pRoot, wxPoint(10,10), wxPoint(0,0), true);
+	DrawCircle(&dc, m_pRoot, wxPoint(10,40), wxPoint(0,0), true);
 	wxPoint maxBoundary;
-	DrawCircle(&dc, m_pRoot, wxPoint(10,10), maxBoundary);
+	DrawCircle(&dc, m_pRoot, wxPoint(10,40), maxBoundary);
 
 	if (m_oldBoundary != maxBoundary)
 	{
@@ -328,6 +331,20 @@ void CGraphWindow::OnKeyDown(wxKeyEvent& event)
 			m_DispMode = (DISP_MODE)(val % DISP_MAX);
 			Refresh();
 		}
+		break;
+
+	case 44: // <
+		m_Timer.Stop();
+		m_TimerInterval = max(100, m_TimerInterval-100);
+		m_Timer.Start( m_TimerInterval );
+		Refresh();
+		break;
+
+	case 46: // >
+		m_Timer.Stop();
+		m_TimerInterval = max(100, m_TimerInterval+100);
+		m_Timer.Start( m_TimerInterval );
+		Refresh();
 		break;
 
 	default:

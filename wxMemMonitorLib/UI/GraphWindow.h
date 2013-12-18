@@ -57,7 +57,7 @@ namespace visualizer
 		CGraphWindow(wxWindow *parent);
 		virtual ~CGraphWindow();
 
-		void UpdateSymbol( const string &symbolName, const visualizer::SSymbolInfo &symbol );
+		void UpdateSymbol( const string &symbolName, const string &varName, const visualizer::SSymbolInfo &symbol );
 		CStructureCircle* AddDataGraph( CStructureCircle *parent, const std::string &valueName, 
 			CPropertyItemAdapter &propAdapter,
 			const SSymbolInfo *pSymbol, STypeData *pTypeData, const GRAPH_ALIGN_TYPE align );
@@ -72,13 +72,15 @@ namespace visualizer
 
 
 	private:
-		wxString	m_CurrentSymbolName;
-		wxTimer	m_Timer;
-		list<CStructureCircle*> m_Circles;
+		string m_CurrentSymbolName;
+		string m_VariableName;
 		wxPoint m_DrawPosBoundary;
 		CStructureCircle *m_pRoot;
 		wxPoint m_oldBoundary;
 		DISP_MODE m_DispMode;
+
+		wxTimer	m_Timer;
+		int m_TimerInterval;
 	};
 
 }

@@ -52,14 +52,14 @@ namespace evc
 		{
 			float velocity = signal * 5.f;
 
-			if (PxPi < m_ElapseT)
-			{
+			//if (PxPi < m_ElapseT)
+			//{
 				((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(velocity);
-			}
-			else
-			{
-				((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-velocity);
-			}
+			//}
+			//else
+			//{
+			//	((PxRevoluteJoint*)m_pJoint)->setDriveVelocity(-velocity);
+			//}
 		}
 	}
 }

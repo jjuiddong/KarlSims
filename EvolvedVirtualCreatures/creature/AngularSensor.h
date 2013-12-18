@@ -37,12 +37,14 @@ namespace evc
 		double angle = q.getAngle();
 
 		// scale 0 ~ 1.f
-		angle = angle / PxPi;
+		angle = angle / (PxPi/2.f) * 2.f;
 		if (angle >= 1.f)
 			angle = 1.f;
 
 		if (q.x < 0)
 			angle = -angle;
+
+		m_Output = angle;
 		return angle;
 	}
 }

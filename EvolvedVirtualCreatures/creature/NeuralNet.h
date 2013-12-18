@@ -13,6 +13,7 @@ namespace evc
 	struct SNeuron
 	{
 		int m_NumInputs;
+		double m_Output;
 		vector<double> m_vecWeight;
 		SNeuron(int NumInputs);
 	};
@@ -46,5 +47,6 @@ namespace evc
 		int m_NumHiddenLayers;
 		int m_NeuronsPerHiddenLyr;
 		vector<SNeuronLayer> m_vecLayers;
+		double m_dActivationResponse;
 	};
 }
