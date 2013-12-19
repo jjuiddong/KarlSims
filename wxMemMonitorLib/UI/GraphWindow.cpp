@@ -94,6 +94,7 @@ CGraphWindow::CGraphWindow(wxWindow *parent) :
 ,	m_oldBoundary(0,0)
 ,	m_DispMode(DISP_T_N_V)
 ,	m_TimerInterval(REFRESH_INTERVAL)
+,	m_IsShowHelp(false)
 {
 	m_Timer.SetOwner(this, ID_REFRESH_TIMER);
 	m_Timer.Start( m_TimerInterval );
@@ -194,22 +195,28 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 
 	int y = 0;
 	dc.DrawText(m_VariableName, wxPoint(10,y));
-	dc.DrawText(format("Refresh Timer Interval : %d", m_TimerInterval), wxPoint(10,y+=17));
-	dc.DrawText("- F5 Key Refresh, -,< Key Refresh Timer Fast, -.> Key Refresh Timer Slow", wxPoint(10, y+=17));
-	switch (m_DispMode)
+	dc.DrawText(format("'H' Key Down to Show/Hide Help Information"), wxPoint(10,y+=17));
+	if (m_IsShowHelp)
 	{
-	case DISP_T_N_V: dc.DrawText("- Tab Key Change Display Mode : Type, Name, Value", wxPoint(10, y+=17)); break;
-	case DISP_V: dc.DrawText("- Tab Key Change Display Mode : Value", wxPoint(10, y+=17)); break;
-	case DISP_SMALL_V: dc.DrawText("- Tab Key Change Display Mode : Small Graph Value", wxPoint(10, y+=17)); break;
+		dc.DrawText(format("Refresh Timer Interval : %d", m_TimerInterval), wxPoint(10,y+=17));
+		dc.DrawText("- F5 Key Refresh", wxPoint(10, y+=17));
+		dc.DrawText("- ,< Key Refresh Timer Fast, ", wxPoint(10, y+=17));
+		dc.DrawText("- .> Key Refresh Timer Slow", wxPoint(10, y+=17));
+		switch (m_DispMode)
+		{
+		case DISP_T_N_V: dc.DrawText("- Tab Key Change Display Mode : Type, Name, Value", wxPoint(10, y+=17)); break;
+		case DISP_V: dc.DrawText("- Tab Key Change Display Mode : Value", wxPoint(10, y+=17)); break;
+		case DISP_SMALL_V: dc.DrawText("- Tab Key Change Display Mode : Small Graph Value", wxPoint(10, y+=17)); break;
+		}
 	}
 
-	DrawCircle(&dc, m_pRoot, wxPoint(10,40), wxPoint(0,0), true);
+	DrawCircle(&dc, m_pRoot, wxPoint(10,y+17), wxPoint(0,0), true);
 	wxPoint maxBoundary;
-	DrawCircle(&dc, m_pRoot, wxPoint(10,40), maxBoundary);
+	DrawCircle(&dc, m_pRoot, wxPoint(10,y+17), maxBoundary);
 
 	if (m_oldBoundary != maxBoundary)
 	{
-		SetVirtualSize(maxBoundary.x+RECT_W+30, maxBoundary.y+RECT_H+30);
+		SetVirtualSize(maxBoundary.x+30, maxBoundary.y+30);
 		SetScrollRate(10,10);
 		Layout();
 		m_oldBoundary = maxBoundary;
@@ -344,6 +351,11 @@ void CGraphWindow::OnKeyDown(wxKeyEvent& event)
 		m_Timer.Stop();
 		m_TimerInterval = max(100, m_TimerInterval+100);
 		m_Timer.Start( m_TimerInterval );
+		Refresh();
+		break;
+
+	case 72: // H
+		m_IsShowHelp = !m_IsShowHelp;
 		Refresh();
 		break;
 

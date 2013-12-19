@@ -29,7 +29,7 @@ namespace visualizer
 
 
 
-	// Symbol Infomation
+	// Symbol Information
 	struct SSymbolInfo
 	{
 		IDiaSymbol *pSym;

@@ -155,7 +155,7 @@ wxPGProperty* CPropertyWindow::AddProperty( wxPGProperty *pParentProp,
 		//}
 	}
 
-	// setting Property Item Infomation
+	// setting Property Item Information
 	std::string typeName;
 	SPropItem *pPropItem = new SPropItem;
 	pPropItem->typeData = *pTypeData;

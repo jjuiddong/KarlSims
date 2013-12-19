@@ -79,6 +79,7 @@ namespace visualizer
 		wxPoint m_oldBoundary;
 		DISP_MODE m_DispMode;
 
+		bool m_IsShowHelp;
 		wxTimer	m_Timer;
 		int m_TimerInterval;
 	};
