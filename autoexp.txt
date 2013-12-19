@@ -1,4 +1,23 @@
 
+evc::CSensor{
+	graph
+	(
+		#(
+			output : [$e.m_Output]
+		)
+	)
+}
+
+
+evc::CEffector{
+	graph
+	(
+		#(
+			signal : [$e.m_Signal]
+		)
+	)
+}
+
 evc::SNeuron{
 	graph
 	(
