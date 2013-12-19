@@ -13,10 +13,10 @@ namespace evc
 	class CAngularSensor : public CSensor
 	{
 	public:
-		CAngularSensor() : m_pJoint(NULL) {}
+		CAngularSensor() : CSensor(), m_pJoint(NULL) { }
 		virtual ~CAngularSensor() {}
 		void SetJoint(PxJoint *joint);
-		virtual double GetOutput() override;
+		virtual const vector<double>& GetOutput() override;
 
 
 	private:
@@ -30,9 +30,9 @@ namespace evc
 	 @brief return joint angle
 	 @date 2013-12-10
 	*/
-	inline double CAngularSensor::GetOutput()
+	inline const vector<double>& CAngularSensor::GetOutput()
 	{
-		RETV(!m_pJoint, 0);
+		RETV(!m_pJoint, m_Output);
 		const PxQuat q = m_pJoint->getRelativeTransform().q;
 		double angle = q.getAngle();
 
@@ -44,7 +44,7 @@ namespace evc
 		if (q.x < 0)
 			angle = -angle;
 
-		m_Output = angle;
-		return angle;
+		m_Output[ 0] = angle;
+		return m_Output;
 	}
 }

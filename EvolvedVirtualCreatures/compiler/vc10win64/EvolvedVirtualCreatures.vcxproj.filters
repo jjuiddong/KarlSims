@@ -31,6 +31,12 @@
     <ClCompile Include="..\..\genetic\Genome.cpp">
       <Filter>Genetic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\creature\PhotoSensor.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\VisionSensor.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -72,6 +78,12 @@
     </ClInclude>
     <ClInclude Include="..\..\genetic\Genome.h">
       <Filter>Genetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\PhotoSensor.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\VisionSensor.h">
+      <Filter>Creature</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

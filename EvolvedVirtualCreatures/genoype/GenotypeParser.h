@@ -31,18 +31,18 @@ namespace evc { namespace genotype_parser {
 		//start -> expression_list;
 		SExprList* start();
 
-		//expression -> id ( id, vec3, material, expression-list )
+		//expression -> id ( id, vec3, material, connection-list )
 		//	| id;
 		SExpr* expression();
 
 		//expression-list -> [ expression {, expression } ];
 		SExprList* expression_list();
 
-		// joint -> Joint( id, quat, quat, vec3, limit, velocity, expression )
-		SJoint* joint();
+		// connection -> connection( id, quat, quat, vec3, limit, velocity, expression )
+		SConnection* connection();
 
-		// joint-list -> [ joint {, joint} ];
-		SJointList* joint_list();
+		// connection-list -> [ connection{, connection} ];
+		SConnectionList* connection_list();
 
 		//vec3 -> vec3( num, num, num ) ;
 		SVec3 vec3();

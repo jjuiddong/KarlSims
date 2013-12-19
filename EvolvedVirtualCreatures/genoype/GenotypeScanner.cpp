@@ -641,12 +641,12 @@ void genotype_parser::RemoveExpressoin_OnlyExpr(SExpr *expr)
 {
 	if (!expr)
 		return;
-	SJointList *pnode = expr->connection;
+	SConnectionList *pnode = expr->connection;
 	while (pnode)
 	{
-		SJointList *rmNode = pnode;
+		SConnectionList *rmNode = pnode;
 		pnode = pnode->next;
-		SAFE_DELETE(rmNode->joint);
+		SAFE_DELETE(rmNode->connect);
 		SAFE_DELETE(rmNode);
 	}
 	SAFE_DELETE(expr);
@@ -665,14 +665,16 @@ void genotype_parser::RemoveExpression(SExpr *expr)
 	while (!q.empty())
 	{
 		SExpr *node = q.front(); q.pop();
+		if (!node) 
+			continue;
 		if (rm.find(node->id) != rm.end())
 			continue;
 
 		rm[ node->id] = node;
-		SJointList *con = node->connection;
+		SConnectionList *con = node->connection;
 		while (con)
 		{
-			q.push(con->joint->expr);
+			q.push(con->connect->expr);
 			con = con->next;
 		}
 	}

@@ -34,9 +34,10 @@
 #include "foundation/PxSimpleTypes.h"
 #include "../wxMemMonitorLib/wxMemMonitor.h"
 
-	DECLARE_TYPE_NAME(RenderSphereActor)
+	//DECLARE_TYPE_NAME(RenderSphereActor)
 	class RenderSphereActor : public RenderBaseActor
-											, public memmonitor::Monitor<RenderSphereActor, TYPE_NAME(RenderSphereActor)>
+		, public SampleAllocateable
+											//, public memmonitor::Monitor<RenderSphereActor, TYPE_NAME(RenderSphereActor)>
 	{
 		public:
 					RenderSphereActor(SampleRenderer::Renderer& renderer, PxReal radius);

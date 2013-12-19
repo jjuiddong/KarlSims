@@ -128,7 +128,7 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 	// connection count
 	int connectCount = 0;
 	{
-		SJointList *pConnect = pexpr->connection;
+		SConnectionList *pConnect = pexpr->connection;
 		while (pConnect)
 		{
 			++connectCount;
@@ -138,10 +138,10 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 	chromo.push_back( connectCount );
 
 	// connection
-	SJointList *pConnect = pexpr->connection;
+	SConnectionList *pConnect = pexpr->connection;
 	while (pConnect)
 	{
-		SJoint *pJoint = pConnect->joint;
+		SConnection *pJoint = pConnect->connect;
 		if (!pJoint)
 			continue;
 
@@ -245,14 +245,14 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 	pexpr->mass = chromo[ index++];
 	pexpr->material = GetMaterialType(chromo[ index++]);
 
-	SJointList *pPrevConnection = NULL;
+	SConnectionList *pPrevConnection = NULL;
 	const int connectionCount = (int)chromo[ index++];
 	for (int i=0; i < connectionCount; ++i)
 	{
-		SJointList *pJList = new SJointList;
-		pJList->joint = new SJoint;
+		SConnectionList *pJList = new SConnectionList;
+		pJList->connect = new SConnection;
 		pJList->next = NULL;
-		SJoint *pJoint = pJList->joint;
+		SConnection *pJoint = pJList->connect;
 
 		pJoint->type = GetJointType(chromo[ index++]);
 

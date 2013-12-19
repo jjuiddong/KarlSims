@@ -55,6 +55,9 @@ public:
 	virtual	void descriptionRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
 	virtual PxU32 getDebugObjectTypes() const;
 
+	const list<evc::CCreature*>& GetAllCreature();
+	const list<evc::CCreature*>& GetAllObstacle();
+
 
 protected:
 	void spawnNode(const int key);
@@ -66,10 +69,14 @@ protected:
 
 private:
 	list<evc::CCreature*> m_Creatures;
-
+	list<evc::CCreature*> m_Obstacles;
 };
 
 
 inline PxU32 CEvc::getDebugObjectTypes() const { 
 	return DEBUG_OBJECT_BOX | DEBUG_OBJECT_SPHERE | DEBUG_OBJECT_CAPSULE | DEBUG_OBJECT_CONVEX;
 }
+
+inline const list<evc::CCreature*>& CEvc::GetAllCreature() { return m_Creatures; }
+inline const list<evc::CCreature*>& CEvc::GetAllObstacle() { return m_Obstacles; }
+

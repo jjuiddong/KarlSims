@@ -111,7 +111,11 @@ void CNode::UpdateNeuron(float dtime)
 	nerves.reserve(count);
 
 	if (m_pParentJointSensor) // get parent joint sensor output
-		nerves.push_back(m_pParentJointSensor->GetOutput());
+	{
+		const vector<double> &out = m_pParentJointSensor->GetOutput();
+		BOOST_FOREACH (auto val, out)
+			nerves.push_back(val);
+	}
 
 	GetOutputNerves(nerves);
 
@@ -136,7 +140,10 @@ int CNode::GetNeuronCount() const
 		count += joint->GetNeuronCount();
 	}
 
-	count += m_Sensors.size();
+	BOOST_FOREACH (auto &sensor, m_Sensors)
+	{
+		count += sensor->GetOutputCount();
+	}
 
 	return count;
 }
@@ -155,7 +162,8 @@ void CNode::GetOutputNerves(OUT vector<double> &out) const
 
 	BOOST_FOREACH (auto &sensor, m_Sensors)
 	{
-		out.push_back( sensor->GetOutput() );
+		const vector<double> &output = sensor->GetOutput();
+		BOOST_FOREACH (auto &val, output)
+			out.push_back(val);
 	}
 }
-

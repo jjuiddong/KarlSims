@@ -1,0 +1,5 @@
+
+
+main( box, vec3(0.3,0.3,0.3), material(blue), mass(1) )
+
+

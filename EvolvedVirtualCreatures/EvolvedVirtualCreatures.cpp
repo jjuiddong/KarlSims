@@ -196,10 +196,11 @@ void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
 	evc::CCreature *pnode = NULL;
+	bool IsCreature = true;
 	switch (key)
 	{
 	case SPAWN_DEBUG_OBJECT: pnode = new evc::CCreature(*this); pnode->GenerateByGenotype("genotype.txt"); break;
-	//case SPAWN_DEBUG_OBJECT2: pnode->GenerateHuman2(g_pDbgConfig->applyJoint); break;
+	case SPAWN_DEBUG_OBJECT2: pnode = new evc::CCreature(*this); pnode->GenerateByGenotype("genotype_box.txt"); IsCreature = false; break;
 	//case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(g_pDbgConfig->applyJoint); break;
@@ -210,8 +211,12 @@ void CEvc::spawnNode(const int key)
 	//case SPAWN_DEBUG_OBJECT0: pnode->GenerateByGenotype("genotype.txt"); break;
 	}
 
-	if (pnode)
+	RET(!pnode);
+
+	if (IsCreature)
 		m_Creatures.push_back( pnode );
+	else
+		m_Obstacles.push_back( pnode );	
 }
 
 
@@ -309,9 +314,9 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 	PhysXSample::onSubstepSetup(dtime, cont);
 
 	BOOST_FOREACH (auto &creature, m_Creatures)
-	{
 		creature->Move(dtime);
-	}
+	BOOST_FOREACH (auto &obstacle, m_Obstacles)
+		obstacle->Move(dtime);
 }
 
 
@@ -385,8 +390,10 @@ void CEvc::gotoNextGenration()
 void CEvc::RemoveAllCreatures()
 {
 	BOOST_FOREACH(auto &creature, m_Creatures)
-	{
 		delete creature;
-	}
 	m_Creatures.clear();
+
+	BOOST_FOREACH(auto &obstacle, m_Obstacles)
+		delete obstacle;
+	m_Obstacles.clear();
 }

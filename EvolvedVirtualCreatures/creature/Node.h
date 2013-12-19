@@ -25,6 +25,8 @@ namespace evc
 		void GetOutputNerves(OUT vector<double> &out) const;
 		int GetNeuronCount() const;
 		void Move(float dtime);
+		PxRigidDynamic* GetBody();
+		CNeuralNet* GetBrain();
 
 
 	protected:
@@ -42,4 +44,8 @@ namespace evc
 		CSensor *m_pParentJointSensor;
 		vector<double> m_Nerves;
 	};
+
+	
+	inline PxRigidDynamic* CNode::GetBody() { return m_pBody; }
+	inline CNeuralNet* CNode::GetBrain() { return m_pBrain; }
 }

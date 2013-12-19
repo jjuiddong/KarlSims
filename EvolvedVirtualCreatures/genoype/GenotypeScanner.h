@@ -37,8 +37,9 @@ namespace evc { namespace genotype_parser {
 	};
 
 	struct SExpr;
-	struct SJoint
+	struct SConnection
 	{
+		string conType;
 		string type;
 		SQuat parentOrient;
 		SQuat orient;
@@ -49,10 +50,10 @@ namespace evc { namespace genotype_parser {
 		SExpr *expr;
 	};
 
-	struct SJointList
+	struct SConnectionList
 	{
-		SJoint *joint;
-		SJointList *next;
+		SConnection *connect;
+		SConnectionList *next;
 	};
 
 	struct SExprList;
@@ -63,7 +64,7 @@ namespace evc { namespace genotype_parser {
 		SVec3 dimension;
 		string material;
 		float mass;
-		SJointList *connection;
+		SConnectionList *connection;
 		int refCount;
 	};
 

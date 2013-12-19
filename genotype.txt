@@ -43,4 +43,3 @@ main( box, vec3(0.3,0.5,0.1), material(yellow), mass(1),
 )
 
 
-

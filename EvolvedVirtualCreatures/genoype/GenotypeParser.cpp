@@ -91,7 +91,7 @@ SExprList* genotype_parser::CGenotypeParser::start()
 
 /**
  @brief 
- expression -> id ( id, vec3, material, mass, joint-list )
+ expression -> id ( id, vec3, material, mass, connection-list )
  	| id;
 
  @date 2013-12-05
@@ -127,7 +127,7 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		if (COMMA == m_Token)
 		{
 			Match(COMMA);
-			pexpr->connection = joint_list();
+			pexpr->connection = connection_list();
 		}
 
 		Match(RPAREN);
@@ -170,65 +170,65 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
- @brief joint -> joint( id, quat, vec3, limit, velocity, period, expression )
+ @brief connection -> connection( id, quat, vec3, limit, velocity, period, expression )
  @date 2013-12-07
 */
-SJoint* genotype_parser::CGenotypeParser::joint()
+SConnection* genotype_parser::CGenotypeParser::connection()
 {
-	SJoint *joint = NULL;
+	SConnection *connct = NULL;
 	if (ID != m_Token)
 		return NULL;
 
 	const string tok =m_pScan->GetTokenStringQ(0);
-	if (!boost::iequals(tok, "joint"))
+	if (!boost::iequals(tok, "joint") && !boost::iequals(tok, "sensor"))
 	{
-		SyntaxError( "must declare %s -> 'joint' ", tok.c_str() );
+		SyntaxError( "must declare %s -> 'joint / sensor' ", tok.c_str() );
 		return NULL;
 	}
 
-	joint = new SJoint;
-	Match(ID);
+	connct = new SConnection;
+	connct->conType = id();	
 	Match(LPAREN);
-	joint->type = id();
+	connct->type = id();
 	Match(COMMA);
-	joint->parentOrient = quat();
+	connct->parentOrient = quat();
 	Match(COMMA);
-	joint->orient = quat();
+	connct->orient = quat();
 	Match(COMMA);
-	joint->pos = vec3();
+	connct->pos = vec3();
 	Match(COMMA);
-	joint->limit = limit();
+	connct->limit = limit();
 	Match(COMMA);
-	joint->velocity = velocity();
+	connct->velocity = velocity();
 	if (COMMA == m_Token)
 		Match(COMMA);
-	joint->period = period();
+	connct->period = period();
 	if (COMMA == m_Token)
 		Match(COMMA);
 
-	joint->expr = expression();
+	connct->expr = expression();
 	Match(RPAREN);
-	return joint;
+	return connct;
 }
 
 
 /**
- @brief joint-list -> [joint {, joint}];
+ @brief connection-list -> [connection {, connection}];
  @date 2013-12-07
 */
-SJointList* genotype_parser::CGenotypeParser::joint_list()
+SConnectionList* genotype_parser::CGenotypeParser::connection_list()
 {
-	SJoint *pjoint = joint();
-	if (!pjoint)
+	SConnection *connct = connection();
+	if (!connct)
 		return NULL;
 
-	SJointList *plist = new SJointList;
-	plist->joint = pjoint;
+	SConnectionList *plist = new SConnectionList;
+	plist->connect = connct;
 
 	if (COMMA == m_Token)
 		Match(COMMA);
 
-	plist->next = joint_list();
+	plist->next = connection_list();
 	return plist;
 }
 
@@ -546,10 +546,10 @@ void genotype_parser::CGenotypeParser::Build( SExpr *pexpr )
 		return; // already check
 
 	m_RefCount.insert(pexpr->id);
-	SJointList *pnode = pexpr->connection;
+	SConnectionList *pnode = pexpr->connection;
 	while (pnode)
 	{
-		Build(pnode->joint->expr);
+		Build(pnode->connect->expr);
 		pnode = pnode->next;
 	}
 }
