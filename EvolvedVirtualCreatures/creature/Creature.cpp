@@ -45,6 +45,7 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
 	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount);
+	m_pRoot->InitBrain();
 
 	m_Genome.fitness = 0;
 	m_Genome.chromo.clear();
@@ -65,6 +66,7 @@ void CCreature::GenerateByGenome(const SGenome &genome)
 
 	genotype_parser::SExpr *p = BuildExpr(genome.chromo);
 	m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount);
+	m_pRoot->InitBrain();
 	genotype_parser::RemoveExpression(p);
 }
 
@@ -83,7 +85,9 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
 	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
 
+	// Generate Body
 	CNode *pNode = new CNode(m_Sample);
+	pNode->m_Name = pexpr->id;
 	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
 	PxVec3 dimRand(RandFloat()-.5f, RandFloat()-.5f, RandFloat()-.5f);
 	dimension += dimRand * 0.3f;
@@ -103,6 +107,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 		pNode->m_pBody = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
 	}
 
+	// Generate Connection 
 	PxRigidDynamic* body = pNode->m_pBody;
 	genotype_parser::SConnectionList *pConnect = pexpr->connection;
 	while (pConnect)
@@ -123,7 +128,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 		pConnect = pConnect->next;
 	}
 
-	pNode->InitNeuron();
+	//pNode->InitNeuron();
 	m_Nodes.push_back(pNode);
 	return pNode;
 }
@@ -215,7 +220,7 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 		CAngularSensor *pChildSensor = new CAngularSensor();
 		pJoint->ApplySensor(*pChildSensor);
 		childNode->m_pParentJointSensor = pChildSensor;
-		childNode->InitNeuron();
+		//childNode->InitNeuron();
 	}
 }
 
@@ -261,14 +266,16 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 	
 	CJoint *pJoint = new CJoint(parentNode, childNode, pxJoint, velocity.x, joint->period);
 
-	CSensor *sensor = NULL;	
+	CSensor *sensor = NULL;
 	if (boost::iequals(joint->type, "photo"))
 	{
+		childNode->m_Name = "photo sensor";
 		sensor = new CPhotoSensor(m_Sample);
 		((CPhotoSensor*)sensor)->SetSensorInfo(childNode, PxVec3(0,1,0), 10);
 	}
 	else if (boost::iequals(joint->type, "vision"))
 	{
+		childNode->m_Name = "vision sensor";
 		sensor = new CVisionSensor(m_Sample);
 		((CVisionSensor*)sensor)->SetSensorInfo(childNode, 10);
 	}

@@ -1,24 +1,9 @@
 
-//main2( box, vec3(0.3,0.5,0.1),
-//	joint( fixed, quat(0,vec3(0,1,0)), vec3(1,0,0), 
-//		limit(1.57075, 0.5235833, 0),
-//		BodyArm11( sphere, vec3(0.3,0.3,0.3) ) 
-//	),
-//	joint( fixed, quat(0,vec3(0,1,0)), vec3(-1,0,0), 
-//		limit(1.57075, 0.5235833, 0),
-//		BodyArm12( sphere, vec3(0.3,0.3,0.3) ) 
-//	),
-//	joint( revolute, quat(0,vec3(1,0,0)), vec3(0,1.1,0), 
-//		limit(-0.785375, 0.785375, 0.1),
-//		main2
-//	)
-//)
-
 Arm1( box, vec3(0.7,0.2,0.1), material(red), mass(1) )
 
 Arm2( box, vec3(0.7,0.2,0.1), material(blue), mass(1) ) 
 
-main( box, vec3(0.3,0.5,0.1), material(yellow), mass(1),
+body( box, vec3(0.3,0.5,0.1), material(yellow), mass(1),
 
 	joint( revolute, quat(1.57075,vec3(0,0,1)), quat(1.57075,vec3(0,0,1)), 
 		vec3(0,-1,0), 
@@ -38,7 +23,22 @@ main( box, vec3(0.3,0.5,0.1), material(yellow), mass(1),
 		limit(-0.385375, 0.385375, 0.1),
 		velocity(1),
 		period(5),
-		main
+		body
+	)
+)
+
+main( sphere, vec3(0.2,0.2,0.2), material(yellow), mass(1),
+	
+	sensor( vision, quat(), quat(), vec3(0,-0.3,0), 
+		limit(-0.385375, 0.385375, 0.1),
+		velocity(1)
+	),
+
+	joint( revolute, quat(), quat(), vec3(0,1.1,0), 
+		limit(-0.385375, 0.385375, 0.1),
+		velocity(1),
+		period(5),
+		body
 	)
 )
 

@@ -63,22 +63,32 @@ void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
 
 
 /**
- @brief 
+ @brief Brain is only one in Nodes
  @date 2013-12-10
 */
-void CNode::InitNeuron()
+void CNode::InitBrain()
 {
-	int count = GetNeuronCount();
-	RET(count <= 0);
+	//int count = GetNeuronCount();
+	//RET(count <= 0);
 
-	if (m_pParentJointSensor)
-		++count;
+	//if (m_pParentJointSensor)
+	//	++count;
 
-	m_Nerves.resize(count);
-	
+	//m_Nerves.resize(count);
+	m_AllConnectSensor.clear();
+	m_AllConnectEffector.clear();
+	GetAllSensor(m_AllConnectSensor);
+	GetAllEffector(m_AllConnectEffector);
+
+	int inputCount = 0;
+	BOOST_FOREACH (auto &sensor, m_AllConnectSensor)
+	{
+		inputCount += sensor->GetOutputCount();
+	}
+	const int outputCount = m_AllConnectEffector.size();
+
 	SAFE_DELETE(m_pBrain);
-	const int outputCount = m_Effectors.size();
-	m_pBrain = new CNeuralNet(count, outputCount, 1, count+1); 
+	m_pBrain = new CNeuralNet(inputCount, outputCount, 1, inputCount); 
 }
 
 
@@ -101,30 +111,45 @@ void CNode::Move(float dtime)
 */
 void CNode::UpdateNeuron(float dtime)
 {
-	int count = GetNeuronCount();
-	RET(count <= 0);
+	//int count = GetNeuronCount();
+	//RET(count <= 0);
 
-	if (m_pParentJointSensor)
-		++count;
+	//if (m_pParentJointSensor)
+	//	++count;
 
-	vector<double> nerves;
-	nerves.reserve(count);
+	//vector<double> nerves;
+	//nerves.reserve(count);
 
-	if (m_pParentJointSensor) // get parent joint sensor output
+	//if (m_pParentJointSensor) // get parent joint sensor output
+	//{
+	//	const vector<double> &out = m_pParentJointSensor->GetOutput();
+	//	BOOST_FOREACH (auto val, out)
+	//		nerves.push_back(val);
+	//}
+
+	//GetOutputNerves(nerves);
+
+	//if (m_pBrain)
+	//{
+	//	vector<double> output = m_pBrain->Update(nerves);
+	//	for (u_int i=0; i < output.size(); ++i)
+	//		m_Effectors[ i]->Signal(dtime, output[ i]);
+	//}
+
+	RET(!m_pBrain);
+
+	vector<double> input;
+	input.reserve(m_AllConnectSensor.size());
+	BOOST_FOREACH (auto &sensor, m_AllConnectSensor)
 	{
-		const vector<double> &out = m_pParentJointSensor->GetOutput();
-		BOOST_FOREACH (auto val, out)
-			nerves.push_back(val);
+		const vector<double> &output = sensor->GetOutput();
+		BOOST_FOREACH (auto &val, output)
+			input.push_back(val);
 	}
 
-	GetOutputNerves(nerves);
-
-	if (m_pBrain)
-	{
-		vector<double> output = m_pBrain->Update(nerves);
-		for (u_int i=0; i < output.size(); ++i)
-			m_Effectors[ i]->Signal(dtime, output[ i]);
-	}
+	vector<double> output = m_pBrain->Update(input);
+	for (u_int i=0; i < output.size(); ++i)
+		m_AllConnectEffector[ i]->Signal(dtime, output[ i]);
 }
 
 
@@ -167,3 +192,38 @@ void CNode::GetOutputNerves(OUT vector<double> &out) const
 			out.push_back(val);
 	}
 }
+
+
+/**
+ @brief 
+ @date 2013-12-20
+*/
+void CNode::GetAllSensor(OUT vector<CSensor*> &out) const
+{
+	BOOST_FOREACH (auto &sensor, m_Sensors)
+	{
+		out.push_back(sensor);
+	}
+	BOOST_FOREACH (auto &joint, m_Joints)
+	{
+		joint->GetActor1()->GetAllSensor(out);
+	}
+}
+
+
+/**
+ @brief 
+ @date 2013-12-20
+*/
+void CNode::GetAllEffector(OUT vector<CEffector*> &out) const
+{
+	BOOST_FOREACH (auto &effector, m_Effectors)
+	{
+		out.push_back(effector);
+	}
+	BOOST_FOREACH (auto &joint, m_Joints)
+	{
+		joint->GetActor1()->GetAllEffector(out);
+	}
+}
+

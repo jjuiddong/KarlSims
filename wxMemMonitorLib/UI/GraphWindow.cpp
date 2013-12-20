@@ -123,26 +123,6 @@ void CGraphWindow::UpdateSymbol( const string &symbolName, const string &varName
 	GetLogWindow()->PrintText( "GVis UpdateSymbol = " +  symbolName  + "\n" );
 
 	visualizer::MakePropertyChild_DefaultForm( visualizer::SVisDispDesc(NULL, NULL, this, NULL), symbol, true, 2 );
-
-	// test code
-	if (0)
-	{
-		//visualizer::SSymbolInfo sym;
-		//AddDataGraph( NULL, "test",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//CStructureCircle *circle0 = AddDataGraph( NULL, "test1",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		//AddDataGraph( circle0, "test10",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//CStructureCircle *circle01 = AddDataGraph( circle0, "test11",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//AddDataGraph( circle01, "test110",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//CStructureCircle *circle010 = AddDataGraph( circle01, "test111",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		//AddDataGraph( circle010, "test1110",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		//AddDataGraph( circle01, "test112",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//AddDataGraph( circle01, "test113",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//CStructureCircle *circle02 = AddDataGraph( circle0, "test12",  &sym, NULL, GRAPH_ALIGN_VERT);
-
-		//AddDataGraph( NULL, "test2",  &sym, NULL, GRAPH_ALIGN_VERT);
-		//CStructureCircle *circle1 = AddDataGraph( NULL, "test3",  &sym, NULL, GRAPH_ALIGN_HORZ);
-		//AddDataGraph( circle1, "test30",  &sym, NULL, GRAPH_ALIGN_VERT);
-	}
 }
 
 

@@ -48,7 +48,7 @@ CFrame::CFrame(wxWindow* parent) : wxFrame(parent, -1, _("wxMemMonitor"),
 
 	// add the panes to the manager
 	m_mgr.AddPane(logWnd, wxBOTTOM, wxT("Log Window"));
-	m_mgr.AddPane(memTree, wxLEFT, wxT("Memory Tree"));
+	m_mgr.AddPane(memTree, wxLEFT, wxT("Memory List"));
 	m_mgr.AddPane(propWnd, wxCENTER, wxT("Properties"));
 
 	// tell the manager to "commit" all the changes just made

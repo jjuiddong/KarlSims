@@ -21,12 +21,14 @@ namespace evc
 	public:
 		CNode(CEvc &sample);
 		virtual ~CNode();
-		void InitNeuron();
+		void InitBrain();
 		void GetOutputNerves(OUT vector<double> &out) const;
 		int GetNeuronCount() const;
 		void Move(float dtime);
 		PxRigidDynamic* GetBody();
 		CNeuralNet* GetBrain();
+		void GetAllSensor(OUT vector<CSensor*> &out) const;
+		void GetAllEffector(OUT vector<CEffector*> &out) const;
 
 
 	protected:
@@ -36,12 +38,17 @@ namespace evc
 
 	public:
 		CEvc &m_Sample;
+		string m_Name;
 		PxRigidDynamic *m_pBody;
-		CNeuralNet *m_pBrain;
 		vector<CJoint*> m_Joints;
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;
 		CSensor *m_pParentJointSensor;
+
+		// brain
+		CNeuralNet *m_pBrain;
+		vector<CSensor*> m_AllConnectSensor;		// 
+		vector<CEffector*> m_AllConnectEffector;	// 
 		vector<double> m_Nerves;
 	};
 
