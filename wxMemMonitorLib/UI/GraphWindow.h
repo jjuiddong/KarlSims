@@ -22,7 +22,7 @@ namespace visualizer
 		virtual ~CStructureCircle();
 		bool AddChild(CStructureCircle *circle);
 		void Refresh();
-
+		void DataCulling();
 
 	public:
 		CStructureCircle *m_pParent;
@@ -74,7 +74,6 @@ namespace visualizer
 	private:
 		string m_CurrentSymbolName;
 		string m_VariableName;
-		wxPoint m_DrawPosBoundary;
 		CStructureCircle *m_pRoot;
 		wxPoint m_oldBoundary;
 		DISP_MODE m_DispMode;

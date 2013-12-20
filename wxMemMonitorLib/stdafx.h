@@ -70,6 +70,8 @@
 #include <algorithm>
 #include <comdef.h> // for _variant_t
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp> // for iequals
+
 
 #pragma warning(disable: 4355) // disable warning, using this pointer in constructor 
 

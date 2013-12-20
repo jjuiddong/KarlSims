@@ -63,10 +63,25 @@ void CStructureCircle::Refresh()
 			wxVar = wxVariant((int)(var.bVal? true : false)); // bool 값은 widgets에서는 0/1 값이어야 한다.
 		wxString str = wxVar;
 		m_Value = str;
+		DataCulling();
 	}
 
 	BOOST_FOREACH (auto &child, m_Children)
 		child->Refresh();
+}
+
+
+/**
+ @brief double, float display 5digit
+ @date 2013-12-20
+*/
+void CStructureCircle::DataCulling()
+{
+	if (boost::iequals(m_TypeName, "double") || boost::iequals(m_TypeName, "float"))
+	{
+		const double f = atof(m_Value.c_str());
+		m_Value = format("%.4f", f);
+	}
 }
 
 
@@ -123,6 +138,9 @@ void CGraphWindow::UpdateSymbol( const string &symbolName, const string &varName
 	GetLogWindow()->PrintText( "GVis UpdateSymbol = " +  symbolName  + "\n" );
 
 	visualizer::MakePropertyChild_DefaultForm( visualizer::SVisDispDesc(NULL, NULL, this, NULL), symbol, true, 2 );
+
+
+
 }
 
 
@@ -139,11 +157,13 @@ CStructureCircle* CGraphWindow::AddDataGraph( CStructureCircle *parent, const st
 	circle->m_TypeName = propAdapter.GetValueType();
 	circle->m_Value = propAdapter.GetValue();
 	circle->m_ChildAlignType = align;
-	
+
 	if (pTypeData)
 		circle->m_TypeData = *pTypeData;
 	if (pSymbol)
 		circle->m_TypeData.ptr = pSymbol->mem.ptr;
+
+	circle->DataCulling();
 
 	if (parent)
 	{
