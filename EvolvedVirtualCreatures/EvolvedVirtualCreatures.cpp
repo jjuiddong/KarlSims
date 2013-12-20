@@ -220,11 +220,11 @@ void CEvc::spawnNode(const int key)
 
 	case SPAWN_DEBUG_OBJECT3: 
 		{
-			PxVec3 initialPos(-100,10,0);
+			PxVec3 initialPos(-50,10,0);
 			for (int i=0; i < 30; ++i)
 			{
 				pnode = new evc::CCreature(*this); 
-				pnode->GenerateByGenotype("genotype.txt", initialPos+=PxVec3(10,0,0)); 
+				pnode->GenerateByGenotype("genotype.txt", initialPos+PxVec3((i%10)*8, 0, (i/10)*8)); 
 				m_Creatures.push_back( pnode );
 			}
 
@@ -408,13 +408,15 @@ void CEvc::gotoNextGenration()
 	BOOST_FOREACH (auto &actor, actors)
 		removeActor(actor);
 
-	PxVec3 initialPos(-100,10,0);
+	PxVec3 initialPos(-50,10,0);
 	const vector<evc::SGenome> &genomes = evc::CGeneticAlgorithm::Get()->GetGenomes();
+	int i = 0;
 	BOOST_FOREACH (auto &genome, genomes)
 	{
 		evc::CCreature *pCreature = new evc::CCreature(*this);
-		pCreature->GenerateByGenome(genome, initialPos += PxVec3(15,0,0));
+		pCreature->GenerateByGenome(genome, initialPos + PxVec3((i%10)*8,0,(i/10)*8));
 		m_Creatures.push_back(pCreature);
+		++i;
 	}
 }
 
