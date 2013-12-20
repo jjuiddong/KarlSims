@@ -36,7 +36,7 @@ namespace evc
 		void CreateNet();
 		vector<double> GetWeights() const;
 		int GetNumberOfWeights() const;
-		void	PutWeights(vector<double> &weights);
+		void	PutWeights(const vector<double> &weights);
 		vector<double> Update(vector<double> &inputs);
 		inline double Sigmoid(double activation, double response);
 

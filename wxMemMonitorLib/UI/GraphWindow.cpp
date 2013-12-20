@@ -205,7 +205,7 @@ void CGraphWindow::OnPaint(wxPaintEvent &event)
 		switch (m_DispMode)
 		{
 		case DISP_T_N_V: dc.DrawText("- Tab Key Change Display Mode : Type, Name, Value", wxPoint(10, y+=17)); break;
-		case DISP_V: dc.DrawText("- Tab Key Change Display Mode : Value", wxPoint(10, y+=17)); break;
+		case DISP_SMALL_T_N_V: dc.DrawText("- Tab Key Change Display Mode : Samll Graph Type, Name, Value", wxPoint(10, y+=17)); break;
 		case DISP_SMALL_V: dc.DrawText("- Tab Key Change Display Mode : Small Graph Value", wxPoint(10, y+=17)); break;
 		}
 	}
@@ -239,24 +239,33 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 	switch (m_DispMode)
 	{
 	case DISP_T_N_V: 
+	case DISP_SMALL_T_N_V:
 		ss << circle->m_TypeName << " " << circle->m_Name;
 		if (!circle->m_Value.empty())
 			ss << " : " << circle->m_Value;
 		break;
 	case DISP_SMALL_V:
-	case DISP_V:
 		ss << circle->m_Value;
 		break;
 	}
 
 	wxSize CircleSize(RECT_W, RECT_H);
-	if (m_DispMode == DISP_SMALL_V)
-		CircleSize = wxSize(5,10);
+	wxSize textPosOffset(2,5);
+	wxSize gapSize(GAP_W, GAP_H);
+	if ((m_DispMode == DISP_SMALL_V) || (m_DispMode == DISP_SMALL_T_N_V))
+	{
+		CircleSize = wxSize(5,20);
+		textPosOffset = wxSize(2,2);
+		gapSize = wxSize(GAP_W/2, GAP_H/2);
+
+		if (ss.str().empty())
+			CircleSize = wxSize(3,3);
+	}
 
 	wxSize textSize;
 	pdc->GetTextExtent(ss.str(), &textSize.x, &textSize.y);
 	textSize.x = max(CircleSize.x, textSize.x+5);
-	textSize.y = RECT_H;
+	textSize.y = CircleSize.y;
 	circle->m_Size = textSize;
 	//
 
@@ -265,13 +274,13 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 		wxRect rect(0,0,textSize.x,textSize.y);
 		rect.Offset(pos);
 		pdc->DrawRoundedRectangle(rect, 5);
-		pdc->DrawText(ss.str(), pos+wxPoint(2,5));
+		pdc->DrawText(ss.str(), pos+textPosOffset);
 	}
 
 	wxPoint nextPos = pos;
 	if (!circle->m_Children.empty())
 	{
-		nextPos += wxPoint(CircleSize.x/2+GAP_W, CircleSize.y+GAP_H);
+		nextPos += (wxPoint(CircleSize.x/2, CircleSize.y) + gapSize);
 	}
 
 	boundary.x = max(nextPos.x+textSize.x, boundary.x);
@@ -295,8 +304,8 @@ void CGraphWindow::DrawCircle(wxPaintDC *pdc, CStructureCircle *circle, const wx
 
 		switch (circle->m_ChildAlignType)
 		{
-		case GRAPH_ALIGN_VERT: nextPos.y = boundary.y + GAP_H; break;
-		case GRAPH_ALIGN_HORZ: nextPos.x = boundary.x + GAP_W; break;
+		case GRAPH_ALIGN_VERT: nextPos.y = boundary.y + gapSize.y; break;
+		case GRAPH_ALIGN_HORZ: nextPos.x = boundary.x + gapSize.x; break;
 		}
 	}
 }

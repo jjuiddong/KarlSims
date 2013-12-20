@@ -23,6 +23,7 @@ namespace evc
 
 	protected:
 		SGenome GetChromoRoulette();
+		void GrabNBest(int NBest, const int NumCopies, vector<SGenome> &Pop);
 
 
 	private:

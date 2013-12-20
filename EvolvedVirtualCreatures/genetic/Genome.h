@@ -7,6 +7,7 @@
 
 namespace evc
 {
+	class CCreature;
 	namespace genotype_parser { struct SExpr; }
 
 	struct SGenome
@@ -33,8 +34,8 @@ namespace evc
 	};
 
 
-	bool GetChromo(const genotype_parser::SExpr *pexpr, OUT vector<double> &chromo);
-	genotype_parser::SExpr* BuildExpr(const vector<double> &chromo);
+	bool GetChromo(const CCreature *creature, const genotype_parser::SExpr *pexpr, OUT vector<double> &chromo);
+	genotype_parser::SExpr* BuildExpr(const vector<double> &chromo, OUT vector<double> &weights);
 	void Crossover(const vector<double> &mum, const vector<double> &dad, OUT vector<double> &baby1, OUT vector<double> &baby2);
 	void Mutate(INOUT vector<double> &chromo);
 }

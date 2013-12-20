@@ -36,6 +36,8 @@ SDbgConfig *g_pDbgConfig = NULL;
 
 CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
+,	m_ElapsTime(NULL)
+,	m_Age(0)
 {
 	g_pDbgConfig = NULL;
 }
@@ -121,7 +123,7 @@ void CEvc::onInit()
 	g_pDbgConfig->force = 5000.f;
 	g_pDbgConfig->value1 = 1;
 	g_pDbgConfig->value2 = 1;
-	g_pDbgConfig->generationRecursiveCount = 1;
+	g_pDbgConfig->generationRecursiveCount = 2;
 
 	srand(timeGetTime());
 
@@ -195,12 +197,41 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
+
+	const PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
+	//const PxVec3 vel = getCamera().getViewDir() * 20.f;
+
 	evc::CCreature *pnode = NULL;
 	bool IsCreature = true;
 	switch (key)
 	{
-	case SPAWN_DEBUG_OBJECT: pnode = new evc::CCreature(*this); pnode->GenerateByGenotype("genotype.txt"); break;
-	case SPAWN_DEBUG_OBJECT2: pnode = new evc::CCreature(*this); pnode->GenerateByGenotype("genotype_box.txt"); IsCreature = false; break;
+	case SPAWN_DEBUG_OBJECT: 
+		pnode = new evc::CCreature(*this); 
+		pnode->GenerateByGenotype("genotype.txt", pos); 
+		m_Creatures.push_back( pnode );
+		break;
+
+	case SPAWN_DEBUG_OBJECT2: 
+		pnode = new evc::CCreature(*this); 
+		pnode->GenerateByGenotype("genotype_box.txt", pos); 
+		m_Obstacles.push_back( pnode );	
+		IsCreature = false; 
+		break;
+
+	case SPAWN_DEBUG_OBJECT3: 
+		{
+			PxVec3 initialPos(-100,10,0);
+			for (int i=0; i < 30; ++i)
+			{
+				pnode = new evc::CCreature(*this); 
+				pnode->GenerateByGenotype("genotype.txt", initialPos+=PxVec3(10,0,0)); 
+				m_Creatures.push_back( pnode );
+			}
+
+			IsCreature = false; 
+		}
+		break;
+
 	//case SPAWN_DEBUG_OBJECT3: pnode->GenerateHuman3(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT4: pnode->GenerateHuman4(g_pDbgConfig->applyJoint); break;
 	//case SPAWN_DEBUG_OBJECT5: pnode->GenerateHuman5(g_pDbgConfig->applyJoint); break;
@@ -212,11 +243,7 @@ void CEvc::spawnNode(const int key)
 	}
 
 	RET(!pnode);
-
-	if (IsCreature)
-		m_Creatures.push_back( pnode );
-	else
-		m_Obstacles.push_back( pnode );	
+	
 }
 
 
@@ -317,6 +344,14 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 		creature->Move(dtime);
 	BOOST_FOREACH (auto &obstacle, m_Obstacles)
 		obstacle->Move(dtime);
+
+	m_ElapsTime += dtime;
+	if (m_ElapsTime > 100) // 1 minutes
+	{
+		gotoNextGenration();
+		m_ElapsTime = 0;
+		++m_Age;
+	}
 }
 
 
@@ -373,11 +408,12 @@ void CEvc::gotoNextGenration()
 	BOOST_FOREACH (auto &actor, actors)
 		removeActor(actor);
 
+	PxVec3 initialPos(-100,10,0);
 	const vector<evc::SGenome> &genomes = evc::CGeneticAlgorithm::Get()->GetGenomes();
 	BOOST_FOREACH (auto &genome, genomes)
 	{
 		evc::CCreature *pCreature = new evc::CCreature(*this);
-		pCreature->GenerateByGenome(genome);
+		pCreature->GenerateByGenome(genome, initialPos += PxVec3(15,0,0));
 		m_Creatures.push_back(pCreature);
 	}
 }

@@ -118,7 +118,7 @@ vector<double> CNeuralNet::GetWeights() const
 		  with the new values
  @date 2013-12-09
 */
-void CNeuralNet::PutWeights(vector<double> &weights)
+void CNeuralNet::PutWeights(const vector<double> &weights)
 {
 	int cWeight = 0;
 	

@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "Genome.h"
 #include "../genoype/GenotypeParser.h"
+#include "../creature/Creature.h"
+#include "../creature/NeuralNet.h"
 
 
 namespace evc 
@@ -55,6 +57,34 @@ int GetJointTypeIndex(const string &type) {
 }
 string GetJointType(const int index) {
 	return GetTypeString(g_JointTypeStrings, g_JointTypeStrings_Size, index);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-12
+*/
+const string g_ConnectTypeStrings[] = {"joint", "sensor"};
+const int g_ConnectTypeStrings_Size = sizeof(g_ConnectTypeStrings) / sizeof(string);
+int GetConnectTypeIndex(const string &type) {
+	return GetStringTypeIndex(g_ConnectTypeStrings, g_ConnectTypeStrings_Size, type);
+}
+string GetConnectType(const int index) {
+	return GetTypeString(g_ConnectTypeStrings, g_ConnectTypeStrings_Size, index);
+}
+
+
+/**
+ @brief 
+ @date 2013-12-12
+*/
+const string g_SensorTypeStrings[] = {"photo", "vision" };
+const int g_SensorTypeStrings_Size = sizeof(g_SensorTypeStrings) / sizeof(string);
+int GetSensorTypeIndex(const string &type) {
+	return GetStringTypeIndex(g_SensorTypeStrings, g_SensorTypeStrings_Size, type);
+}
+string GetSensorType(const int index) {
+	return GetTypeString(g_SensorTypeStrings, g_SensorTypeStrings_Size, index);
 }
 
 
@@ -146,7 +176,15 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 			continue;
 
 		// type
-		chromo.push_back( (double)GetJointTypeIndex(pJoint->type) );
+		chromo.push_back( (double)GetConnectTypeIndex(pJoint->conType) );
+		if (boost::iequals(pJoint->conType, "joint"))
+		{
+			chromo.push_back( (double)GetJointTypeIndex(pJoint->type) );
+		}
+		else
+		{
+			chromo.push_back( (double)GetSensorTypeIndex(pJoint->type) );
+		}
 
 		// orient
 		chromo.push_back( pJoint->parentOrient.angle );
@@ -190,10 +228,18 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
  @brief convert pexpr to chromo
  @date 2013-12-12
 */
-bool evc::GetChromo(const genotype_parser::SExpr *pexpr, OUT vector<double> &chromo)
+bool evc::GetChromo(const CCreature *creature, const genotype_parser::SExpr *pexpr, OUT vector<double> &chromo)
 {
 	map<string, int> check;
-	return GetChromo_Sub(pexpr, chromo, check);
+	GetChromo_Sub(pexpr, chromo, check);
+
+	const CNeuralNet *nn = creature->GetBrain();
+	RETV(!nn, true);
+
+	vector<double> weights = nn->GetWeights();
+	std::copy(weights.begin(), weights.end(), std::back_inserter(chromo));
+	chromo.push_back(weights.size()); // save weight size
+	return true;
 }
 
 
@@ -201,11 +247,13 @@ bool evc::GetChromo(const genotype_parser::SExpr *pexpr, OUT vector<double> &chr
  @brief 
  @date 2013-12-12
 */
-genotype_parser::SExpr* evc::BuildExpr(const vector<double> &chromo)
+genotype_parser::SExpr* evc::BuildExpr(const vector<double> &chromo, OUT vector<double> &weights)
 {
 	map<int, genotype_parser::SExpr*> symTable;
 	int next;
-	return BuildChromo_Sub(chromo, 0, next, symTable);
+	genotype_parser::SExpr *expr = BuildChromo_Sub(chromo, 0, next, symTable);
+	std::copy(chromo.begin()+(next+1), chromo.end()-1, std::back_inserter(weights));
+	return expr;
 }
 
 
@@ -229,6 +277,7 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 	auto it = symTable.find(exprId);
 	if (symTable.end() != it)
 	{ // Already Exist Expression
+		nextIndex = startIndex;
 		return it->second;
 	}
 
@@ -254,7 +303,11 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 		pJList->next = NULL;
 		SConnection *pJoint = pJList->connect;
 
-		pJoint->type = GetJointType(chromo[ index++]);
+		pJoint->conType = GetConnectType(chromo[ index++]);
+		if (boost::iequals(pJoint->conType, "joint"))
+			pJoint->type = GetJointType(chromo[ index++]);
+		else
+			pJoint->type = GetSensorType(chromo[ index++]);
 
 		// orient
 		pJoint->parentOrient.angle = chromo[ index++];
@@ -325,8 +378,7 @@ void evc::Mutate(INOUT vector<double> &chromo)
 void evc::Mutate_Sub(INOUT vector<double> &chromo, const int startIndex, OUT int &nextIndex, 
 	INOUT map<int, genotype_parser::SExpr*> &symTable)
 {
-
-
+	
 }
 
 
@@ -334,8 +386,48 @@ void evc::Mutate_Sub(INOUT vector<double> &chromo, const int startIndex, OUT int
  @brief cross over chromo
  @date 2013-12-13
 */
-void evc::Crossover(const vector<double> &mum, const vector<double> &dad, OUT vector<double> &baby1, OUT vector<double> &baby2)
+void evc::Crossover(const vector<double> &mum, const vector<double> &dad, 
+	OUT vector<double> &baby1, OUT vector<double> &baby2)
 {
-	baby1 = mum;
-	baby2 = mum;
+	const int mumWeightSize = mum.back();
+	const int dadWeightSize = dad.back();
+	if ((mumWeightSize > 0) && (mumWeightSize == dadWeightSize))
+	{
+		baby1.reserve(dad.size());
+		baby2.reserve(dad.size());
+
+		std::copy(dad.begin(), dad.end()-(mumWeightSize+1), std::back_inserter(baby1));
+		std::copy(mum.begin(), mum.end()-(mumWeightSize+1), std::back_inserter(baby2));
+
+		vector<double> dadW;
+		vector<double> mumW;
+		dadW.reserve(mumWeightSize);
+		mumW.reserve(mumWeightSize);
+
+		const int weightStart = dad.size() - (mumWeightSize+1);
+		std::copy(dad.begin()+weightStart, dad.end()-1, std::back_inserter(dadW));
+		std::copy(mum.begin()+weightStart, mum.end()-1, std::back_inserter(mumW));
+
+		// crossover dadW, mumW
+		int cp = RandInt(0, mumWeightSize - 1);
+		for (int i=0; i<cp; ++i)
+		{
+			baby1.push_back(mumW[i]);
+			baby2.push_back(dadW[i]);
+		}
+
+		for (int i=cp; i<mumWeightSize; ++i)
+		{
+			baby1.push_back(dadW[i]);
+			baby2.push_back(mumW[i]);
+		}
+
+		baby1.push_back(mumWeightSize);
+		baby2.push_back(mumWeightSize);
+	}
+	else
+	{
+		baby1 = mum;
+		baby2 = dad;
+	}
 }

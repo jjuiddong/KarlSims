@@ -66,7 +66,7 @@ void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
  @brief Brain is only one in Nodes
  @date 2013-12-10
 */
-void CNode::InitBrain()
+void CNode::InitBrain(const vector<double> &weights) // weights = vector<double>()
 {
 	//int count = GetNeuronCount();
 	//RET(count <= 0);
@@ -89,6 +89,9 @@ void CNode::InitBrain()
 
 	SAFE_DELETE(m_pBrain);
 	m_pBrain = new CNeuralNet(inputCount, outputCount, 1, inputCount); 
+
+	if (!weights.empty())
+		m_pBrain->PutWeights(weights);
 }
 
 

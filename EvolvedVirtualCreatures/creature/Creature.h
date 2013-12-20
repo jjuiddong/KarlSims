@@ -23,17 +23,18 @@ namespace evc
 	public:
 		CCreature(CEvc &sample);
 		virtual ~CCreature();
-		void GenerateByGenotype(const string &genotypeScriptFileName);
-		void GenerateByGenome(const SGenome &genome);
+		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos);
+		void GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos);
 		void Move(float dtime);
 		const SGenome& GetGenome() const;
 		PxVec3 GetPos() const;
+		const CNeuralNet* GetBrain() const;
 
 
 	protected:
-		CNode* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt );
+		CNode* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt, const PxVec3 &initialPos );
 		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect);
-		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect);
+		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos );
 		MaterialIndex GetMaterialType(const string &materialStr);
 
 
@@ -42,6 +43,7 @@ namespace evc
 		CNode *m_pRoot;
 		vector<CNode*> m_Nodes;
 		SGenome m_Genome;
+		PxVec3 m_InitialPos;
 	};
 
 

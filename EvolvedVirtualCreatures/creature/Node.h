@@ -21,12 +21,12 @@ namespace evc
 	public:
 		CNode(CEvc &sample);
 		virtual ~CNode();
-		void InitBrain();
+		void InitBrain(const vector<double> &weights = vector<double>());
 		void GetOutputNerves(OUT vector<double> &out) const;
 		int GetNeuronCount() const;
 		void Move(float dtime);
 		PxRigidDynamic* GetBody();
-		CNeuralNet* GetBrain();
+		const CNeuralNet* GetBrain() const;
 		void GetAllSensor(OUT vector<CSensor*> &out) const;
 		void GetAllEffector(OUT vector<CEffector*> &out) const;
 
@@ -54,5 +54,5 @@ namespace evc
 
 	
 	inline PxRigidDynamic* CNode::GetBody() { return m_pBody; }
-	inline CNeuralNet* CNode::GetBrain() { return m_pBrain; }
+	inline const CNeuralNet* CNode::GetBrain() const { return m_pBrain; }
 }

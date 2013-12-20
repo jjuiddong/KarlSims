@@ -25,7 +25,7 @@ CJoint::CJoint(CNode *actor0, CNode *actor1, PxJoint *joint, float velocity, flo
 CJoint::~CJoint()
 {
 	//SAFE_RELEASE(m_pJoint);
-
+	SAFE_DELETE(m_pActor1);
 }
 
 

@@ -468,9 +468,9 @@ void visualizer::MakeProperty_Data(SVisDispDesc parentDispdesc, const SSymbolInf
 		break;
 
 	case SymTagPointerType:
-		visDispDesc = MakeProperty_Pointer_Preview(parentDispdesc, SSymbolInfo(pBaseType, symbol.mem));
+		visDispDesc = MakeProperty_Pointer_Preview(parentDispdesc, SSymbolInfo(pBaseType, symbol.mem, false));
 		if (visDispDesc.prop || visDispDesc.circle)
-			MakeProperty_Child(visDispDesc, SSymbolInfo(pBaseType, symbol.mem, false), IsUdtExpand, SVisOption(option.depth-1, option.isApplyVisualizer));
+			MakeProperty_Child(visDispDesc, SSymbolInfo(pBaseType, symbol.mem), IsUdtExpand, SVisOption(option.depth-1, option.isApplyVisualizer));
 		break;
 
 	default:
@@ -635,7 +635,7 @@ SVisDispDesc visualizer::MakeProperty_UDTData( SVisDispDesc parentDispdesc,
 		isVisualizerType = visualizer::MakeVisualizerProperty( newPropDesc, symbol, option.depth );
 	}
 
-	if (!isExpand)
+	if (!isExpand && prop.GetProperty())
 		prop.GetProperty()->SetExpanded(false);
 
 	return newPropDesc;
@@ -683,7 +683,8 @@ void visualizer ::MakeProperty_Array(SVisDispDesc parentDispdesc,
 			SMemInfo arrayElem(valueName, ptr, (size_t)element_length);
 			MakeProperty_BaseType(parentDispdesc, valueName, SSymbolInfo(pElementType, arrayElem, false));
 		}
-		pParentProp->SetExpanded(false);
+		if (pParentProp)
+			pParentProp->SetExpanded(false);
 	}
 	else // UDT Array
 	{
@@ -701,7 +702,8 @@ void visualizer ::MakeProperty_Array(SVisDispDesc parentDispdesc,
 
 			MakeProperty_Preview(SVisDispDesc(NULL, prop.GetProperty()), arraySymbol, IsUdtExpand, option);
 		}
-		pParentProp->SetExpanded(false);
+		if (pParentProp)
+			pParentProp->SetExpanded(false);
 	}
 	pElementType->Release();
 }

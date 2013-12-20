@@ -25,12 +25,13 @@ CCreature::CCreature(CEvc &sample) :
 
 CCreature::~CCreature()
 {
-	m_pRoot = NULL;
-	BOOST_FOREACH (auto &p, m_Nodes)
-	{
-		SAFE_DELETE(p);
-	}
+	//m_pRoot = NULL;
+	//BOOST_FOREACH (auto &p, m_Nodes)
+	//{
+	//	SAFE_DELETE(p);
+	//}
 	m_Nodes.clear();
+	SAFE_DELETE(m_pRoot);
 }
 
 
@@ -38,19 +39,22 @@ CCreature::~CCreature()
  @brief 
  @date 2013-12-09
 */
-void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
+void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos)
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
-	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount);
+	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount, initialPos);
 	m_pRoot->InitBrain();
 
 	m_Genome.fitness = 0;
 	m_Genome.chromo.clear();
 	m_Genome.chromo.reserve(64);
-	GetChromo(pexpr, m_Genome.chromo);
+	GetChromo(this, pexpr, m_Genome.chromo);
+
+	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
+	m_InitialPos.y = 0;
 
 	genotype_parser::RemoveExpression(pexpr);
 }
@@ -60,13 +64,18 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName)
  @brief 
  @date 2013-12-13
 */
-void CCreature::GenerateByGenome(const SGenome &genome)
+void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos)
 {
 	m_Genome = genome;
 
-	genotype_parser::SExpr *p = BuildExpr(genome.chromo);
-	m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount);
-	m_pRoot->InitBrain();
+	vector<double> weights;
+	genotype_parser::SExpr *p = BuildExpr(genome.chromo, weights);
+	m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount, initialPos);
+	m_pRoot->InitBrain(weights);
+
+	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
+	m_InitialPos.y = 0;
+
 	genotype_parser::RemoveExpression(p);
 }
 
@@ -75,25 +84,30 @@ void CCreature::GenerateByGenome(const SGenome &genome)
  @brief create creature by genotype script
  @date 2013-12-06
 */
-CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt )
+CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt, const PxVec3 &initialPos )
 {
 	if (!pexpr)
 		return NULL;
 	if (recursiveCnt < 0)
 		return NULL;
 
-	const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
-	const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
-
 	// Generate Body
+	const PxVec3 pos = initialPos;
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_Name = pexpr->id;
 	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
-	PxVec3 dimRand(RandFloat()-.5f, RandFloat()-.5f, RandFloat()-.5f);
-	dimension += dimRand * 0.3f;
-	dimension.x = max(dimension.x, 0.1f);
-	dimension.y = max(dimension.y, 0.1f);
-	dimension.z = max(dimension.z, 0.1f);
+	{ // rand dimension
+		PxVec3 dimRand1 = dimension * 0.2f;
+		PxVec3 dimRand(RandFloat()*dimRand1.x, RandFloat()*dimRand1.y, RandFloat()*dimRand1.z);
+		if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
+		if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
+		if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+
+		dimension += dimRand;
+		dimension.x = max(dimension.x, 0.1f);
+		dimension.y = max(dimension.y, 0.1f);
+		dimension.z = max(dimension.z, 0.1f);
+	}
 
 	MaterialIndex material = GetMaterialType(pexpr->material);
 	const float mass = pexpr->mass;
@@ -114,7 +128,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	{
 		if (boost::iequals(pConnect->connect->conType, "joint"))
 		{
-			CNode *pChildNode = GenerateByGenotype( pConnect->connect->expr, recursiveCnt-1 );
+			CNode *pChildNode = GenerateByGenotype( pConnect->connect->expr, recursiveCnt-1, initialPos );
 			if (pChildNode)
 			{
 				 CreateJoint(pNode, pChildNode, pConnect->connect);
@@ -122,7 +136,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 		}
 		else if(boost::iequals(pConnect->connect->conType, "sensor"))
 		{
-			CreateSensor(pNode, pConnect->connect);
+			CreateSensor(pNode, pConnect->connect, pos);
 		}
 
 		pConnect = pConnect->next;
@@ -229,7 +243,7 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
  @brief 
  @date 2013-12-19
 */
-CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect)
+CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos)
 {
 	RETV(!parentNode, NULL);
 
@@ -239,9 +253,7 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
 	MaterialIndex material = GetMaterialType("red");
 	{
-		const PxVec3 pos = m_Sample.getCamera().getPos() + (m_Sample.getCamera().getViewDir()*10.f);
-		const PxVec3 vel = m_Sample.getCamera().getViewDir() * 20.f;
-		pNode->m_pBody = m_Sample.createBox(pos, dimension, NULL, m_Sample.getManageMaterial(material), 1.f);
+		pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.getManageMaterial(material), 1.f);
 	}
 	childNode = pNode;
 
@@ -315,6 +327,14 @@ void CCreature::Move(float dtime)
 {
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
+
+	if (m_pRoot)
+	{
+		PxVec3 pos = m_pRoot->GetBody()->getGlobalPose().p;
+		pos.y = 0;
+		PxVec3 len =  pos - m_InitialPos;
+		m_Genome.fitness = len.magnitude();
+	}
 }
 
 
@@ -326,4 +346,15 @@ PxVec3 CCreature::GetPos() const
 {
 	RETV(!m_pRoot, PxVec3());
 	return m_pRoot->GetBody()->getGlobalPose().p;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-20
+*/
+const CNeuralNet* CCreature::GetBrain() const
+{
+	RETV(!m_pRoot, NULL);
+	return m_pRoot->GetBrain();
 }
