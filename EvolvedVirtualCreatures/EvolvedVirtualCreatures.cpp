@@ -408,13 +408,14 @@ void CEvc::gotoNextGenration()
 	BOOST_FOREACH (auto &actor, actors)
 		removeActor(actor);
 
-	PxVec3 initialPos(-50,10,0);
+	PxVec3 initialPos(-100,10,0);
 	const vector<evc::SGenome> &genomes = evc::CGeneticAlgorithm::Get()->GetGenomes();
 	int i = 0;
 	BOOST_FOREACH (auto &genome, genomes)
 	{
+		const float GAP = 10.f + (m_Age*0.5f);
 		evc::CCreature *pCreature = new evc::CCreature(*this);
-		pCreature->GenerateByGenome(genome, initialPos + PxVec3((i%10)*8,0,(i/10)*8));
+		pCreature->GenerateByGenome(genome, initialPos + PxVec3((i%10)*GAP,0,(i/10)*GAP));
 		m_Creatures.push_back(pCreature);
 		++i;
 	}
