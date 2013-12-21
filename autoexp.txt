@@ -1,4 +1,15 @@
 
+
+evc::CCreature{
+	graph
+	(
+		#(
+			fitness : [$e.m_Genome.fitness]
+		)
+	)
+}
+
+
 evc::CSensor{
 	graph
 	(
@@ -18,11 +29,12 @@ evc::CEffector{
 	)
 }
 
+
 evc::SNeuron{
 	graph
 	(
 		#(
-			NumInputs : [$e.m_NumInputs],
+			Output : [$e.m_Output],
 			#vert(
 				expr: $e.m_vecWeight
 			)			
