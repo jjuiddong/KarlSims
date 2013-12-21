@@ -378,7 +378,15 @@ void evc::Mutate(INOUT vector<double> &chromo)
 void evc::Mutate_Sub(INOUT vector<double> &chromo, const int startIndex, OUT int &nextIndex, 
 	INOUT map<int, genotype_parser::SExpr*> &symTable)
 {
-	
+	const int weightSize = chromo.back();
+	const int weightStart = chromo.size() - (weightSize+1);
+
+	const int size = chromo.size() - 1;
+	for (int i=weightStart; i < size; ++i)
+	{
+		if (RandFloat() < 0.1f)
+			chromo[ i] = (RandomClamped() * 0.3f);
+	}	
 }
 
 
