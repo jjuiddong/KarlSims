@@ -38,6 +38,7 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 	PhysXSample(app)
 ,	m_ElapsTime(NULL)
 ,	m_Age(0)
+,	m_Gap(10.f)
 {
 	g_pDbgConfig = NULL;
 }
@@ -224,7 +225,7 @@ void CEvc::spawnNode(const int key)
 			for (int i=0; i < 30; ++i)
 			{
 				pnode = new evc::CCreature(*this); 
-				pnode->GenerateByGenotype("genotype.txt", initialPos+PxVec3((i%10)*8, 0, (i/10)*8)); 
+				pnode->GenerateByGenotype("genotype.txt", initialPos+PxVec3((i%10)*m_Gap, 0, (i/10)*m_Gap));
 				m_Creatures.push_back( pnode );
 			}
 
@@ -413,7 +414,7 @@ void CEvc::gotoNextGenration()
 	int i = 0;
 	BOOST_FOREACH (auto &genome, genomes)
 	{
-		const float GAP = 10.f + (m_Age*0.5f);
+		const float GAP = m_Gap + (m_Age*0.5f);
 		evc::CCreature *pCreature = new evc::CCreature(*this);
 		pCreature->GenerateByGenome(genome, initialPos + PxVec3((i%10)*GAP,0,(i/10)*GAP));
 		m_Creatures.push_back(pCreature);
