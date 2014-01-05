@@ -24,6 +24,8 @@
     <ClCompile Include="..\..\genoype\GenotypeParser.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp" />
     <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\renderer\RenderComposition.cpp" />
+    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp" />
     <ClCompile Include="..\..\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -44,6 +46,8 @@
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
+    <ClInclude Include="..\..\renderer\RenderComposition.h" />
+    <ClInclude Include="..\..\renderer\RenderCompositionShape.h" />
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
   </ItemGroup>

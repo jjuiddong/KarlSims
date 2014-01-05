@@ -37,6 +37,12 @@
     <ClCompile Include="..\..\creature\VisionSensor.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderComposition.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -84,6 +90,12 @@
     <ClInclude Include="..\..\creature\VisionSensor.h">
       <Filter>Creature</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderComposition.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderCompositionShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Creature">
@@ -94,6 +106,9 @@
     </Filter>
     <Filter Include="Genetic">
       <UniqueIdentifier>{47d12792-b50d-43ed-9b84-37a89c2b730a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{73a679d4-7ceb-4126-b60e-5821c3086014}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
