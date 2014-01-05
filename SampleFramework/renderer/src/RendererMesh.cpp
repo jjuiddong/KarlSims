@@ -129,6 +129,21 @@ const RendererInstanceBuffer *RendererMesh::getInstanceBuffer(void) const
 	return m_instanceBuffer;
 }
 
+RendererVertexBuffer** RendererMesh::getVertexBuffersEdit()
+{
+	return m_vertexBuffers;
+}
+
+RendererIndexBuffer* RendererMesh::getIndexBufferEdit()
+{
+	return m_indexBuffer;
+}
+
+RendererInstanceBuffer* RendererMesh::getInstanceBufferEdit()
+{
+	return m_instanceBuffer;
+}
+
 void RendererMesh::bind(void) const
 {
 	for(PxU32 i=0; i<m_numVertexBuffers; i++)

@@ -349,7 +349,7 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 	m_ElapsTime += dtime;
 	if (m_ElapsTime > 100) // 1 minutes
 	{
-		gotoNextGenration();
+		//gotoNextGenration();
 		m_ElapsTime = 0;
 		++m_Age;
 	}

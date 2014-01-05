@@ -15,6 +15,7 @@ CNode::CNode(CEvc &sample) :
 ,	m_pBrain(NULL)
 ,	m_pBody(NULL)
 ,	m_pParentJointSensor(NULL)
+,	m_pRenderComposition(NULL)
 {
 
 }

@@ -9,6 +9,7 @@
 
 
 class CEvc;
+class RenderComposition;
 namespace evc
 {
 	class CJoint;
@@ -36,6 +37,7 @@ namespace evc
 		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect);
 		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos );
 		MaterialIndex GetMaterialType(const string &materialStr);
+		void GenerateRenderComposition( CNode *node );
 
 
 	private:

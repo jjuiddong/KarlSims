@@ -10,11 +10,10 @@
 #include "PhotoSensor.h"
 #include "VisionSensor.h"
 #include "MuscleEffector.h"
-
+#include "../renderer/RenderComposition.h"
 
 
 using namespace evc;
-
 
 CCreature::CCreature(CEvc &sample) :
 	m_Sample(sample)
@@ -46,7 +45,10 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const P
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
 	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount, initialPos);
+	RET(!m_pRoot);
 	m_pRoot->InitBrain();
+
+	GenerateRenderComposition(m_pRoot);
 
 	m_Genome.fitness = 0;
 	m_Genome.chromo.clear();
@@ -112,6 +114,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	MaterialIndex material = GetMaterialType(pexpr->material);
 	const float mass = pexpr->mass;
 
+
 	if (boost::iequals(pexpr->shape, "box"))
 	{
 		pNode->m_pBody = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(material), mass);
@@ -128,11 +131,12 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	{
 		if (boost::iequals(pConnect->connect->conType, "joint"))
 		{
-			CNode *pChildNode = GenerateByGenotype( pConnect->connect->expr, recursiveCnt-1, initialPos );
+			PxVec3 conPos(pConnect->connect->pos.x, pConnect->connect->pos.y, pConnect->connect->pos.z);
+			CNode *pChildNode = GenerateByGenotype( pConnect->connect->expr, recursiveCnt-1, initialPos - conPos );
 			if (pChildNode)
 			{
 				 CreateJoint(pNode, pChildNode, pConnect->connect);
-			 }
+			}
 		}
 		else if(boost::iequals(pConnect->connect->conType, "sensor"))
 		{
@@ -152,7 +156,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
  @brief 
  @date 2013-12-19
 */
-void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect)
+void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect )
 {
 	RET(!childNode);
 	RET(!parentNode);
@@ -220,7 +224,7 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 		}
 	}
 
-	CJoint *pJoint = new CJoint(parentNode, childNode, pxJoint, velocity.x, joint->period);
+	CJoint *pJoint = new CJoint(parentNode, childNode, tm0, tm1, pxJoint, velocity.x, joint->period);
 	CAngularSensor *pSensor = new CAngularSensor();
 	CMuscleEffector *pEffector = new CMuscleEffector(joint->period);
 	pJoint->ApplySensor(*pSensor);
@@ -276,7 +280,7 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 		pxJoint = j;
 	}
 	
-	CJoint *pJoint = new CJoint(parentNode, childNode, pxJoint, velocity.x, joint->period);
+	CJoint *pJoint = new CJoint(parentNode, childNode, tm0, tm1, pxJoint, velocity.x, joint->period);
 
 	CSensor *sensor = NULL;
 	if (boost::iequals(joint->type, "photo"))
@@ -357,4 +361,55 @@ const CNeuralNet* CCreature::GetBrain() const
 {
 	RETV(!m_pRoot, NULL);
 	return m_pRoot->GetBrain();
+}
+
+
+/**
+ @brief composite all node shape
+ @date 2014-01-05
+*/
+void CCreature::GenerateRenderComposition( CNode *node )
+{
+	RET(!node);
+
+	BOOST_FOREACH (auto joint, node->m_Joints)
+	{
+		GenerateRenderComposition((CNode*)joint->GetActor1());
+	}
+
+	PxRigidDynamic *rigidActor0 = node->GetBody();
+	PxU32 nbShapes0 = rigidActor0->getNbShapes();
+	if (!nbShapes0)
+		return;
+	PxShape** shapes0 = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*nbShapes0);
+	PxU32 nb0 = rigidActor0->getShapes(shapes0, nbShapes0);
+	PX_ASSERT(nb0==nbShapes0);
+
+	RenderBaseActor *renderActor0 = m_Sample.getRenderActor(rigidActor0, shapes0[ 0]);
+	if (renderActor0)
+	{
+		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), renderActor0->getRenderShape());
+		node->m_pRenderComposition->setEnableCameraCull(true);
+		m_Sample.addRenderObject( node->m_pRenderComposition );
+	}
+	SAMPLE_FREE(shapes0);
+
+
+	// composite child shape
+	BOOST_FOREACH (auto joint, node->m_Joints)
+	{
+		CNode *child = (CNode*)joint->GetActor1();
+
+		RenderComposition *p = node->m_pRenderComposition;
+		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), 
+			p->getRenderShape(), joint->GetTm0(), child->m_pRenderComposition->getRenderShape(), joint->GetTm1());
+
+		node->m_pRenderComposition->setEnableCameraCull(true);
+
+		m_Sample.addRenderObject( node->m_pRenderComposition );
+		m_Sample.removeRenderObject(p);
+		m_Sample.removeRenderObject(child->m_pRenderComposition);
+		child->m_pRenderComposition = NULL;
+	}
+
 }

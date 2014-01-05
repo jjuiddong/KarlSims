@@ -99,6 +99,8 @@ public:
 					void									createRenderObjectsFromActor(PxRigidActor* actor, RenderMaterial* material=NULL);
 					RenderBaseActor*						createRenderBoxFromShape(PxRigidActor* actor, PxShape* shape, RenderMaterial* material=NULL, const PxReal* uvs=NULL);
 					RenderBaseActor*						createRenderObjectFromShape(PxRigidActor* actor, PxShape* shape, RenderMaterial* material=NULL);
+					void									addRenderObject(RenderBaseActor *actor);
+
 					RenderMeshActor*						createRenderMeshFromRawMesh(const RAWMesh& data, PxShape* shape = NULL);
 					RenderTexture*							createRenderTextureFromRawTexture(const RAWTexture& data);
 					RenderMaterial*							createRenderMaterialFromTextureFile(const char* filename);

@@ -2083,6 +2083,21 @@ RenderBaseActor* PhysXSample::createRenderBoxFromShape(PxRigidActor* actor, PxSh
 	return shapeRenderActor;
 }
 
+/**
+ @brief 
+ @date 2014-01-05
+*/
+void	PhysXSample::addRenderObject(RenderBaseActor *actor)
+{
+	if(actor)
+	{
+		//link(shapeRenderActor, shape, actor);
+		mRenderActors.push_back(actor);
+		//shapeRenderActor->setRenderMaterial(material);
+		//shapeRenderActor->setEnableCameraCull(true);
+	}
+}
+
 
 RenderBaseActor* PhysXSample::createRenderObjectFromShape(PxRigidActor* actor, PxShape* shape, RenderMaterial* material)
 {

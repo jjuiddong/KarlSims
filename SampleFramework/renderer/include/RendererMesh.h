@@ -76,10 +76,11 @@ namespace SampleRenderer
 
 		PxU32                             getNumVertexBuffers(void) const;
 		const RendererVertexBuffer *const*getVertexBuffers(void) const;
-
 		const RendererIndexBuffer        *getIndexBuffer(void) const;
-
 		const RendererInstanceBuffer     *getInstanceBuffer(void) const;
+		RendererVertexBuffer** getVertexBuffersEdit();
+		RendererIndexBuffer* getIndexBufferEdit();
+		RendererInstanceBuffer* getInstanceBufferEdit();
 
 		virtual bool willRender() const { return true; }
 

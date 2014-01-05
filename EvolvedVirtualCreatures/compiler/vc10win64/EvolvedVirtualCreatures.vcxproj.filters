@@ -37,6 +37,12 @@
     <ClCompile Include="..\..\creature\VisionSensor.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderComposition.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -85,6 +91,12 @@
     <ClInclude Include="..\..\creature\VisionSensor.h">
       <Filter>Creature</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderComposition.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderCompositionShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Genotype">
@@ -95,6 +107,9 @@
     </Filter>
     <Filter Include="Genetic">
       <UniqueIdentifier>{845a6c7c-8b15-46d7-8cc7-f4b57de8a10c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{6dd6012b-18dd-4c0e-852c-7ec5fb458432}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

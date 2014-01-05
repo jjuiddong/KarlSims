@@ -7,6 +7,7 @@
 
 #include "PhysXSample.h"
 class CEvc;
+class RenderComposition;
 
 namespace evc
 {
@@ -44,6 +45,7 @@ namespace evc
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;
 		CSensor *m_pParentJointSensor;
+		RenderComposition *m_pRenderComposition;
 
 		// brain
 		CNeuralNet *m_pBrain;
