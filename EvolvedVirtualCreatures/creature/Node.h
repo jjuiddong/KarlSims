@@ -46,6 +46,7 @@ namespace evc
 		vector<CEffector*> m_Effectors;
 		CSensor *m_pParentJointSensor;
 		RenderComposition *m_pRenderComposition;
+		int m_PaletteIndex; // tm palette index
 
 		// brain
 		CNeuralNet *m_pBrain;

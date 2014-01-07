@@ -7,28 +7,33 @@
 using namespace physx;
 using namespace SampleRenderer;
 
+
+/**
+ @brief 
+ @date 2014-01-06
+*/
 RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer, 
-	const PxVec3& pos1, const PxVec3& extents1, 
-	const PxVec3& pos2, const PxVec3& extents2,
-	const PxReal* uvs)
+	const int paletteIndex,
+	const vector<PxTransform> &tmPalette,
+	RendererCompositionShape *shape0, const PxTransform &tm0, 
+	RendererCompositionShape *shape1, const PxTransform &tm1, 
+	const PxReal* uvs) :
+	m_PaletteIndex(paletteIndex)
 {
-	RendererShape* rs = new RendererCompositionShape(renderer, pos1, extents1, pos2, extents2, uvs);
+	RendererShape* rs = new RendererCompositionShape(renderer, paletteIndex, tmPalette, shape0, tm0, shape1, tm1, uvs);
 	setRenderShape(rs);
 }
 
-RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer, 
-	RendererShape *shape0, const PxTransform &tm0, 
-	RendererShape *shape1, const PxTransform &tm1, 
-	const PxReal* uvs)
-{
-	RendererShape* rs = new RendererCompositionShape(renderer, shape0, tm0, shape1, tm1, uvs);
-	setRenderShape(rs);
-}
 
+/**
+ @brief 
+ @date 2014-01-06
+*/
 RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer, 
-	SampleRenderer::RendererShape *shape0 )
+	const int paletteIndex, const vector<PxTransform> &tmPalette, SampleRenderer::RendererShape *shape0 ) :
+	m_PaletteIndex(paletteIndex)
 {
-	RendererShape* rs = new RendererCompositionShape(renderer, shape0);
+	RendererShape* rs = new RendererCompositionShape(renderer, paletteIndex, tmPalette, shape0);
 	setRenderShape(rs);
 }
 
@@ -48,8 +53,6 @@ RenderComposition::~RenderComposition()
 */
 void RenderComposition::render(SampleRenderer::Renderer& renderer, RenderMaterial* material, bool wireFrame)
 {
-	
-
-
+	((RendererCompositionShape*)getRenderShape())->ApplyPalette();
 	RenderBaseActor::render(renderer, material, wireFrame);
 }

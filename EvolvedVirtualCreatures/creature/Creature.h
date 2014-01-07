@@ -46,6 +46,7 @@ namespace evc
 		vector<CNode*> m_Nodes;
 		SGenome m_Genome;
 		PxVec3 m_InitialPos;
+		vector<PxTransform> m_TmPalette;
 	};
 
 

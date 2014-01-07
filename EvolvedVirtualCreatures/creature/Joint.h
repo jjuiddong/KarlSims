@@ -37,8 +37,8 @@ namespace evc
 		float m_Period; // (dtime*m_Period) =  dtime
 		float m_ElapseT;
 		double m_RelativeAngle; // radian, -pi ~ 0 ~ pi
-		PxTransform m_Tm0;
-		PxTransform m_Tm1;
+		PxTransform m_Tm0; // initial tm0
+		PxTransform m_Tm1; // initial tm1
 	};
 
 

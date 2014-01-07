@@ -11,6 +11,7 @@
 #include "VisionSensor.h"
 #include "MuscleEffector.h"
 #include "../renderer/RenderComposition.h"
+#include "../renderer/RenderCompositionShape.h"
 
 
 using namespace evc;
@@ -48,6 +49,7 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const P
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
+	m_TmPalette.resize(m_Nodes.size()); // generate tm palette
 	GenerateRenderComposition(m_pRoot);
 
 	m_Genome.fitness = 0;
@@ -97,6 +99,7 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	const PxVec3 pos = initialPos;
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_Name = pexpr->id;
+	pNode->m_PaletteIndex = m_Nodes.size();
 	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
 	{ // rand dimension
 		PxVec3 dimRand1 = dimension * 0.2f;
@@ -114,7 +117,6 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	MaterialIndex material = GetMaterialType(pexpr->material);
 	const float mass = pexpr->mass;
 
-
 	if (boost::iequals(pexpr->shape, "box"))
 	{
 		pNode->m_pBody = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(material), mass);
@@ -123,6 +125,8 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	{
 		pNode->m_pBody = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
 	}
+
+	m_Nodes.push_back(pNode);
 
 	// Generate Connection 
 	PxRigidDynamic* body = pNode->m_pBody;
@@ -147,7 +151,6 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	}
 
 	//pNode->InitNeuron();
-	m_Nodes.push_back(pNode);
 	return pNode;
 }
 
@@ -332,6 +335,14 @@ void CCreature::Move(float dtime)
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
 
+	// update palette
+	BOOST_FOREACH (auto &node, m_Nodes)
+	{
+		if (node->GetBody())
+			m_TmPalette[ node->m_PaletteIndex] = node->GetBody()->getGlobalPose();
+	}
+
+	// fitness
 	if (m_pRoot)
 	{
 		PxVec3 pos = m_pRoot->GetBody()->getGlobalPose().p;
@@ -388,8 +399,12 @@ void CCreature::GenerateRenderComposition( CNode *node )
 	RenderBaseActor *renderActor0 = m_Sample.getRenderActor(rigidActor0, shapes0[ 0]);
 	if (renderActor0)
 	{
-		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), renderActor0->getRenderShape());
+		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), node->m_PaletteIndex, 
+			m_TmPalette, renderActor0->getRenderShape());
+
+		renderActor0->setRendering(false);
 		node->m_pRenderComposition->setEnableCameraCull(true);
+
 		m_Sample.addRenderObject( node->m_pRenderComposition );
 	}
 	SAMPLE_FREE(shapes0);
@@ -402,9 +417,11 @@ void CCreature::GenerateRenderComposition( CNode *node )
 
 		RenderComposition *p = node->m_pRenderComposition;
 		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), 
-			p->getRenderShape(), joint->GetTm0(), child->m_pRenderComposition->getRenderShape(), joint->GetTm1());
+			node->m_PaletteIndex, m_TmPalette, 
+			(SampleRenderer::RendererCompositionShape*)p->getRenderShape(), joint->GetTm0(), 
+			(SampleRenderer::RendererCompositionShape*)child->m_pRenderComposition->getRenderShape(), joint->GetTm1());
 
-		node->m_pRenderComposition->setEnableCameraCull(true);
+		node->m_pRenderComposition->setEnableCameraCull(false);
 
 		m_Sample.addRenderObject( node->m_pRenderComposition );
 		m_Sample.removeRenderObject(p);

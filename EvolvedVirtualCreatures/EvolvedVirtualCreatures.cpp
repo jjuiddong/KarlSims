@@ -199,7 +199,8 @@ void CEvc::spawnNode(const int key)
 {
 	PxSceneWriteLock scopedLock(*mScene);
 
-	const PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
+	PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
+	//pos.y = .5f;
 	//const PxVec3 vel = getCamera().getViewDir() * 20.f;
 
 	evc::CCreature *pnode = NULL;
