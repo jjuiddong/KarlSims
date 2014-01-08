@@ -13,6 +13,7 @@ using namespace SampleRenderer;
  @date 2014-01-06
 */
 RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer, 
+	const int parentShapeIndex, const int childShapeIndex, 
 	const int paletteIndex,
 	const vector<PxTransform> &tmPalette,
 	RendererCompositionShape *shape0, const PxTransform &tm0, 
@@ -20,7 +21,7 @@ RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer,
 	const PxReal* uvs) :
 	m_PaletteIndex(paletteIndex)
 {
-	RendererShape* rs = new RendererCompositionShape(renderer, paletteIndex, tmPalette, shape0, tm0, shape1, tm1, uvs);
+	RendererShape* rs = new RendererCompositionShape(renderer, parentShapeIndex, childShapeIndex, paletteIndex, tmPalette, shape0, tm0, shape1, tm1, uvs);
 	setRenderShape(rs);
 }
 

@@ -257,11 +257,13 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 	CNode *childNode = NULL;
 
 	CNode *pNode = new CNode(m_Sample);
+	pNode->m_PaletteIndex = m_Nodes.size();
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
 	MaterialIndex material = GetMaterialType("red");
 	{
 		pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.getManageMaterial(material), 1.f);
 	}
+	m_Nodes.push_back(pNode);
 	childNode = pNode;
 
 	PxRigidDynamic* body = parentNode->m_pBody;
@@ -417,6 +419,7 @@ void CCreature::GenerateRenderComposition( CNode *node )
 
 		RenderComposition *p = node->m_pRenderComposition;
 		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), 
+			node->m_PaletteIndex, child->m_PaletteIndex,
 			node->m_PaletteIndex, m_TmPalette, 
 			(SampleRenderer::RendererCompositionShape*)p->getRenderShape(), joint->GetTm0(), 
 			(SampleRenderer::RendererCompositionShape*)child->m_pRenderComposition->getRenderShape(), joint->GetTm1());

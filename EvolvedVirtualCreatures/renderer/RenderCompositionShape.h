@@ -16,6 +16,7 @@ namespace SampleRenderer
 	{
 	public:
 		RendererCompositionShape(Renderer &renderer, 
+			const int parentShapeIndex, const int childShapeIndex, 
 			const int paletteIndex, const vector<PxTransform> &tmPalette,
 			RendererCompositionShape *shape0, const PxTransform &tm0, 
 			RendererCompositionShape *shape1, const PxTransform &tm1, const PxReal* uvs=NULL);
@@ -48,7 +49,9 @@ namespace SampleRenderer
 			);
 
 		void FindMostCloseFace( 
+			const int findParentBoneIndex, const int findChildBoneIndex,
 			void *positions, PxU32 positionStride, void *normals, PxU32 normalStride,
+			void *bones, PxU32 boneStride, const PxU32 numVerts,
 			PxU16 *indices, PxU32 idx0Size, PxU32 idx1Size,
 			OUT std::pair<int,int> &closeFace0, OUT std::pair<int,int> &closeFace1,
 			OUT set<PxU16> &vtxIndices0, OUT set<PxU16> &vtxIndices1 );
@@ -66,6 +69,9 @@ namespace SampleRenderer
 			void *positions, PxU32 positionStride, void *normals, PxU32 normalStride,
 			PxU16 *indices, OUT PxVec3 &out );
 
+		void CalculateCenterPoint( const int boneIndex, void *positions, PxU32 positionStride, 
+			void *bones, PxU32 boneStride, const PxU32 numVerts, OUT PxVec3 &out );
+
 		void CopyToSourceVertex(void *positions, PxU32 positionStride, void *normals, PxU32 normalStride, const int numVerts);
 
 		void CopyLocalVertexToSourceVtx( const RendererCompositionShape *shape0, const RendererCompositionShape *shape1,
@@ -73,7 +79,7 @@ namespace SampleRenderer
 			const vector<PxU16> &closeVtxIndices);
 		
 		//void CalculateNormal( const vector<PxU16> &indicesBuff, vector<PxVec3> &vtxBuff, vector<PxVec3> &normBuff );
-		void ApplyVertexTransform(void *positions, PxU32 positionStride, void *normals, PxU32 normalStride, const int numVerts, 
+		void ApplyTransform(void *positions, PxU32 positionStride, void *normals, PxU32 normalStride, const int numVerts, 
 			const PxTransform &tm);
 
 

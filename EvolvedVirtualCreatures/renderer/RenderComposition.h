@@ -14,6 +14,7 @@ class RenderComposition : public RenderBaseActor
 {
 public:
 	RenderComposition(SampleRenderer::Renderer& renderer, 
+		const int parentShapeIndex, const int childShapeIndex, 
 		const int paletteIndex,
 		const vector<PxTransform> &tmPalette,
 		SampleRenderer::RendererCompositionShape *shape0, const PxTransform &tm0, 

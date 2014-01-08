@@ -37,6 +37,7 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer, const int
  @date 2014-01-02
 */
 RendererCompositionShape::RendererCompositionShape(Renderer &renderer, 
+	const int parentShapeIndex, const int childShapeIndex, 
 	const int paletteIndex, const vector<PxTransform> &tmPalette,
 	RendererCompositionShape *shape0, const PxTransform &tm0, 
 	RendererCompositionShape *shape1, const PxTransform &tm1, 
@@ -63,6 +64,7 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer,
 	
 	const PxU32 idx0Size = idx0->getMaxIndices();
 	const PxU32 idx1Size = idx1->getMaxIndices();
+	const PxU32 numVerts = m_vertexBuffer->getMaxVertices();
 
 	// generate vertex buffer
 	PxU32 positionStride = 0;
@@ -77,8 +79,8 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer,
 
 	set<PxU16> vtxIndices0, vtxIndices1; 
 	std::pair<int,int> mostCloseFace0, mostCloseFace1;
-	FindMostCloseFace(positions, positionStride, normals, normalStride, indices, 
-		idx0Size, idx1Size, mostCloseFace0, mostCloseFace1, vtxIndices0, vtxIndices1);
+	FindMostCloseFace(parentShapeIndex, childShapeIndex, positions, positionStride, normals, normalStride, 
+		bones, boneStride, numVerts, indices, idx0Size, idx1Size, mostCloseFace0, mostCloseFace1, vtxIndices0, vtxIndices1);
 
 	const PxU32 numVtx0 = vtx0[0]->getMaxVertices();
 	const PxU32 numVtx1 = vtx1[0]->getMaxVertices();
@@ -98,7 +100,7 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer,
 		indices, m_indexBuffer->getMaxIndices(), startIndexIdx, outVtxIndices);
 
 	// recovery original position
-	ApplyVertexTransform(positions, positionStride, normals, normalStride, m_vertexBuffer->getMaxVertices(), tm0);
+	ApplyTransform(positions, positionStride, normals, normalStride, m_vertexBuffer->getMaxVertices(), tm0);
 
 	m_indexBuffer->unlock();
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
@@ -173,6 +175,31 @@ void RendererCompositionShape::CalculateCenterPoint(
 	}
 
 	center /= 12.f;
+	out = center;
+}
+
+
+/**
+ @brief 
+ @date 2014-01-08
+*/
+void RendererCompositionShape::CalculateCenterPoint( const int boneIndex, void *positions, 
+	PxU32 positionStride, void *bones, PxU32 boneStride, const PxU32 numVerts, OUT PxVec3 &out )
+{
+	int count=0;
+	PxVec3 center;
+	for (PxU32 i=0; i < numVerts; ++i)
+	{
+		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
+		PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (boneStride * i));
+		if (boneIndex == b)
+		{
+			center +=p;
+			++count;
+		}
+	}
+
+	center /= (float)count;
 	out = center;
 }
 
@@ -258,12 +285,12 @@ void RendererCompositionShape::GenerateCompositionShape(
 				PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
 				PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * i));
 				PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (uvStride * i));
-				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (uvStride * i));
+				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (boneStride * i));
 
 				PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions0) + (positionStride0 * i));
 				PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals0) + (normalStride0 * i));
 				PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs0) + (uvStride0 * i));
-				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones0) + (uvStride0 * i));
+				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones0) + (boneStride0 * i));
 
 				//p = p0;
 				PxTransform m = tm0.getInverse() * PxTransform(p0);
@@ -518,8 +545,10 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU
  @brief 
  @date 2014-01-05
 */
-void RendererCompositionShape::FindMostCloseFace( 
+void RendererCompositionShape::FindMostCloseFace(
+	const int findParentBoneIndex, const int findChildBoneIndex, 
 	void *positions, PxU32 positionStride, void *normals, PxU32 normalStride,
+	void *bones, PxU32 boneStride, const PxU32 numVerts,
 	PxU16 *indices, PxU32 idx0Size, PxU32 idx1Size,
 	OUT std::pair<int,int> &closeFace0, OUT std::pair<int,int> &closeFace1,
 	OUT set<PxU16> &vtxIndices0, OUT set<PxU16> &vtxIndices1 )
@@ -530,10 +559,16 @@ void RendererCompositionShape::FindMostCloseFace(
 	vector<PxVec3> centers;
 	vector<PxVec3> centerNorms;
 
+	PxVec3 meshCenter0, meshCenter1;
+	CalculateCenterPoint(findParentBoneIndex, positions, positionStride, bones, boneStride, numVerts, meshCenter0);
+	CalculateCenterPoint(findChildBoneIndex, positions, positionStride, bones, boneStride, numVerts, meshCenter1);
+	PxVec3 mesh0to1V = meshCenter1 - meshCenter0;
+	mesh0to1V.normalize();
+
 	while (foundCount < 2)
 	{
 		float minLen = 100000.f;
-		float minDot = 0.f;
+		float minDot = 1000.f;
 		int minFaceIdx0 = -1;
 		int minFaceIdx1 = -1;
 		PxVec3 minCenter0, minCenter1;
@@ -560,6 +595,13 @@ void RendererCompositionShape::FindMostCloseFace(
 				PxVec3 &n1 = *(PxVec3*)(((PxU8*)normals) + (normalStride * vidx1));
 				PxVec3 &n2 = *(PxVec3*)(((PxU8*)normals) + (normalStride * vidx2));
 
+				PxU32 &b0 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx0));
+				PxU32 &b1 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx1));
+				PxU32 &b2 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx2));
+
+				if ((b0 != findParentBoneIndex) || (b1 != findParentBoneIndex) || (b2 != findParentBoneIndex))
+					continue;
+
 				center0 = p0 + p1 + p2;
 				center0 /= 3.f;
 
@@ -569,6 +611,11 @@ void RendererCompositionShape::FindMostCloseFace(
 				v1.normalize();
 				center0Normal = v1.cross(v0);
 				center0Normal.normalize();
+
+				if (mesh0to1V.dot(center0Normal) <= 0.f)
+				{
+					continue;
+				}
 			}
 
 			for (PxU32 k=idx0Size; k<(idx0Size+idx1Size); k+=3)
@@ -591,6 +638,13 @@ void RendererCompositionShape::FindMostCloseFace(
 					PxVec3 &n1 = *(PxVec3*)(((PxU8*)normals) + (normalStride * vidx1));
 					PxVec3 &n2 = *(PxVec3*)(((PxU8*)normals) + (normalStride * vidx2));
 
+					PxU32 &b0 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx0));
+					PxU32 &b1 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx1));
+					PxU32 &b2 = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx2));
+
+					if ((b0 != findChildBoneIndex) || (b1 != findChildBoneIndex) || (b2 != findChildBoneIndex))
+						continue;
+
 					center1 = p0 + p1 + p2;
 					center1 /= 3.f;
 
@@ -600,11 +654,17 @@ void RendererCompositionShape::FindMostCloseFace(
 					v1.normalize();
 					center1Normal = v1.cross(v0);
 					center1Normal.normalize();
+
+					if (mesh0to1V.dot(center1Normal) >= 0.f)
+					{
+						continue;
+					}
 				}
 
-
 				PxVec3 len = center0 - center1;
-				if (minLen > len.magnitude())
+				const float dot = center0Normal.dot(center1Normal);
+				//if (minLen > len.magnitude())
+				if (minDot > dot)
 				{
 					minFaceIdx0 = i;
 					minFaceIdx1 = k;
@@ -613,14 +673,17 @@ void RendererCompositionShape::FindMostCloseFace(
 					minCenter1 = center1;
 					minCenterNorm0 = center0Normal;
 					minCenterNorm1 = center1Normal;
-					minDot = center0Normal.dot(center1Normal);
+					//minDot = center0Normal.dot(center1Normal);
 				}
 			}
 		}
 
+		if (minFaceIdx0 < 0)
+			break;
+
 		checkV0.insert(minFaceIdx0);
 		checkV1.insert(minFaceIdx1);
-		dots.push_back(minDot);
+		//dots.push_back(minDot);
 
 		centers.push_back(minCenter0);
 		centers.push_back(minCenter1);
@@ -637,6 +700,9 @@ void RendererCompositionShape::FindMostCloseFace(
 
 		++foundCount;
 	}
+
+	if (centers.empty())
+		return;
 
 	// cross test
 	PxVec3 v0 = centers[ 1] - centers[ 0];
@@ -1009,7 +1075,7 @@ void RendererCompositionShape::CopyLocalVertexToSourceVtx( const RendererComposi
  @brief 
  @date 2014-01-07
 */
-void RendererCompositionShape::ApplyVertexTransform(void *positions, PxU32 positionStride, void *normals, 
+void RendererCompositionShape::ApplyTransform(void *positions, PxU32 positionStride, void *normals, 
 	PxU32 normalStride, const int numVerts, const PxTransform &tm)
 {
 	for (int i=0; i < numVerts; ++i)
