@@ -169,7 +169,22 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 	genotype_parser::SConnection *joint = connect;
 	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
 	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+
+	//PxVec3 dimRand(RandFloat()*dir1.x, RandFloat()*dir1.y, RandFloat()*dir1.z);
+	//if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
+	//if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
+	//if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+	//dir1 += dimRand;
+
 	PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
+
+	PxVec3 dimRand(RandFloat(), RandFloat(), RandFloat());
+	if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
+	if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
+	if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+	pos += dimRand;
+
+
 	PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
 	PxVec3 velocity(joint->velocity.x, joint->velocity.y, joint->velocity.z);
 
