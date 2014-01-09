@@ -564,11 +564,13 @@ void RendererCompositionShape::FindMostCloseFace(
 	CalculateCenterPoint(findChildBoneIndex, positions, positionStride, bones, boneStride, numVerts, meshCenter1);
 	PxVec3 mesh0to1V = meshCenter1 - meshCenter0;
 	mesh0to1V.normalize();
+	PxVec3 mesh1to0V = meshCenter0 - meshCenter1;
+	mesh1to0V.normalize();
 
 	while (foundCount < 2)
 	{
 		float minLen = 100000.f;
-		float minDot = 1000.f;
+		float maxDot = -10000;
 		int minFaceIdx0 = -1;
 		int minFaceIdx1 = -1;
 		PxVec3 minCenter0, minCenter1;
@@ -655,16 +657,17 @@ void RendererCompositionShape::FindMostCloseFace(
 					center1Normal = v1.cross(v0);
 					center1Normal.normalize();
 
-					if (mesh0to1V.dot(center1Normal) >= 0.f)
+					if (mesh1to0V.dot(center1Normal) <= 0.f)
 					{
 						continue;
 					}
 				}
 
 				PxVec3 len = center0 - center1;
-				const float dot = center0Normal.dot(center1Normal);
+				//const float dot = center0Normal.dot(center1Normal);
+				const float dot = mesh1to0V.dot(center1Normal) + mesh0to1V.dot(center0Normal);
 				//if (minLen > len.magnitude())
-				if (minDot > dot)
+				if (maxDot < dot)
 				{
 					minFaceIdx0 = i;
 					minFaceIdx1 = k;
@@ -674,6 +677,7 @@ void RendererCompositionShape::FindMostCloseFace(
 					minCenterNorm0 = center0Normal;
 					minCenterNorm1 = center1Normal;
 					//minDot = center0Normal.dot(center1Normal);
+					maxDot = dot;
 				}
 			}
 		}
@@ -681,24 +685,26 @@ void RendererCompositionShape::FindMostCloseFace(
 		if (minFaceIdx0 < 0)
 			break;
 
-		checkV0.insert(minFaceIdx0);
-		checkV1.insert(minFaceIdx1);
-		//dots.push_back(minDot);
-
-		centers.push_back(minCenter0);
-		centers.push_back(minCenter1);
-		centerNorms.push_back(minCenterNorm0);
-
-		if (foundCount == 0)
 		{
-			closeFace0 = std::pair<int,int>(minFaceIdx0, minFaceIdx1);
-		}
-		else
-		{
-			closeFace1 = std::pair<int,int>(minFaceIdx0, minFaceIdx1);
-		}
+			checkV0.insert(minFaceIdx0);
+			checkV1.insert(minFaceIdx1);
+			//dots.push_back(minDot);
+			centers.push_back(minCenter0);
+			centers.push_back(minCenter1);
+			centerNorms.push_back(minCenterNorm0);
+			centerNorms.push_back(minCenterNorm1);
 
-		++foundCount;
+			if (foundCount == 0)
+			{
+				closeFace0 = std::pair<int,int>(minFaceIdx0, minFaceIdx1);
+			}
+			else
+			{
+				closeFace1 = std::pair<int,int>(minFaceIdx0, minFaceIdx1);
+			}
+
+			++foundCount;
+		}
 	}
 
 	if (centers.empty())
@@ -709,9 +715,12 @@ void RendererCompositionShape::FindMostCloseFace(
 	v0.normalize();
 	PxVec3 v1 = centers[ 3] - centers[ 2];
 	v1.normalize();
-	if ((centerNorms[ 0].dot(v0) < 0.f) && (centerNorms[ 1].dot(v1) < 0.f))
+	const float dot1 = centerNorms[ 0].dot(v0);
+	const float dot2 = centerNorms[ 2].dot(v1);
+	if ((dot1 < 0.f) && (dot2 < 0.f))
+	{
 		return;
-
+	}
 
 	vtxIndices0.insert( indices[ closeFace0.first] );
 	vtxIndices0.insert( indices[ closeFace0.first+1] );
@@ -767,24 +776,43 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 		indices1.push_back(vidx);
 	}
 
+	PxVec3 center0, center1;
+	BOOST_FOREACH (const auto &v, v0)
+		center0 += v;
+	center0 /= (float)v0.size();
+	BOOST_FOREACH (const auto &v, v1)
+		center1 += v;
+	center1 /= (float)v1.size();
+
 	vector<int> line(6);
-	for (unsigned int i=0; i < v0.size(); ++i)
 	{
-		float minLen = 10000;
-		for (unsigned int k=0; k < v1.size(); ++k)
+		PxVec3 startV = v0[1] - v0[ 0];
+		startV.normalize();
+
+		int findIdx = -1;
+		for (u_int i=3; i >= 1; --i)
 		{
-			PxVec3 v = v0[ i] - v1[ k];
-			const float len = v.magnitude();
-			if (minLen > len)
+			PxVec3 v = v1[ i-1] - v1[ i];
+			v.normalize();
+
+			if (startV.dot(v) > 0)
 			{
-				line[ i] = k;
-				minLen = len;
+				findIdx = i;
+				break;
 			}
 		}
+
+		if (findIdx < 0)
+			return;
+
+		findIdx += 4;
+		line[ 0] = findIdx-- % 4;
+		line[ 1] = findIdx-- % 4;
+		line[ 2] = findIdx-- % 4;
+		line[ 3] = findIdx-- % 4;
 	}
 
-
-	vector<PxU16> face0Indices, outFace0Indices;
+ 	vector<PxU16> face0Indices, outFace0Indices;
 	face0Indices.push_back(indices0[ 0]);
 	face0Indices.push_back(indices0[ 1]);
 	face0Indices.push_back(indices1[ line[ 0]]);
