@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "RenderComposition.h"
 #include "RenderCompositionShape.h"
+#include "RendererShape.h"
+#include "RaycastCCD.h"
 
 
 using namespace physx;
@@ -54,6 +56,41 @@ RenderComposition::~RenderComposition()
 */
 void RenderComposition::render(SampleRenderer::Renderer& renderer, RenderMaterial* material, bool wireFrame)
 {
+	if(!mEnableRender)
+		return;
+
 	((RendererCompositionShape*)getRenderShape())->ApplyPalette();
+	mScaledTransform = PxMat44::createIdentity();
 	RenderBaseActor::render(renderer, material, wireFrame);
+}
+
+
+/**
+ @brief 
+ @date 2014-01-10
+*/
+void RenderComposition::update(float deltaTime)
+{
+	// Setup render transform from physics transform, if physics object exists
+	if(mPhysicsShape)
+	{
+		if(!mArticulationLink && ( !mDynamicActor || mDynamicActor->isSleeping()))
+			return;
+
+		PxTransform newPose = PxShapeExt::getGlobalPose(*mPhysicsShape, *mPhysicsActor);
+		PxVec3 newShapeCenter = getShapeCenter(mPhysicsActor, mPhysicsShape, mCCDWitnessOffset);
+
+		bool updateCCDWitness = true;
+		if(mEnableCCD)
+			updateCCDWitness = doRaycastCCD(mPhysicsActor, mPhysicsShape, newPose, newShapeCenter, mCCDWitness, mCCDWitnessOffset);
+
+		// Copy physics pose to graphics pose
+		setTransform(PxTransform(newPose.p, newPose.q * mPhysicsToGraphicsRot));
+
+		if(updateCCDWitness)
+			mCCDWitness = newShapeCenter;
+
+		// update worldBounds In Creature class
+		//setWorldBounds(PxShapeExt::getWorldBounds(*mPhysicsShape, *mPhysicsActor));
+	}
 }

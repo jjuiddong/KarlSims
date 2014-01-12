@@ -27,6 +27,7 @@ namespace evc
 		int GetNeuronCount() const;
 		void Move(float dtime);
 		PxRigidDynamic* GetBody();
+		PxShape* GetShape();
 		const CNeuralNet* GetBrain() const;
 		void GetAllSensor(OUT vector<CSensor*> &out) const;
 		void GetAllEffector(OUT vector<CEffector*> &out) const;
@@ -41,12 +42,14 @@ namespace evc
 		CEvc &m_Sample;
 		string m_Name;
 		PxRigidDynamic *m_pBody;
+		PxShape *m_pShape;
 		vector<CJoint*> m_Joints;
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;
 		CSensor *m_pParentJointSensor;
 		RenderComposition *m_pRenderComposition;
 		int m_PaletteIndex; // tm palette index
+		PxBounds3 m_worldBounds;
 
 		// brain
 		CNeuralNet *m_pBrain;
@@ -57,5 +60,6 @@ namespace evc
 
 	
 	inline PxRigidDynamic* CNode::GetBody() { return m_pBody; }
+	inline PxShape* CNode::GetShape() { return m_pShape; }
 	inline const CNeuralNet* CNode::GetBrain() const { return m_pBrain; }
 }

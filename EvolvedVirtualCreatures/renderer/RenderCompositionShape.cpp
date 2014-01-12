@@ -676,7 +676,6 @@ void RendererCompositionShape::FindMostCloseFace(
 					minCenter1 = center1;
 					minCenterNorm0 = center0Normal;
 					minCenterNorm1 = center1Normal;
-					//minDot = center0Normal.dot(center1Normal);
 					maxDot = dot;
 				}
 			}
@@ -688,7 +687,6 @@ void RendererCompositionShape::FindMostCloseFace(
 		{
 			checkV0.insert(minFaceIdx0);
 			checkV1.insert(minFaceIdx1);
-			//dots.push_back(minDot);
 			centers.push_back(minCenter0);
 			centers.push_back(minCenter1);
 			centerNorms.push_back(minCenterNorm0);
@@ -776,14 +774,7 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 		indices1.push_back(vidx);
 	}
 
-	PxVec3 center0, center1;
-	BOOST_FOREACH (const auto &v, v0)
-		center0 += v;
-	center0 /= (float)v0.size();
-	BOOST_FOREACH (const auto &v, v1)
-		center1 += v;
-	center1 /= (float)v1.size();
-
+	// find appropriate face
 	vector<int> line(6);
 	{
 		PxVec3 startV = v0[1] - v0[ 0];

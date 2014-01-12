@@ -27,6 +27,7 @@ public:
 	RenderComposition(const RenderComposition&);
 	virtual ~RenderComposition();
 
+	virtual void update(float deltaTime) override;
 	virtual void render(SampleRenderer::Renderer& renderer, RenderMaterial* material=NULL, bool wireFrame = false) override;
 
 

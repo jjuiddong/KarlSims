@@ -5,6 +5,7 @@
 #include "NeuralNet.h"
 #include "AngularSensor.h"
 #include "MuscleEffector.h"
+#include "../renderer/RenderComposition.h"
 
 
 using namespace evc;
@@ -14,6 +15,7 @@ CNode::CNode(CEvc &sample) :
 	m_Sample(sample)
 ,	m_pBrain(NULL)
 ,	m_pBody(NULL)
+,	m_pShape(NULL)
 ,	m_pParentJointSensor(NULL)
 ,	m_pRenderComposition(NULL)
 ,	m_PaletteIndex(0)
@@ -105,6 +107,9 @@ void CNode::Move(float dtime)
 {
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);
+
+	if (m_pBody && m_pShape)
+		m_worldBounds = PxShapeExt::getWorldBounds(*m_pShape, *m_pBody);
 
 	UpdateNeuron(dtime);
 }

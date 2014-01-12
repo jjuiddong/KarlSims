@@ -52,6 +52,18 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const P
 	m_TmPalette.resize(m_Nodes.size()); // generate tm palette
 	GenerateRenderComposition(m_pRoot);
 
+	{
+		PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
+		PxU32 nbShapes0 = rigidActor0->getNbShapes();
+		if (!nbShapes0)
+			return;
+		PxShape** shapes0 = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*nbShapes0);
+		PxU32 nb0 = rigidActor0->getShapes(shapes0, nbShapes0);
+		PX_ASSERT(nb0==nbShapes0);
+		m_Sample.link(m_pRoot->m_pRenderComposition, shapes0[ 0], m_pRoot->GetBody());
+		SAMPLE_FREE(shapes0);
+	}
+
 	m_Genome.fitness = 0;
 	m_Genome.chromo.clear();
 	m_Genome.chromo.reserve(64);
@@ -124,6 +136,13 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 	else if (boost::iequals(pexpr->shape, "sphere"))
 	{
 		pNode->m_pBody = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
+	}
+
+	if (pNode->m_pBody)
+	{
+		PxShape *shape;
+		if (1 == pNode->m_pBody->getShapes(&shape, 1))
+			pNode->m_pShape = shape;
 	}
 
 	m_Nodes.push_back(pNode);
@@ -359,6 +378,26 @@ void CCreature::Move(float dtime)
 			m_TmPalette[ node->m_PaletteIndex] = node->GetBody()->getGlobalPose();
 	}
 
+	// update worldbound
+	if (m_pRoot && m_pRoot->m_pRenderComposition)
+	{
+		PxBounds3 worldBound = m_pRoot->m_worldBounds;
+		BOOST_FOREACH (auto &node, m_Nodes)
+		{
+			if (node == m_pRoot)
+				continue;
+
+			PxBounds3 bound = node->m_worldBounds;
+			worldBound.minimum.x = min(worldBound.minimum.x, bound.minimum.x);
+			worldBound.minimum.y = min(worldBound.minimum.y, bound.minimum.y);
+			worldBound.minimum.z = min(worldBound.minimum.z, bound.minimum.z);
+			worldBound.maximum.x = max(worldBound.maximum.x, bound.maximum.x);
+			worldBound.maximum.y = max(worldBound.maximum.y, bound.maximum.y);
+			worldBound.maximum.z = max(worldBound.maximum.z, bound.maximum.z);
+		}
+		m_pRoot->m_pRenderComposition->setWorldBounds(worldBound);
+	}
+
 	// fitness
 	if (m_pRoot)
 	{
@@ -423,6 +462,8 @@ void CCreature::GenerateRenderComposition( CNode *node )
 		node->m_pRenderComposition->setEnableCameraCull(true);
 
 		m_Sample.addRenderObject( node->m_pRenderComposition );
+		m_Sample.removeRenderObject(renderActor0);
+		m_Sample.unlink(renderActor0, shapes0[ 0], rigidActor0);
 	}
 	SAMPLE_FREE(shapes0);
 
@@ -439,7 +480,7 @@ void CCreature::GenerateRenderComposition( CNode *node )
 			(SampleRenderer::RendererCompositionShape*)p->getRenderShape(), joint->GetTm0(), 
 			(SampleRenderer::RendererCompositionShape*)child->m_pRenderComposition->getRenderShape(), joint->GetTm1());
 
-		node->m_pRenderComposition->setEnableCameraCull(false);
+		node->m_pRenderComposition->setEnableCameraCull(true);
 
 		m_Sample.addRenderObject( node->m_pRenderComposition );
 		m_Sample.removeRenderObject(p);
