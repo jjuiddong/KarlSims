@@ -39,20 +39,21 @@ CCreature::~CCreature()
  @brief 
  @date 2013-12-09
 */
-void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos)
+void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, const bool isDispSkinning) //isDispSkinning=true
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
 	genotype_parser::CGenotypeParser parser;
 	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
-	m_pRoot = GenerateByGenotype(pexpr, g_pDbgConfig->generationRecursiveCount, initialPos);
+	m_pRoot = GenerateByGenotype(NULL, pexpr, g_pDbgConfig->generationRecursiveCount, initialPos);
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
 	m_TmPalette.resize(m_Nodes.size()); // generate tm palette
-	GenerateRenderComposition(m_pRoot);
-
+	if (isDispSkinning)
 	{
+		GenerateRenderComposition(m_pRoot);
+
 		PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
 		PxU32 nbShapes0 = rigidActor0->getNbShapes();
 		if (!nbShapes0)
@@ -86,7 +87,7 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
 
 	vector<double> weights;
 	genotype_parser::SExpr *p = BuildExpr(genome.chromo, weights);
-	m_pRoot = GenerateByGenotype(p, g_pDbgConfig->generationRecursiveCount, initialPos);
+	m_pRoot = GenerateByGenotype(NULL, p, g_pDbgConfig->generationRecursiveCount, initialPos);
 	m_pRoot->InitBrain(weights);
 
 	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
@@ -100,42 +101,65 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
  @brief create creature by genotype script
  @date 2013-12-06
 */
-CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt, const PxVec3 &initialPos )
+CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
+	const PxVec3 &initialPos, const PxVec3 &randPos, const float dimensionRate, const PxVec3 &parentDim, const bool IsTerminal ) 
+	//dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
 {
 	if (!pexpr)
 		return NULL;
 	if (recursiveCnt < 0)
-		return NULL;
+		return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
 
 	// Generate Body
-	const PxVec3 pos = initialPos;
+	PxVec3 pos = initialPos;
+	pos += RandVec3(randPos, 1.f);
+
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_Name = pexpr->id;
 	pNode->m_PaletteIndex = m_Nodes.size();
-	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
-	{ // rand dimension
-		PxVec3 dimRand1 = dimension * 0.2f;
-		PxVec3 dimRand(RandFloat()*dimRand1.x, RandFloat()*dimRand1.y, RandFloat()*dimRand1.z);
-		if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
-		if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
-		if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+	pNode->m_IsTerminalNode = IsTerminal;
 
-		dimension += dimRand;
-		dimension.x = max(dimension.x, 0.1f);
-		dimension.y = max(dimension.y, 0.1f);
-		dimension.z = max(dimension.z, 0.1f);
+	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
+	const PxVec3 randShape(pexpr->randShape.x, pexpr->randShape.y, pexpr->randShape.z);
+	const PxVec3 randRange(dimension.x*randShape.x, dimension.y*randShape.y, dimension.z*randShape.z);
+	dimension += RandVec3(randRange, 1.f);
+	dimension = MaximumVec3(dimension, PxVec3(0.1f, 0.1f, 0.1f));
+	dimension *= dimensionRate;
+
+	if (!parentDim.isZero())
+	{
+		const float parentVolume = parentDim.x * parentDim.y * parentDim.z;
+		const float childVolume = dimension.x * dimension.y * dimension.z;
+		if ((childVolume*1.3f) >= parentVolume)
+		{
+			dimension /= ((childVolume*1.3f) / parentVolume);
+		}
 	}
+
+	//const bool IsParentTerminal = (parentNode && parentNode->m_IsTerminalNode);
+	//if (!IsTerminal && (!parentDim.isZero() && parentDim.magnitude() < .2f))
+	//{
+	//	SAFE_DELETE(pNode);
+	//	return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
+	//}
+
 
 	MaterialIndex material = GetMaterialType(pexpr->material);
 	const float mass = pexpr->mass;
 
 	if (boost::iequals(pexpr->shape, "box"))
 	{
-		pNode->m_pBody = m_Sample.createBox(pos+PxVec3(0,0,0), dimension, NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createBox(pos, dimension, NULL, m_Sample.getManageMaterial(material), mass);
 	}
 	else if (boost::iequals(pexpr->shape, "sphere"))
 	{
-		pNode->m_pBody = m_Sample.createSphere(pos+PxVec3(0,0,0), dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
+	}
+	else if (boost::iequals(pexpr->shape, "root"))
+	{
+		pos = PxVec3(pos.x,0,pos.z);
+		pNode->m_pBody = m_Sample.createBox(pos, PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 	}
 
 	if (pNode->m_pBody)
@@ -147,26 +171,39 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 
 	m_Nodes.push_back(pNode);
 
-	// Generate Connection 
+	//if (IsTerminal)
+	//	return pNode;
+
+	// Generate Connection (None Terminal Connection)
 	PxRigidDynamic* body = pNode->m_pBody;
-	genotype_parser::SConnectionList *pConnect = pexpr->connection;
-	while (pConnect)
+	genotype_parser::SConnectionList *pConnectList = pexpr->connection;
+	while (pConnectList)
 	{
-		if (boost::iequals(pConnect->connect->conType, "joint"))
+		genotype_parser::SConnection *connection = pConnectList->connect;
+		if (connection->terminalOnly)
 		{
-			PxVec3 conPos(pConnect->connect->pos.x, pConnect->connect->pos.y, pConnect->connect->pos.z);
-			CNode *pChildNode = GenerateByGenotype( pConnect->connect->expr, recursiveCnt-1, initialPos - conPos );
-			if (pChildNode)
-			{
-				 CreateJoint(pNode, pChildNode, pConnect->connect);
-			}
-		}
-		else if(boost::iequals(pConnect->connect->conType, "sensor"))
-		{
-			CreateSensor(pNode, pConnect->connect, pos);
+			pConnectList = pConnectList->next;
+			continue;
 		}
 
-		pConnect = pConnect->next;
+		if (boost::iequals(connection->conType, "joint"))
+		{
+			PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
+			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
+			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, pos - conPos, randPos, 
+				dimensionRate*0.7f, dimension);
+			if (pChildNode && !pChildNode->m_IsTerminalNode)
+			{
+				PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
+				CreateJoint(pNode, pChildNode, connection, newConPos);
+			}
+		}
+		else if(boost::iequals(connection->conType, "sensor"))
+		{
+			CreateSensor(pNode, connection, pos);
+		}
+
+		pConnectList = pConnectList->next;
 	}
 
 	//pNode->InitNeuron();
@@ -176,9 +213,55 @@ CNode* CCreature::GenerateByGenotype( const genotype_parser::SExpr *pexpr, const
 
 /**
  @brief 
+ @date 2014-01-13
+*/
+CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
+	const PxVec3 &initialPos, const float dimensionRate, const PxVec3 &parentDim ) 
+{
+	RETV(!pexpr, NULL);
+
+	CNode *pNode = NULL;
+	PxVec3 pos = initialPos;
+
+	// Generate Terminal Connection
+	genotype_parser::SConnectionList *pConnectList = pexpr->connection;
+	while (pConnectList)
+	{
+		genotype_parser::SConnection *connection = pConnectList->connect;
+		if (connection->terminalOnly)
+		{
+			if (boost::iequals(connection->conType, "joint"))
+			{
+				PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
+				PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
+				CNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
+					pos - conPos, randPos, dimensionRate, parentDim, true);
+				if (pChildNode)
+				{
+					PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
+					CreateJoint(parentNode, pChildNode, connection, newConPos);
+				}
+				pNode = pChildNode;
+			}
+			else if(boost::iequals(connection->conType, "sensor"))
+			{
+				CNode *pChildNode = CreateSensor(parentNode, connection, pos, true);
+				pNode = pChildNode;
+			}
+		}
+
+		pConnectList = pConnectList->next;
+	}
+
+	return pNode;
+}
+
+
+/**
+ @brief 
  @date 2013-12-19
 */
-void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect )
+void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos )
 {
 	RET(!childNode);
 	RET(!parentNode);
@@ -189,20 +272,19 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
 	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
 
-	//PxVec3 dimRand(RandFloat()*dir1.x, RandFloat()*dir1.y, RandFloat()*dir1.z);
-	//if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
-	//if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
-	//if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
-	//dir1 += dimRand;
+	PxVec3 pos = conPos;
 
-	PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
+	// random position
+	PxVec3 randPos(connect->randPos.x, connect->randPos.y, connect->randPos.z);
+	pos += RandVec3(randPos, 1.f);
 
-	PxVec3 dimRand(RandFloat(), RandFloat(), RandFloat());
-	if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
-	if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
-	if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
-	pos += dimRand;
-
+	// random orientation
+	PxVec3 randOrient(connect->randOrient.x, connect->randOrient.y, connect->randOrient.z);
+	if (!dir1.isZero())
+	{
+		dir1 += RandVec3(randOrient, 1.f);
+		dir1.normalize();
+	}
 
 	PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
 	PxVec3 velocity(joint->velocity.x, joint->velocity.y, joint->velocity.z);
@@ -212,19 +294,14 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
 	PxJoint* pxJoint = NULL;
-
 	if (boost::iequals(joint->type, "fixed"))
 	{
-		PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), 
-			body, tm0, 
-			child, tm1 );
+		PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1 );
 		pxJoint = j;
 	}
 	else if(boost::iequals(joint->type, "spherical"))
 	{
-		if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), 
-			body, tm0,
-			child, tm1) )
+		if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1) )
 		{
 			if (!limit.isZero())
 			{
@@ -239,9 +316,7 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 	}
 	else if (boost::iequals(joint->type, "revolute"))
 	{
-		if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), 
-			body, tm0,
-			child, tm1) )
+		if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1) )
 		{
 			if (!limit.isZero())
 			{
@@ -284,7 +359,8 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
  @brief 
  @date 2013-12-19
 */
-CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos)
+CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal)
+	// IsTerminal = false
 {
 	RETV(!parentNode, NULL);
 
@@ -292,6 +368,8 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_PaletteIndex = m_Nodes.size();
+	pNode->m_IsTerminalNode = IsTerminal;
+
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
 	MaterialIndex material = GetMaterialType("red");
 	{
@@ -488,4 +566,38 @@ void CCreature::GenerateRenderComposition( CNode *node )
 		child->m_pRenderComposition = NULL;
 	}
 
+}
+
+
+/**
+ @brief random vector from vector value and rate
+ @date 2014-01-13
+*/
+PxVec3 CCreature::RandVec3( const PxVec3 &vec, const float rate )
+{
+	if (rate <= 0.f)
+		return vec;
+	if (vec.isZero())
+		return vec;
+
+	PxVec3 dimRand1 = vec * rate;
+	PxVec3 dimRand(RandFloat()*dimRand1.x, RandFloat()*dimRand1.y, RandFloat()*dimRand1.z);
+	if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
+	if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
+	if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+	return dimRand;
+}
+
+
+/**
+ @brief return maximum value
+ @date 2014-01-13
+*/
+PxVec3 CCreature::MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 )
+{
+	PxVec3 val;
+	val.x = max(vec0.x, vec1.x);
+	val.y = max(vec0.y, vec1.y);
+	val.z = max(vec0.z, vec1.z);
+	return val;
 }

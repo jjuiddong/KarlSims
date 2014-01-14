@@ -31,14 +31,14 @@ namespace evc { namespace genotype_parser {
 		//start -> expression_list;
 		SExprList* start();
 
-		//expression -> id ( id, vec3, material, connection-list )
+		//expression -> id ( id, vec3, material, [randshape,] connection-list )
 		//	| id;
 		SExpr* expression();
 
 		//expression-list -> [ expression {, expression } ];
 		SExprList* expression_list();
 
-		// connection -> connection( id, quat, quat, vec3, limit, velocity, expression )
+		// connection -> connection( id, quat, quat, vec3, limit, velocity, [randpos,] [randorient,] expression )
 		SConnection* connection();
 
 		// connection-list -> [ connection{, connection} ];
@@ -64,6 +64,21 @@ namespace evc { namespace genotype_parser {
 
 		// period -> period(num)
 		float period();
+
+		// randshape -> randshape(num, num, num)
+		SVec3 randshape();
+
+		// randfield -> randshape | randpos | randorient
+		SVec3 randField();
+
+		// randpos -> randpos(num, num, num)
+		SVec3 randpos();
+
+		// randorient -> randorient(num, num, num)
+		SVec3 randorient();
+
+		// terminalOnly -> terminalOnly
+		bool terminalonly();
 
 
 		string number();

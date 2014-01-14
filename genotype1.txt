@@ -5,7 +5,14 @@ Arm2( box, vec3(0.7,0.2,0.1), material(blue), mass(1) )
 
 Body( box, vec3(0.3,0.5,0.3), material(yellow), mass(1),
 
-	joint( fixed, quat(), quat(), vec3(0,-2,0), 
+	joint( fixed, quat(), quat(), vec3(1,-2,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(0),
+		period(10),
+		Body
+	),
+
+	joint( fixed, quat(), quat(), vec3(-1,-2,0), 
 		limit(-0.785375, 0.785375, 0.1),
 		velocity(0),
 		period(20),
@@ -15,7 +22,7 @@ Body( box, vec3(0.3,0.5,0.3), material(yellow), mass(1),
 
 main( root, vec3(0.3,0.5,0.3), material(yellow), mass(1),
 
-	joint( revolute, quat(), quat(), vec3(0,-2,0), 
+	joint( fixed, quat(), quat(), vec3(0,-2,0), 
 		limit(-0.785375, 0.785375, 0.1),
 		velocity(0),
 		period(20),

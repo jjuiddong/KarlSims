@@ -19,6 +19,7 @@ CNode::CNode(CEvc &sample) :
 ,	m_pParentJointSensor(NULL)
 ,	m_pRenderComposition(NULL)
 ,	m_PaletteIndex(0)
+,	m_IsTerminalNode(false)
 {
 
 }

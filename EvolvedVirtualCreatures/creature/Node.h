@@ -41,6 +41,7 @@ namespace evc
 	public:
 		CEvc &m_Sample;
 		string m_Name;
+		bool m_IsTerminalNode;
 		PxRigidDynamic *m_pBody;
 		PxShape *m_pShape;
 		vector<CJoint*> m_Joints;

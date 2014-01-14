@@ -91,7 +91,7 @@ SExprList* genotype_parser::CGenotypeParser::start()
 
 /**
  @brief 
- expression -> id ( id, vec3, material, mass, connection-list )
+ expression -> id ( id, vec3, material, mass, [randshape,] [connection-list] )
  	| id;
 
  @date 2013-12-05
@@ -104,6 +104,7 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		pexpr = new SExpr;
 		pexpr->refCount = 0;
 		pexpr->connection = NULL;
+		pexpr->randShape = SVec3(0,0,0);
 
 		pexpr->id = id();
 		Match(LPAREN);
@@ -125,10 +126,12 @@ SExpr* genotype_parser::CGenotypeParser::expression()
 		}
 
 		if (COMMA == m_Token)
-		{
 			Match(COMMA);
-			pexpr->connection = connection_list();
-		}
+		pexpr->randShape = randshape();
+
+		if (COMMA == m_Token)
+			Match(COMMA);
+		pexpr->connection = connection_list();
 
 		Match(RPAREN);
 	}
@@ -170,7 +173,7 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
- @brief connection -> connection( id, quat, vec3, limit, velocity, period, expression )
+ @brief connection -> connection( id, quat, vec3, limit, velocity, period, [randpos,] [randorient,]  [terminalonly,] expression )
  @date 2013-12-07
 */
 SConnection* genotype_parser::CGenotypeParser::connection()
@@ -188,6 +191,8 @@ SConnection* genotype_parser::CGenotypeParser::connection()
 
 	connct = new SConnection;
 	connct->conType = id();	
+	connct->terminalOnly = false;
+
 	Match(LPAREN);
 	connct->type = id();
 	Match(COMMA);
@@ -200,13 +205,27 @@ SConnection* genotype_parser::CGenotypeParser::connection()
 	connct->limit = limit();
 	Match(COMMA);
 	connct->velocity = velocity();
+
 	if (COMMA == m_Token)
 		Match(COMMA);
 	connct->period = period();
+
 	if (COMMA == m_Token)
 		Match(COMMA);
+	connct->randPos = randField();
 
+	if (COMMA == m_Token)
+		Match(COMMA);
+	connct->randOrient = randField();
+
+	if (COMMA == m_Token)
+		Match(COMMA);
+	connct->terminalOnly = terminalonly();
+
+	if (COMMA == m_Token)
+		Match(COMMA);
 	connct->expr = expression();
+
 	Match(RPAREN);
 	return connct;
 }
@@ -452,6 +471,150 @@ float genotype_parser::CGenotypeParser::period()
 	}
 
 	return ret;
+}
+
+
+/**
+ @brief randfield -> randshape | randpos | randorient
+ @date 2014-01-13
+*/
+SVec3 CGenotypeParser::randField()
+{
+	SVec3 v(0,0,0);
+	
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "randpos"))
+	{
+		v = randpos();
+	}
+	else if (boost::iequals(tok, "randorient"))
+	{
+		v = randorient();
+	}
+	else if (boost::iequals(tok, "randshape"))
+	{
+		v = randshape();
+	}
+
+	return v;
+}
+
+
+/**
+ @brief randshape -> randshape(num, num, num)
+ @date 2014-01-13
+*/
+SVec3 CGenotypeParser::randshape()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID != m_Token)
+		return v;
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "randshape"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		v.x = atof(number().c_str());
+		Match(COMMA);
+		v.y = atof(number().c_str());
+		Match(COMMA);
+		v.z = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		// nothing
+	}
+
+	return v;
+}
+
+
+/**
+ @brief randpos -> randpos(num, num, num)
+ @date 2014-01-13
+*/
+SVec3 genotype_parser::CGenotypeParser::randpos()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID != m_Token)
+		return v;
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "randpos"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		v.x = atof(number().c_str());
+		Match(COMMA);
+		v.y = atof(number().c_str());
+		Match(COMMA);
+		v.z = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		// nothing
+	}
+
+	return v;
+}
+
+
+/**
+ @brief randorient -> randorient(num, num, num)
+ @date 2014-01-13
+*/
+SVec3 genotype_parser::CGenotypeParser::randorient()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID != m_Token)
+		return v;
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "randorient"))
+	{
+		Match(ID);
+		Match(LPAREN);
+		v.x = atof(number().c_str());
+		Match(COMMA);
+		v.y = atof(number().c_str());
+		Match(COMMA);
+		v.z = atof(number().c_str());
+		Match(RPAREN);
+	}
+	else
+	{
+		// nothing
+	}
+
+	return v;
+}
+
+
+/**
+ @brief terminalOnly -> terminalOnly
+ @date 2014-01-13
+*/
+bool CGenotypeParser::terminalonly()
+{
+	if (ID != m_Token)
+		return false;
+
+	const string tok = m_pScan->GetTokenStringQ(0);
+	if (boost::iequals(tok, "terminalOnly"))
+	{
+		Match(ID);
+		return true;
+	}
+	return false;
 }
 
 

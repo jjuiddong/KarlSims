@@ -24,7 +24,7 @@ namespace evc
 	public:
 		CCreature(CEvc &sample);
 		virtual ~CCreature();
-		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos);
+		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const bool isDispSkinning=true);
 		void GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos);
 		void Move(float dtime);
 		const SGenome& GetGenome() const;
@@ -33,12 +33,18 @@ namespace evc
 
 
 	protected:
-		CNode* GenerateByGenotype( const genotype_parser::SExpr *pexpr, const int recursiveCnt, const PxVec3 &initialPos );
-		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect);
-		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos );
+		CNode* GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
+			const PxVec3 &initialPos, const PxVec3 &randPos=PxVec3(0,0,0), const float dimensionRate=1.f, 
+			const PxVec3 &parentDim=PxVec3(0,0,0),  const bool IsTerminal=false);
+		CNode* GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
+			const PxVec3 &initialPos, const float dimensionRate, const PxVec3 &parentDim );
+
+		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos);
+		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
 		MaterialIndex GetMaterialType(const string &materialStr);
 		void GenerateRenderComposition( CNode *node );
-
+		PxVec3 RandVec3( const PxVec3 &vec, const float rate );
+		PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );
 
 	private:
 		CEvc &m_Sample;

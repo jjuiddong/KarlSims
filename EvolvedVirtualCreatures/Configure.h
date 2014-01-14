@@ -14,5 +14,6 @@ struct SDbgConfig : public memmonitor::Monitor<SDbgConfig, TYPE_NAME(SDbgConfig)
 	float force;
 	float value1;
 	float value2;
+	bool displaySkinning;
 	int generationRecursiveCount;
 };

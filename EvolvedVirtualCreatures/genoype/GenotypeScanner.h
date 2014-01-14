@@ -28,6 +28,8 @@ namespace evc { namespace genotype_parser {
 	struct SVec3 
 	{ 
 		float x, y, z; 
+		SVec3() {}
+		SVec3(float x0, float y0, float z0): x(x0), y(y0), z(z0) {}
 	};
 
 	struct SQuat
@@ -46,6 +48,9 @@ namespace evc { namespace genotype_parser {
 		SVec3 pos;
 		SVec3 limit;
 		SVec3 velocity;
+		SVec3 randPos;
+		SVec3 randOrient;
+		bool terminalOnly;
 		float period;
 		SExpr *expr;
 	};
@@ -62,6 +67,7 @@ namespace evc { namespace genotype_parser {
 		string id;
 		string shape;
 		SVec3 dimension;
+		SVec3 randShape;
 		string material;
 		float mass;
 		SConnectionList *connection;

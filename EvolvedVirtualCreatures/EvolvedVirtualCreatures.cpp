@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "SamplePreprocessor.h"
 #include "EvolvedVirtualCreatures.h"
@@ -40,13 +39,11 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_Age(0)
 ,	m_Gap(10.f)
 {
-	g_pDbgConfig = NULL;
 }
 
 CEvc::~CEvc()
 {
 	RemoveAllCreatures();
-	SAFE_DELETE(g_pDbgConfig);
 	evc::CGeneticAlgorithm::Release();
 }
 
@@ -119,12 +116,16 @@ void CEvc::onInit()
 	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::L_ARM, false);
 	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::R_ARM, false);
 
-	g_pDbgConfig = new SDbgConfig;
-	g_pDbgConfig->applyJoint = true;
-	g_pDbgConfig->force = 5000.f;
-	g_pDbgConfig->value1 = 1;
-	g_pDbgConfig->value2 = 1;
-	g_pDbgConfig->generationRecursiveCount = 2;
+	if (!g_pDbgConfig)
+	{
+		g_pDbgConfig = new SDbgConfig;
+		g_pDbgConfig->applyJoint = true;
+		g_pDbgConfig->force = 5000.f;
+		g_pDbgConfig->value1 = 1;
+		g_pDbgConfig->value2 = 1;
+		g_pDbgConfig->displaySkinning = true;
+		g_pDbgConfig->generationRecursiveCount = 2;
+	}
 
 	srand(timeGetTime());
 
@@ -209,13 +210,13 @@ void CEvc::spawnNode(const int key)
 	{
 	case SPAWN_DEBUG_OBJECT: 
 		pnode = new evc::CCreature(*this); 
-		pnode->GenerateByGenotype("genotype.txt", pos); 
+		pnode->GenerateByGenotype("genotype.txt", pos, g_pDbgConfig->displaySkinning); 
 		m_Creatures.push_back( pnode );
 		break;
 
 	case SPAWN_DEBUG_OBJECT2: 
 		pnode = new evc::CCreature(*this); 
-		pnode->GenerateByGenotype("genotype_box.txt", pos); 
+		pnode->GenerateByGenotype("genotype_box.txt", pos, g_pDbgConfig->displaySkinning); 
 		m_Obstacles.push_back( pnode );	
 		IsCreature = false; 
 		break;

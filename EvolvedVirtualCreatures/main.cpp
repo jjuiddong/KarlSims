@@ -8,6 +8,8 @@
 #include "SampleAllocator.h"
 #include "PhysXSampleApplication.h"
 #include "PsFile.h"
+#include "EvolvedVirtualCreatures.h"
+extern SDbgConfig *g_pDbgConfig;
 
 //#include "../../../wxMemMonitorLib/wxMemMonitor.h"
 //#include "vld/vld.h"
@@ -102,5 +104,7 @@ int main()
 	mainInitialize();
 	mainLoop();
 	mainTerminate();
+
+	SAFE_DELETE(g_pDbgConfig);
 	return 0;
 }
