@@ -42,8 +42,9 @@ public:
 	virtual void onSleep(PxActor** , PxU32 ){}
 
 
-	//virtual	void onTickPreRender(float dtime);
-	virtual	void	onTickPostRender(float dtime);
+	//virtual	void onTickPreRender(float dtime) override;
+	virtual	void customizeRender() override;
+	virtual	void	onTickPostRender(float dtime) override;
 	virtual	void customizeSceneDesc(PxSceneDesc&);
 	virtual	void onSubstepSetup(float dtime, pxtask::BaseTask* cont);
 

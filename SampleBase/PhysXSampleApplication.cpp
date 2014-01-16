@@ -714,18 +714,18 @@ void PhysXSampleApplication::onRender()
 	if(renderer)
 	{
 		mCamera.BuildFrustum();
-#if 0
-		PxScene* mScene = &mSample->getActiveScene();
-		if(mScene)
-		{
-			const PxVec3* frustumVerts = mCamera.getFrustumVerts();
-			PxBounds3 cameraBounds(frustumVerts[0], frustumVerts[0]);
-			for(PxU32 i=0;i<8;i++)
-				cameraBounds.include(frustumVerts[i]);
-			mScene->setVisualizationCullingBox(cameraBounds);
-			mScene->setVisualizationParameter(PxVisualizationParameter::eCULL_BOX, 1.0f);
-		}
-#endif
+//#if 0
+//		PxScene* mScene = &mSample->getActiveScene();
+//		if(mScene)
+//		{
+//			const PxVec3* frustumVerts = mCamera.getFrustumVerts();
+//			PxBounds3 cameraBounds(frustumVerts[0], frustumVerts[0]);
+//			for(PxU32 i=0;i<8;i++)
+//				cameraBounds.include(frustumVerts[i]);
+//			mScene->setVisualizationCullingBox(cameraBounds);
+//			mScene->setVisualizationParameter(PxVisualizationParameter::eCULL_BOX, 1.0f);
+//		}
+//#endif
 		renderer->clearBuffers();
 
 #ifndef RENDERER_TABLET
@@ -761,7 +761,7 @@ void PhysXSampleApplication::onRender()
 			renderer->render(mCamera.getViewMatrix(), mCamera.getProjMatrix());
 		}
 
-		// render debug lines and points with a small depth bias to avoid z-fighting
+		 //render debug lines and points with a small depth bias to avoid z-fighting
 		{
 			if (mSample)
 			{
@@ -777,6 +777,7 @@ void PhysXSampleApplication::onRender()
 			
 			renderer->render(mCamera.getViewMatrix(), proj);
 		}
+
 	{
 		const PxReal scale = 0.5f;
 		const PxReal shadowOffset = 6.0f;
@@ -1130,6 +1131,7 @@ void PhysXSampleApplication::onInit()
 		mManagedMaterials[MATERIAL_GREEN]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, c, 0.0f),		opacity, doubleSided, id, NULL);
 		mManagedMaterials[MATERIAL_BLUE]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, 0.0f, c),		opacity, doubleSided, id, NULL);
 		mManagedMaterials[MATERIAL_YELLOW]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, 0.0f),			opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_WHITE]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, c),			opacity, doubleSided, id, NULL);
 		mManagedMaterials[MATERIAL_FLAT]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.5f, 0.5f, 0.5f),	opacity, doubleSided, id, NULL, true, true);
 	}
 

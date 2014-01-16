@@ -49,7 +49,8 @@ RenderMaterial::RenderMaterial(Renderer& renderer, const PxVec3& diffuseColor, P
 	mRenderMaterialInstance	(NULL),
 	mID						(id),
 	mDoubleSided			(doubleSided),
-	mOwnsRendererMaterial	(true)
+	mOwnsRendererMaterial	(true),
+	mDiffuseColor(diffuseColor)
 {
 	RendererMaterialDesc matDesc;
 	if(lit)

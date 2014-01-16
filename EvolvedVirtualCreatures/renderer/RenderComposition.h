@@ -22,7 +22,8 @@ public:
 		const PxReal* uvs=NULL);
 
 	RenderComposition(SampleRenderer::Renderer& renderer, const int paletteIndex,
-		const vector<PxTransform> &tmPalette, SampleRenderer::RendererShape *shape0 );
+		const vector<PxTransform> &tmPalette, SampleRenderer::RendererShape *shape0, 
+		RenderMaterial *material0);
 
 	RenderComposition(const RenderComposition&);
 	virtual ~RenderComposition();

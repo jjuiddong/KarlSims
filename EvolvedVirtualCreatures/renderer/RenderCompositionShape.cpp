@@ -10,7 +10,7 @@
 #include <RendererMesh.h>
 #include <RendererMeshDesc.h>
 #include <RendererMemoryMacros.h>
-#include <boost/foreach.hpp>
+#include <RenderMaterial.h>
 
 
 using namespace SampleRenderer;
@@ -23,12 +23,12 @@ RendererCompositionShape::~RendererCompositionShape(void)
 }
 
 RendererCompositionShape::RendererCompositionShape(Renderer &renderer, const int paletteIndex, 
-	const vector<PxTransform> &tmPalette, RendererShape *shape0) :
+	const vector<PxTransform> &tmPalette, RendererShape *shape0, RenderMaterial *material0) :
 	RendererShape(renderer)
 ,	m_PaletteIndex(paletteIndex)
 ,	m_TmPalette(tmPalette)
 {
-	GenerateCompositionShape(shape0);
+	GenerateCompositionShape(shape0, material0);
 }
 
 
@@ -67,20 +67,18 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer,
 	const PxU32 numVerts = m_vertexBuffer->getMaxVertices();
 
 	// generate vertex buffer
-	PxU32 positionStride = 0;
-	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
-	PxU32 normalStride = 0;
-	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
-	PxU32 uvStride = 0;
-	void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
-	PxU32 boneStride = 0;
-	void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride);
+	PxU32 stride = 0;
+	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
+	void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
+	//void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride);
+	void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride);
 	PxU16 *indices = (PxU16*)m_indexBuffer->lock();
 
 	set<PxU16> vtxIndices0, vtxIndices1; 
 	std::pair<int,int> mostCloseFace0, mostCloseFace1;
-	FindMostCloseFace(parentShapeIndex, childShapeIndex, positions, positionStride, normals, normalStride, 
-		bones, boneStride, numVerts, indices, idx0Size, idx1Size, mostCloseFace0, mostCloseFace1, vtxIndices0, vtxIndices1);
+	FindMostCloseFace(parentShapeIndex, childShapeIndex, positions, stride, normals, stride, 
+		bones, stride, numVerts, indices, idx0Size, idx1Size, mostCloseFace0, mostCloseFace1, vtxIndices0, vtxIndices1);
 
 	const PxU32 numVtx0 = vtx0[0]->getMaxVertices();
 	const PxU32 numVtx1 = vtx1[0]->getMaxVertices();
@@ -89,23 +87,24 @@ RendererCompositionShape::RendererCompositionShape(Renderer &renderer,
 
 	PxVec3 center;
 	CalculateCenterPoint( mostCloseFace0, mostCloseFace1,
-		positions, positionStride, normals, normalStride, indices, center );
+		positions, stride, normals, stride, indices, center );
 
 	vector<PxU16> outVtxIndices;
 	GenerateBoxFromCloseVertex( vtxIndices0, vtxIndices1, center,
-		positions, positionStride, startVtxIdx, normals, normalStride, bones, boneStride, indices, startIndexIdx,
+		positions, normals, bones, colors, stride, startVtxIdx, indices, startIndexIdx,
 		outVtxIndices );
 
-	CopyLocalVertexToSourceVtx(shape0, shape1, normals, normalStride, m_vertexBuffer->getMaxVertices(), 
+	CopyLocalVertexToSourceVtx(shape0, shape1, normals, stride, m_vertexBuffer->getMaxVertices(), 
 		indices, m_indexBuffer->getMaxIndices(), startIndexIdx, outVtxIndices);
 
 	// recovery original position
-	ApplyTransform(positions, positionStride, normals, normalStride, m_vertexBuffer->getMaxVertices(), tm0);
+	ApplyTransform(positions, stride, normals, stride, m_vertexBuffer->getMaxVertices(), tm0);
 
 	m_indexBuffer->unlock();
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
-	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
+	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
+	//m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
 }
 
@@ -227,23 +226,19 @@ void RendererCompositionShape::GenerateCompositionShape(
 	if ((numVtxBuff0 <= 0) || (numVtxBuff1 <= 0))
 		return;
 
-	PxU32 positionStride0 = 0;
-	void *positions0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride0);
-	PxU32 normalStride0 = 0;
-	void *normals0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride0);
-	PxU32 uvStride0 = 0;
-	void *uvs0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride0);
-	PxU32 boneStride0 = 0;
-	void *bones0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride0);
+	PxU32 stride0 = 0;
+	void *positions0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride0);
+	void *colors0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride0);
+	void *normals0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride0);
+	void *uvs0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride0);
+	void *bones0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride0);
 
-	PxU32 positionStride1 = 0;
-	void *positions1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride1);
-	PxU32 normalStride1 = 0;
-	void *normals1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride1);
-	PxU32 uvStride1 = 0;
-	void *uvs1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride1);
-	PxU32 boneStride1 = 0;
-	void *bones1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride1);
+	PxU32 stride1 = 0;
+	void *positions1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride1);
+	void *colors1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride1);
+	void *normals1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride1);
+	void *uvs1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride1);
+	void *bones1 = vtx1[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride1);
 
 	PxU16 *indices0 = (PxU16*)idx0->lock();
 	PxU16 *indices1 = (PxU16*)idx1->lock();
@@ -261,6 +256,7 @@ void RendererCompositionShape::GenerateCompositionShape(
 		RendererVertexBufferDesc vbdesc;
 		vbdesc.hint = RendererVertexBuffer::HINT_STATIC;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_POSITION]  = RendererVertexBuffer::FORMAT_FLOAT3;
+		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_COLOR]  = RendererVertexBuffer::FORMAT_COLOR_BGRA;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_NORMAL] = RendererVertexBuffer::FORMAT_FLOAT3;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_TEXCOORD0] = RendererVertexBuffer::FORMAT_FLOAT2;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_BONEINDEX] = RendererVertexBuffer::FORMAT_UBYTE4;
@@ -268,34 +264,34 @@ void RendererCompositionShape::GenerateCompositionShape(
 		m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
 		RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
 
-		PxU32 positionStride = 0;
-		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
-		PxU32 normalStride = 0;
-		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
-		PxU32 uvStride = 0;
-		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
-		PxU32 boneStride = 0;
-		void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride);
+		PxU32 stride = 0;
+		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+		void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
+		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
+		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride);
+		void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride);
 
 		if (m_vertexBuffer)
 		{
 			// copy shape0 to current
 			for (PxU32 i=0; i < numVtx0; ++i)
 			{
-				PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
-				PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * i));
-				PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (uvStride * i));
-				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (boneStride * i));
+				PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));
+				PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
+				PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (stride * i));
+				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (stride * i));
+				PxU32 &c = *(PxU32*)(((PxU8*)colors) + (stride * i));
 
-				PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions0) + (positionStride0 * i));
-				PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals0) + (normalStride0 * i));
-				PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs0) + (uvStride0 * i));
-				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones0) + (boneStride0 * i));
+				PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions0) + (stride0 * i));
+				PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals0) + (stride0 * i));
+				PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs0) + (stride0 * i));
+				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones0) + (stride0 * i));
+				PxU32 &c0 = *(PxU32*)(((PxU8*)colors0) + (stride0 * i));
 
-				//p = p0;
 				PxTransform m = tm0.getInverse() * PxTransform(p0);
 				p = m.p;
 				n = n0;
+				c = c0;
 				uv[ 0] = uv0[ 0];
 				uv[ 1] = uv0[ 1];
 				b = b0;
@@ -304,20 +300,22 @@ void RendererCompositionShape::GenerateCompositionShape(
 			// copy shape1 to current
 			for (PxU32 i=0; i < numVtx1; ++i)
 			{
-				PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * (i+numVtx0)));
-				PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * (i+numVtx0)));
-				PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (uvStride * (i+numVtx0)));
-				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (uvStride * (i+numVtx0)));
+				PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * (i+numVtx0)));
+				PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * (i+numVtx0)));
+				PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (stride * (i+numVtx0)));
+				PxU32 &b  =  *(PxU32*)(((PxU8*)bones) + (stride * (i+numVtx0)));
+				PxU32 &c = *(PxU32*)(((PxU8*)colors) + (stride  * (i+numVtx0)));
 
-				PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions1) + (positionStride1 * i));
-				PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals1) + (normalStride1 * i));
-				PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs1) + (uvStride1 * i));
-				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones1) + (uvStride1 * i));
+				PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions1) + (stride1 * i));
+				PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals1) + (stride1 * i));
+				PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs1) + (stride1 * i));
+				PxU32 &b0  =  *(PxU32*)(((PxU8*)bones1) + (stride1 * i));
+				PxU32 &c0 = *(PxU32*)(((PxU8*)colors1) + (stride1 * i));
 
-				//p = p0;
 				PxTransform m = tm1.getInverse() * PxTransform(p0);
 				p = m.p;
 				n = n0;
+				c = c0;
 				uv[ 0] = uv0[ 0];
 				uv[ 1] = uv0[ 1];
 				b = b0;
@@ -326,6 +324,7 @@ void RendererCompositionShape::GenerateCompositionShape(
 
 
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
@@ -357,10 +356,12 @@ void RendererCompositionShape::GenerateCompositionShape(
 	idx1->unlock();
 	vtx0[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	vtx0[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+	vtx0[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
 	vtx0[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
 	vtx0[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
 	vtx1[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	vtx1[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+	vtx1[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
 	vtx1[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
 	vtx1[ 0]->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
 
@@ -386,11 +387,11 @@ void RendererCompositionShape::GenerateCompositionShape(
  @brief 
  @date 2014-01-04
 */
-void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU32 positionStride, 
-	void *normals, PxU32 normalStride, void *bones, PxU32 boneStride,
-	PxU32 startVtxIdx, PxU16 *indices, PxU32 startIndexIdx,
+void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, void *normals, void *bones, void *colors,
+	PxU32 stride, PxU32 startVtxIdx, PxU16 *indices, PxU32 startIndexIdx,
 	const PxVec3 &center, PxVec3 v0, PxVec3 v1, PxVec3 v2, PxVec3 v3,
 	PxU32 b0, PxU32 b1, PxU32 b2, PxU32 b3,
+	PxU32 c0, PxU32 c1, PxU32 c2, PxU32 c3,
 	vector<PxU16> &faceIndices, OUT vector<PxU16> &outfaceIndices )
 {
 	// test cw
@@ -448,15 +449,18 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU
 		const float d = n.dot(cn);
 		if (d >= 0)
 		{ // cw
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v0;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v1;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v2;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * face1VtxIdx)) = -n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face1VtxIdx+1))) = -n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face1VtxIdx+2))) = -n;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * face1VtxIdx)) = b0;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face1VtxIdx+1))) = b1;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face1VtxIdx+2))) = b2;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v0;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v1;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v2;
+			*(PxVec3*)(((PxU8*)normals) + (stride * face1VtxIdx)) = -n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face1VtxIdx+1))) = -n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face1VtxIdx+2))) = -n;
+			*(PxU32*)(((PxU8*)bones) + (stride * face1VtxIdx)) = b0;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face1VtxIdx+1))) = b1;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face1VtxIdx+2))) = b2;
+			*(PxU32*)(((PxU8*)colors) + (stride * face1VtxIdx)) = c0;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face1VtxIdx+1))) = c1;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face1VtxIdx+2))) = c2;
 
 			outfaceIndices.push_back( faceIndices[ 0] );
 			outfaceIndices.push_back( faceIndices[ 1] );
@@ -464,15 +468,18 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU
 		}
 		else
 		{ // ccw
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v0;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v2;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v1;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * face1VtxIdx)) = n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face1VtxIdx+1))) = n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face1VtxIdx+2))) = n;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * face1VtxIdx)) = b0;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face1VtxIdx+1))) = b2;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face1VtxIdx+2))) = b1;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v0;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v2;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v1;
+			*(PxVec3*)(((PxU8*)normals) + (stride * face1VtxIdx)) = n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face1VtxIdx+1))) = n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face1VtxIdx+2))) = n;
+			*(PxU32*)(((PxU8*)bones) + (stride * face1VtxIdx)) = b0;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face1VtxIdx+1))) = b2;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face1VtxIdx+2))) = b1;
+			*(PxU32*)(((PxU8*)colors) + (stride * face1VtxIdx)) = c0;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face1VtxIdx+1))) = c2;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face1VtxIdx+2))) = c1;
 
 			outfaceIndices.push_back( faceIndices[ 0] );
 			outfaceIndices.push_back( faceIndices[ 2] );
@@ -503,15 +510,18 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU
 		const float d = n.dot(cn);
 		if (d >= 0)
 		{ // cw
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v0;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v2;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v3;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * face2VtxIdx)) = -n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face2VtxIdx+1))) = -n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face2VtxIdx+2))) = -n;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * face2VtxIdx)) = b0;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face2VtxIdx+1))) = b2;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face2VtxIdx+2))) = b3;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v0;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v2;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v3;
+			*(PxVec3*)(((PxU8*)normals) + (stride * face2VtxIdx)) = -n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face2VtxIdx+1))) = -n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face2VtxIdx+2))) = -n;
+			*(PxU32*)(((PxU8*)bones) + (stride * face2VtxIdx)) = b0;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face2VtxIdx+1))) = b2;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face2VtxIdx+2))) = b3;
+			*(PxU32*)(((PxU8*)colors) + (stride * face2VtxIdx)) = c0;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face2VtxIdx+1))) = c2;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face2VtxIdx+2))) = c3;
 
 			outfaceIndices.push_back( faceIndices[ 0] );
 			outfaceIndices.push_back( faceIndices[ 2] );
@@ -519,15 +529,18 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector( void *positions, PxU
 		}
 		else
 		{ // ccw
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v0;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v3;
-			*(PxVec3*)(((PxU8*)positions) + (positionStride * startVtxIdx++)) = v2;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * face2VtxIdx)) = n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face2VtxIdx+1))) = n;
-			*(PxVec3*)(((PxU8*)normals) + (normalStride * (face2VtxIdx+2))) = n;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * face2VtxIdx)) = b0;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face2VtxIdx+1))) = b3;
-			*(PxU32*)(((PxU8*)bones) + (boneStride * (face2VtxIdx+2))) = b2;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v0;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v3;
+			*(PxVec3*)(((PxU8*)positions) + (stride * startVtxIdx++)) = v2;
+			*(PxVec3*)(((PxU8*)normals) + (stride * face2VtxIdx)) = n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face2VtxIdx+1))) = n;
+			*(PxVec3*)(((PxU8*)normals) + (stride * (face2VtxIdx+2))) = n;
+			*(PxU32*)(((PxU8*)bones) + (stride * face2VtxIdx)) = b0;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face2VtxIdx+1))) = b3;
+			*(PxU32*)(((PxU8*)bones) + (stride * (face2VtxIdx+2))) = b2;
+			*(PxU32*)(((PxU8*)colors) + (stride * face2VtxIdx)) = c0;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face2VtxIdx+1))) = c3;
+			*(PxU32*)(((PxU8*)colors) + (stride * (face2VtxIdx+2))) = c2;
 
 			outfaceIndices.push_back( faceIndices[ 0] );
 			outfaceIndices.push_back( faceIndices[ 3] );
@@ -741,11 +754,9 @@ void RendererCompositionShape::FindMostCloseFace(
  @date 2014-01-05
 */
 void RendererCompositionShape::GenerateBoxFromCloseVertex(
-	const set<PxU16> &vtxIndices0, const set<PxU16> &vtxIndices1,
-	PxVec3 center,
-	void *positions, PxU32 positionStride, PxU32 startVtxIdx,
-	void *normals, PxU32 normalStride, 
-	void *bones, PxU32 boneStride,
+	const set<PxU16> &vtxIndices0, const set<PxU16> &vtxIndices1, PxVec3 center,
+	void *positions, void *normals, void *bones, void *colors,
+	PxU32 stride, PxU32 startVtxIdx,
 	PxU16 *indices, PxU32 startIndexIdx,
 	OUT vector<PxU16> &outVtxIndices )
 {
@@ -756,21 +767,26 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	vector<PxU16> indices0, indices1; 
 	vector<PxVec3> v0, v1;
 	vector<PxU32> b0, b1;
+	vector<PxU32> c0, c1;
 	BOOST_FOREACH (const auto vidx, vtxIndices0)
 	{
-		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * vidx));
-		PxU32 &b = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx));
+		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * vidx));
+		PxU32 &b = *(PxU32*)(((PxU8*)bones) + (stride * vidx));
+		PxU32 &c = *(PxU32*)(((PxU8*)colors) + (stride * vidx));
 		v0.push_back(p);
 		b0.push_back(b);
+		c0.push_back(c);
 		indices0.push_back(vidx);
 	}
 
 	BOOST_FOREACH (auto vidx, vtxIndices1)
 	{
-		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * vidx));
-		PxU32 &b = *(PxU32*)(((PxU8*)bones) + (boneStride * vidx));
+		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * vidx));
+		PxU32 &b = *(PxU32*)(((PxU8*)bones) + (stride * vidx));
+		PxU32 &c = *(PxU32*)(((PxU8*)colors) + (stride * vidx));
 		v1.push_back(p);
 		b1.push_back(b);
+		c1.push_back(c);
 		indices1.push_back(vidx);
 	}
 
@@ -809,9 +825,10 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	face0Indices.push_back(indices1[ line[ 0]]);
 	face0Indices.push_back(indices1[ line[ 1]]);
 
-	GenerateTriangleFrom4Vector( positions, positionStride, normals, normalStride, bones, boneStride, 
+	GenerateTriangleFrom4Vector( positions, normals, bones, colors, stride, 
 		startVtxIdx, indices, startIndexIdx, center, v0[ 0], v0[ 1], v1[ line[ 0]], v1[ line[ 1]],
 		b0[ 0], b0[ 1], b1[ line[ 0]], b1[ line[ 1]], 
+		c0[ 0], c0[ 1], c1[ line[ 0]], c1[ line[ 1]], 
 		face0Indices, outFace0Indices );
 	startVtxIdx += 6;
 	startIndexIdx += 6;
@@ -823,9 +840,10 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	face1Indices.push_back(indices1[ line[ 1]]);
 	face1Indices.push_back(indices1[ line[ 2]]);
 
-	GenerateTriangleFrom4Vector(positions, positionStride, normals, normalStride, bones, boneStride, 
+	GenerateTriangleFrom4Vector(positions, normals, bones, colors, stride, 
 		startVtxIdx, indices, startIndexIdx,center, v0[ 1], v0[ 2], v1[ line[ 1]], v1[ line[ 2]],
 		b0[ 1], b0[ 2], b1[ line[ 1]], b1[ line[ 2]],
+		c0[ 1], c0[ 2], c1[ line[ 1]], c1[ line[ 2]],
 		face1Indices, outFace1Indices );
 	startVtxIdx += 6;
 	startIndexIdx += 6;
@@ -837,9 +855,10 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	face2Indices.push_back(indices1[ line[ 2]]);
 	face2Indices.push_back(indices1[ line[ 3]]);
 
-	GenerateTriangleFrom4Vector(positions, positionStride, normals, normalStride, bones, boneStride, 
+	GenerateTriangleFrom4Vector(positions, normals, bones, colors, stride, 
 		startVtxIdx, indices, startIndexIdx, center, v0[ 2], v0[ 3], v1[ line[ 2]], v1[ line[ 3]],
 		b0[ 2], b0[ 3], b1[ line[ 2]], b1[ line[ 3]],
+		c0[ 2], c0[ 3], c1[ line[ 2]], c1[ line[ 3]],
 		face2Indices, outFace2Indices );
 	startVtxIdx += 6;
 	startIndexIdx += 6;
@@ -851,9 +870,10 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	face3Indices.push_back(indices1[ line[ 3]]);
 	face3Indices.push_back(indices1[ line[ 0]]);
 
-	GenerateTriangleFrom4Vector(positions, positionStride, normals, normalStride, bones, boneStride, 
+	GenerateTriangleFrom4Vector(positions, normals, bones, colors, stride, 
 		startVtxIdx, indices, startIndexIdx, center, v0[ 3], v0[ 0], v1[ line[ 3]], v1[ line[ 0]],
 		b0[ 3], b0[ 0], b1[ line[ 3]], b1[ line[ 0]],
+		c0[ 3], c0[ 0], c1[ line[ 3]], c1[ line[ 0]],
 		face3Indices, outFace3Indices );
 	startVtxIdx += 6;
 	startIndexIdx += 6;
@@ -869,11 +889,10 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 /**
  @brief 
  @date 2014-01-03
-*/
-void RendererCompositionShape::GenerateCompositionShape( RendererShape *shape0 )
+ */
+void RendererCompositionShape::GenerateCompositionShape( RendererShape *shape0, RenderMaterial *material0 )
 {
 	RendererMesh *mesh0 = shape0->getMesh();
-
 	SampleRenderer::RendererVertexBuffer **vtx0 = mesh0->getVertexBuffersEdit();
 	SampleRenderer::RendererIndexBuffer *idx0 = mesh0->getIndexBufferEdit();
 	const PxU32 numVtxBuff0 = mesh0->getNumVertexBuffers();
@@ -881,64 +900,66 @@ void RendererCompositionShape::GenerateCompositionShape( RendererShape *shape0 )
 	if (numVtxBuff0 <= 0)
 		return;
 
-	PxU32 positionStride0 = 0;
-	void *positions0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride0);
-	PxU32 normalStride0 = 0;
-	void *normals0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride0);
-	PxU32 uvStride0 = 0;
-	void *uvs0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride0);
+	PxU32 stride0 = 0;
+	void *positions0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride0);
+	void *normals0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride0);
+	void *uvs0 = vtx0[ 0]->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride0);
 
 	PxU16 *indices0 = (PxU16*)idx0->lock();
 	PxU32 idx0Size = idx0->getMaxIndices();
 
 	const PxU32 numVerts = vtx0[0]->getMaxVertices();
 	const PxU32 numIndices = idx0Size;
+	const PxVec3 diffuseColor = (material0)? (material0->mDiffuseColor*255) : PxVec3(255,255,255);
 
 	if (indices0 && positions0 && normals0)
 	{
 		RendererVertexBufferDesc vbdesc;
 		vbdesc.hint = RendererVertexBuffer::HINT_STATIC;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_POSITION]  = RendererVertexBuffer::FORMAT_FLOAT3;
+		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_COLOR]  = RendererVertexBuffer::FORMAT_COLOR_BGRA;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_NORMAL] = RendererVertexBuffer::FORMAT_FLOAT3;
 		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_TEXCOORD0] = RendererVertexBuffer::FORMAT_FLOAT2;
-		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_BONEINDEX] = RendererVertexBuffer::FORMAT_UBYTE4;		
+		vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_BONEINDEX] = RendererVertexBuffer::FORMAT_UBYTE4;
 		vbdesc.maxVertices = numVerts;
 		m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
 		RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
 
-		PxU32 positionStride = 0;
-		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
-		PxU32 normalStride = 0;
-		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
-		PxU32 uvStride = 0;
-		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
-		PxU32 boneStride = 0;
-		void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride);
+		PxU32 stride = 0;
+		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
+		void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
+		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, stride);
+		void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride);
 
 		// copy shape0 to current
 		for (PxU32 i=0; i < numVerts; ++i)
 		{
 			// current node
-			PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
-			PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * i));
-			PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (uvStride * i));
+			PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));
+			PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
+			PxU32 &c = *(PxU32*)(((PxU8*)colors) + (stride * i));
+			PxF32 *uv  =  (PxF32*)(((PxU8*)uvs) + (stride * i));
 
 			// source node
-			PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions0) + (positionStride0 * i));
-			PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals0) + (normalStride0 * i));
-			PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs0) + (uvStride0 * i));
-			PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (boneStride * i));
+			PxVec3 &p0 = *(PxVec3*)(((PxU8*)positions0) + (stride0 * i));
+			PxVec3 &n0 = *(PxVec3*)(((PxU8*)normals0) + (stride0 * i));
+			PxF32 *uv0  =  (PxF32*)(((PxU8*)uvs0) + (stride0 * i));
+			PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (stride * i));
 
 			p = p0;
 			n = n0;
+			c = m_renderer.convertColor(RendererColor(diffuseColor.x, diffuseColor.y, diffuseColor.z));
+
 			uv[ 0] = uv0[ 0];
 			uv[ 1] = uv0[ 1];
 			bidx = m_PaletteIndex;
 		}
 
-		CopyToSourceVertex(positions, positionStride, normals, normalStride, numVerts);
+		CopyToSourceVertex(positions, normals, stride, numVerts);
 
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
@@ -992,21 +1013,17 @@ void RendererCompositionShape::GenerateCompositionShape( RendererShape *shape0 )
 */
 void RendererCompositionShape::ApplyPalette()
 {
-	PxU32 positionStride = 0;
-	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
-	PxU32 normalStride = 0;
-	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
-	PxU32 uvStride = 0;
-	void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
-	PxU32 boneStride = 0;
-	void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, boneStride);
+	PxU32 stride = 0;
+	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
+	void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride);
 
 	const PxU32 numVerts = m_vertexBuffer->getMaxVertices();
 	for (PxU32 i=0; i < numVerts; ++i)
 	{
-		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
-		PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * i));
-		const PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (boneStride * i));
+		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));
+		PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
+		const PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (stride * i));
 
 		PxTransform tm0 = m_TmPalette[ bidx] * PxTransform(m_SrcVertex[ i]);
 		PxTransform tm1 = PxTransform(m_TmPalette[ bidx].q) * PxTransform(m_SrcNormal[ i]);
@@ -1015,7 +1032,6 @@ void RendererCompositionShape::ApplyPalette()
 		n = tm1.p;
 	}
 
-	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
@@ -1026,17 +1042,20 @@ void RendererCompositionShape::ApplyPalette()
  @brief 
  @date 2014-01-06
 */
-void RendererCompositionShape::CopyToSourceVertex(void *positions, PxU32 positionStride, 
-	void *normals, PxU32 normalStride, const int numVerts)
+void RendererCompositionShape::CopyToSourceVertex(void *positions, void *normals, PxU32 stride, const int numVerts)
 {
 	m_SrcVertex.resize(numVerts);
 	m_SrcNormal.resize(numVerts);
 	for (int i=0; i < numVerts; ++i)
 	{
-		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (positionStride * i));
-		PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (normalStride * i));
+		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));
 		m_SrcVertex[ i] = p;
-		m_SrcNormal[ i] = n;
+
+		if (normals)
+		{
+			PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
+			m_SrcNormal[ i] = n;
+		}
 	}
 }
 
@@ -1068,6 +1087,7 @@ void RendererCompositionShape::CopyLocalVertexToSourceVtx( const RendererComposi
 	BOOST_FOREACH (const auto &v, shape1->GetLocalSrcNormal())
 		m_SrcNormal[ nidx++] = v;
 
+	// copy close mesh vertex
 	const PxU32 vtx0Size = srcVtx0.size();
 	BOOST_FOREACH (auto &idx, closeVtxIndices)
 	{

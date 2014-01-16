@@ -394,17 +394,17 @@ void Renderer::render(const physx::PxMat44 &eye, const RendererProjection &proj,
 			bindFogState(m_fogColor, m_fogDistance);
 			bindViewProj(eye, proj);
 
-#if RENDERER_ENABLE_SINGLE_PASS_LIGHTING
-			for(PxU32 i=0; i<numLights; i++)
-			{
-				m_visibleLights[i]->bind(i);
-			}
-			renderMeshes(m_visibleLitMeshes, m_visibleLights[0]->getPass());
-			for(PxU32 i=0; i<numLights; i++)
-			{
-				m_visibleLights[i]->m_renderer = NULL;
-			}
-#else
+//#if RENDERER_ENABLE_SINGLE_PASS_LIGHTING
+//			for(PxU32 i=0; i<numLights; i++)
+//			{
+//				m_visibleLights[i]->bind(i);
+//			}
+//			renderMeshes(m_visibleLitMeshes, m_visibleLights[0]->getPass());
+//			for(PxU32 i=0; i<numLights; i++)
+//			{
+//				m_visibleLights[i]->m_renderer = NULL;
+//			}
+//#else
 			RendererLight &light0 = *m_visibleLights[0];
 			light0.bind();
 			renderMeshes(m_visibleLitMeshes, light0.getPass());
@@ -418,7 +418,7 @@ void Renderer::render(const physx::PxMat44 &eye, const RendererProjection &proj,
 				renderMeshes(m_visibleLitMeshes, light.getPass());
 			}
 			endMultiPass();
-#endif
+//#endif
 			renderMeshes(m_visibleUnlitMeshes, RendererMaterial::PASS_UNLIT);
 
 			///////////////////////////////////////////////////////////////////////////

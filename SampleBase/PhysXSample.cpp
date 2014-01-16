@@ -776,7 +776,7 @@ void PhysXSample::render()
 				getCamera().cull(renderActor->getWorldBounds())==PLANEAABB_EXCLUSION)
 				continue;
 
-			renderActor->render(*renderer, mManagedMaterials[MATERIAL_GREY], mWireFrame);
+			renderActor->render(*renderer, mManagedMaterials[MATERIAL_WHITE], mWireFrame);
 			++nbVisible;
 		}
 

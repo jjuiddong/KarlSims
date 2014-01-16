@@ -33,10 +33,11 @@ RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer,
  @date 2014-01-06
 */
 RenderComposition::RenderComposition(SampleRenderer::Renderer& renderer, 
-	const int paletteIndex, const vector<PxTransform> &tmPalette, SampleRenderer::RendererShape *shape0 ) :
+	const int paletteIndex, const vector<PxTransform> &tmPalette, SampleRenderer::RendererShape *shape0,
+	RenderMaterial *material0 ) : 
 	m_PaletteIndex(paletteIndex)
 {
-	RendererShape* rs = new RendererCompositionShape(renderer, paletteIndex, tmPalette, shape0);
+	RendererShape* rs = new RendererCompositionShape(renderer, paletteIndex, tmPalette, shape0, material0);
 	setRenderShape(rs);
 }
 
@@ -56,7 +57,7 @@ RenderComposition::~RenderComposition()
 */
 void RenderComposition::render(SampleRenderer::Renderer& renderer, RenderMaterial* material, bool wireFrame)
 {
-	if(!mEnableRender)
+	if (!mEnableRender)
 		return;
 
 	((RendererCompositionShape*)getRenderShape())->ApplyPalette();

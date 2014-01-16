@@ -9,7 +9,8 @@ END_CBUFFER(cbDiffuse)
 SurfaceMaterial computeSurfaceMaterial(const FragmentParameters params)
 {
 	SurfaceMaterial mout;
-	mout.diffuseColor       = half3(diffuseColor.rgb);
+//	mout.diffuseColor       = half3(diffuseColor.rgb);
+	mout.diffuseColor       = half3(params.color.rgb);
 	mout.alpha              = half(diffuseColor.a);
 	mout.emissiveColor      = 0;
 	mout.specularColor      = half3(0.2,0.2,0.2); // TODO: make this a constant parameter set by the material.

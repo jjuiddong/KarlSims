@@ -73,6 +73,7 @@ namespace SampleRenderer
 				PxU32										mID;
 				bool										mDoubleSided;
 				bool										mOwnsRendererMaterial;
+				PxVec3									mDiffuseColor;
 	};
 
 #endif

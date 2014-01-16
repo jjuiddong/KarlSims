@@ -143,8 +143,8 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 	//	return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
 	//}
 
-
 	MaterialIndex material = GetMaterialType(pexpr->material);
+	pNode->m_MaterialName = pexpr->material;
 	const float mass = pexpr->mass;
 
 	if (boost::iequals(pexpr->shape, "box"))
@@ -522,6 +522,9 @@ void CCreature::GenerateRenderComposition( CNode *node )
 		GenerateRenderComposition((CNode*)joint->GetActor1());
 	}
 
+	const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
+	RenderMaterial *material = m_Sample.getManageMaterial(materialIndex);
+
 	PxRigidDynamic *rigidActor0 = node->GetBody();
 	PxU32 nbShapes0 = rigidActor0->getNbShapes();
 	if (!nbShapes0)
@@ -534,7 +537,7 @@ void CCreature::GenerateRenderComposition( CNode *node )
 	if (renderActor0)
 	{
 		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), node->m_PaletteIndex, 
-			m_TmPalette, renderActor0->getRenderShape());
+			m_TmPalette, renderActor0->getRenderShape(), material);
 
 		renderActor0->setRendering(false);
 		node->m_pRenderComposition->setEnableCameraCull(true);

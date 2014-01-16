@@ -82,27 +82,20 @@ void CEvc::newMesh(const RAWMesh& data)
 //	}
 //}
 
-void	CEvc::onTickPostRender(float dtime)
+
+
+// A structure for our custom vertex type
+struct CUSTOMVERTEX
 {
-	PhysXSample::onTickPostRender(dtime);
+	FLOAT x, y, z, rhw; // The transformed position for the vertex
+	DWORD color;        // The vertex color
+};
 
-	PxReal vertices[] = {0, 0, 1, 1};
-	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
-	getRenderer()->drawLines2D(2, vertices, colors );
-	PxReal vertices2[] = {1, 0, 0, 1};
-	getRenderer()->drawLines2D(2, vertices2, colors );
-}
-
+//LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
+//IDirect3DVertexDeclaration9* g_decl = 0;
 
 void CEvc::onInit()
 {
-	//if (getConsole())
-	//{
-	//	getConsole()->addCmd("value", gValue);
-	//	getConsole()->addCmd("export", gExport);
-	//	getConsole()->addCmd("import", gImport);
-	//}
-
 	PhysXSample::onInit();
 
 	mApplication.setMouseCursorHiding(true);
@@ -129,27 +122,58 @@ void CEvc::onInit()
 
 	srand(timeGetTime());
 
-	//PxRigidDynamic* actor1 = NULL;
-	//const PxVec3 pos = getCamera().getPos();
-	//const PxVec3 vel = getCamera().getViewDir() * getDebugObjectsVelocity();
-	//actor1 = createSphere(pos, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
-
-	//PxRigidDynamic* actor2 = NULL;
-	//PxVec3 pos2 = getCamera().getPos();
-	//pos2.x += 1.f;
-	//actor2 = createSphere(pos2, getDebugSphereObjectRadius(), &vel, mManagedMaterials[MATERIAL_GREEN], mDefaultDensity);
 
 
-	// Joint Test
-	//const float scale = 1.f;
-	//const float plankDepth = 2.f;
-	////PxRevoluteJoint* j = PxRevoluteJointCreate(getPhysics(), 
-	////PxFixedJoint* j = PxFixedJointCreate(getPhysics(), 
-	//PxSphericalJoint* j = PxSphericalJointCreate(getPhysics(), 
-	//	actor1, PxTransform(PxVec3(0,0, plankDepth)*scale),
-	//	actor2, PxTransform(PxVec3(0,0,-plankDepth)*scale));
-	//if(j)
-	//	j->setProjectionLinearTolerance(.5f);
+
+	////-------------------------------------------------------------------------------------------------------
+	//CUSTOMVERTEX vertices[] =
+	//{
+	//	{ 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, }, // x, y, z, rhw, color
+	//	{ 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+	//	{  50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+	//};
+	//IDirect3DDevice9 *d3dDevice = (IDirect3DDevice9*)getRenderer()->getDevice();
+	//if (FAILED(d3dDevice->CreateVertexBuffer( 3 * sizeof( CUSTOMVERTEX ),0, 0,D3DPOOL_DEFAULT, &g_pVB, NULL ) ) )
+	//	return;
+	//VOID* pVertices;
+	//if (FAILED( g_pVB->Lock( 0, sizeof( vertices ), ( void** )&pVertices, 0 ) ) )
+	//	return;
+	//memcpy( pVertices, vertices, sizeof( vertices ) );
+	//g_pVB->Unlock();
+	//const D3DVERTEXELEMENT9 tempDecl[] =
+	//{
+	//	{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITIONT, 0},    //Position
+	//	{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},      //Color
+	//	D3DDECL_END()
+	//};
+	//d3dDevice->CreateVertexDeclaration(tempDecl, &g_decl);
+
+
+}
+
+
+/**
+ @brief 
+ @date 2014-01-16
+*/
+void CEvc::customizeRender()
+{
+	//IDirect3DDevice9 *d3dDevice = (IDirect3DDevice9*)getRenderer()->getDevice();
+	//d3dDevice->SetVertexDeclaration(g_decl);
+	//d3dDevice->SetStreamSource( 0, g_pVB, 0, sizeof( CUSTOMVERTEX ) );
+	//d3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 1 );
+}
+
+
+void	CEvc::onTickPostRender(float dtime)
+{
+	PhysXSample::onTickPostRender(dtime);
+
+	PxReal vertices[] = {0, 0, 1, 1};
+	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+	getRenderer()->drawLines2D(2, vertices, colors );
+	PxReal vertices2[] = {1, 0, 0, 1};
+	getRenderer()->drawLines2D(2, vertices2, colors );
 
 }
 
