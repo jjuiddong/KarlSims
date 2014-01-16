@@ -1,0 +1,101 @@
+
+Leaf( box, vec3(1.7,0.4,0.1), material(blue), mass(1),
+ 
+	joint( fixed, quat(), quat(), vec3(2,0,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Leaf
+	)
+
+) 
+
+FlowerLeaf( box, vec3(1.7,0.4,0.1), material(yellow), mass(1) ) 
+
+Circle( sphere, vec3(0.9,0.2,0.1), material(yellow), mass(1) 
+	
+	joint( fixed, quat(), quat(0.5,Vec3(0,0,1)), vec3(0.5,-0.4,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		FlowerLeaf
+	)
+
+	joint( fixed, quat(), quat(0.5,Vec3(0,0,1)), vec3(0.5,0,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		FlowerLeaf
+	)
+
+	joint( fixed, quat(), quat(-0.5,Vec3(0,0,1)), vec3(-0.5,0,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		FlowerLeaf
+	)
+
+	joint( fixed, quat(), quat(-0.5,Vec3(0,0,1)), vec3(-0.5,-0.4,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		FlowerLeaf
+	)
+
+	joint( fixed, quat(), quat(1.5,Vec3(0,0,1)), vec3(0,-0.4,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		FlowerLeaf
+	)
+
+) 
+
+Body( box, vec3(0.5,0.5,0.3), material(green), mass(1), randshape(0,0,0),
+
+	joint( fixed, quat(), quat(), vec3(0,-2,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(10),
+		period(10),
+		randpos(0,0,0),
+		randorient(0,0,0),
+		Body
+	),
+
+	joint( fixed, quat(), quat(0.5,Vec3(0,0,1)), vec3(1,-0.4,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Leaf
+	),
+
+	joint( fixed, quat(), quat(-0.5,Vec3(0,0,1)), vec3(-1,-0.4,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Leaf
+	),
+
+	joint( fixed, quat(), quat(), vec3(0,-1.5,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(10),
+		period(10),
+		randpos(0,0,0),
+		randorient(0,0,0),
+		terminalOnly,
+		Circle
+	)
+
+)
+
+main( root, vec3(0.5,0.5,0.3), material(green), mass(1),
+
+	joint( fixed, quat(), quat(), vec3(0,-2,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Body
+	)
+)
+
+
