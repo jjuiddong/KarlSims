@@ -35,12 +35,13 @@ namespace evc
 	protected:
 		CNode* GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
 			const PxVec3 &initialPos, const PxVec3 &randPos=PxVec3(0,0,0), const float dimensionRate=1.f, 
-			const PxVec3 &parentDim=PxVec3(0,0,0),  const bool IsTerminal=false);
+			const PxVec3 &parentDim=PxVec3(0,0,0), const bool IsTerminal=false);
 		CNode* GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
 			const PxVec3 &initialPos, const float dimensionRate, const PxVec3 &parentDim );
 
-		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos);
+		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
 		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
+
 		MaterialIndex GetMaterialType(const string &materialStr);
 		void GenerateRenderComposition( CNode *node );
 		PxVec3 RandVec3( const PxVec3 &vec, const float rate );

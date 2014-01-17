@@ -793,30 +793,37 @@ void RendererCompositionShape::GenerateBoxFromCloseVertex(
 	// find appropriate face
 	vector<int> line(6);
 	{
-		PxVec3 startV = v0[1] - v0[ 0];
-		startV.normalize();
-
 		int findIdx = -1;
-		for (u_int i=3; i >= 1; --i)
+		int findIdx2 = -1;
+		for (u_int k=0; k < 3; ++k)
 		{
-			PxVec3 v = v1[ i-1] - v1[ i];
-			v.normalize();
+			PxVec3 startV = v0[ k+1] - v0[ k];
+			startV.normalize();
 
-			if (startV.dot(v) > 0)
+			for (u_int i=3; i >= 1; --i)
 			{
-				findIdx = i;
-				break;
+				PxVec3 v = v1[ i-1] - v1[ i];
+				v.normalize();
+				const float dot = startV.dot(v);
+				if (dot > 0)
+				{
+					findIdx = i;
+					findIdx2 = k;
+					break;
+				}
 			}
+			if (findIdx >= 0)
+				break;
 		}
 
 		if (findIdx < 0)
 			return;
 
 		findIdx += 4;
-		line[ 0] = findIdx-- % 4;
-		line[ 1] = findIdx-- % 4;
-		line[ 2] = findIdx-- % 4;
-		line[ 3] = findIdx-- % 4;
+		line[ findIdx2++ % 4] = findIdx-- % 4;
+		line[ findIdx2++ % 4] = findIdx-- % 4;
+		line[ findIdx2++ % 4] = findIdx-- % 4;
+		line[ findIdx2++ % 4] = findIdx-- % 4;
 	}
 
  	vector<PxU16> face0Indices, outFace0Indices;

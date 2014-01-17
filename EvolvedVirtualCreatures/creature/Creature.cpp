@@ -102,8 +102,9 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
  @date 2013-12-06
 */
 CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
-	const PxVec3 &initialPos, const PxVec3 &randPos, const float dimensionRate, const PxVec3 &parentDim, const bool IsTerminal ) 
-	//dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
+	const PxVec3 &initialPos, const PxVec3 &randPos, const float dimensionRate, 
+	const PxVec3 &parentDim, const bool IsTerminal ) 
+	// dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
 {
 	if (!pexpr)
 		return NULL;
@@ -171,8 +172,6 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 
 	m_Nodes.push_back(pNode);
 
-	//if (IsTerminal)
-	//	return pNode;
 
 	// Generate Connection (None Terminal Connection)
 	PxRigidDynamic* body = pNode->m_pBody;
@@ -190,7 +189,9 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 		{
 			PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
 			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
-			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, pos - conPos, randPos, 
+			PxVec3 nodePos = pos - conPos;
+
+			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, randPos, 
 				dimensionRate*0.7f, dimension);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
@@ -206,7 +207,6 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 		pConnectList = pConnectList->next;
 	}
 
-	//pNode->InitNeuron();
 	return pNode;
 }
 
@@ -234,8 +234,10 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 			{
 				PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
 				PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
+				PxVec3 nodePos = pos - conPos;
+
 				CNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
-					pos - conPos, randPos, dimensionRate, parentDim, true);
+					nodePos, randPos, dimensionRate, parentDim, true);
 				if (pChildNode)
 				{
 					PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
@@ -350,7 +352,6 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 		CAngularSensor *pChildSensor = new CAngularSensor();
 		pJoint->ApplySensor(*pChildSensor);
 		childNode->m_pParentJointSensor = pChildSensor;
-		//childNode->InitNeuron();
 	}
 }
 
