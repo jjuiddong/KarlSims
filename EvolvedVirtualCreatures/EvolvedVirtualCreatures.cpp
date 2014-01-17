@@ -247,15 +247,17 @@ void CEvc::spawnNode(const int key)
 
 	case SPAWN_DEBUG_OBJECT3: 
 		{
-			PxVec3 initialPos(-50,10,0);
-			for (int i=0; i < 30; ++i)
-			{
-				pnode = new evc::CCreature(*this); 
-				pnode->GenerateByGenotype("genotype.txt", initialPos+PxVec3((i%10)*m_Gap, 0, (i/10)*m_Gap));
-				m_Creatures.push_back( pnode );
-			}
-
-			IsCreature = false; 
+			pnode = new evc::CCreature(*this); 
+			pnode->GenerateByGenotype("genotype_flower.txt", pos, g_pDbgConfig->displaySkinning); 
+			m_Creatures.push_back( pnode );
+			//PxVec3 initialPos(-50,10,0);
+			//for (int i=0; i < 30; ++i)
+			//{
+			//	pnode = new evc::CCreature(*this); 
+			//	pnode->GenerateByGenotype("genotype.txt", initialPos+PxVec3((i%10)*m_Gap, 0, (i/10)*m_Gap));
+			//	m_Creatures.push_back( pnode );
+			//}
+			//IsCreature = false; 
 		}
 		break;
 
