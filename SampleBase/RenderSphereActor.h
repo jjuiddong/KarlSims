@@ -32,7 +32,6 @@
 
 #include "RenderBaseActor.h"
 #include "foundation/PxSimpleTypes.h"
-#include "../wxMemMonitorLib/wxMemMonitor.h"
 
 	//DECLARE_TYPE_NAME(RenderSphereActor)
 	class RenderSphereActor : public RenderBaseActor

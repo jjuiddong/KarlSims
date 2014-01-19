@@ -11,7 +11,6 @@
 #include "EvolvedVirtualCreatures.h"
 extern SDbgConfig *g_pDbgConfig;
 
-//#include "../../../wxMemMonitorLib/wxMemMonitor.h"
 //#include "vld/vld.h"
 MEMORYMONITOR_INNER_PROCESS();
 

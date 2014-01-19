@@ -884,7 +884,7 @@ BOOL CFastMemLoader::ReadScriptRec( BYTE *pStruct, SScriptParseTree *pParseTree,
 
 		if (TYPE_POINTER == type.eType) // pointer는 따로 처리해줘야한다.
 		{
-			const int nSize = keyValue.array.size() * type.nElementSize;
+			const int nSize = (int)keyValue.array.size() * type.nElementSize;
 			if (nSize > 0)
 			{
 				BYTE *pSubMem = new BYTE[ nSize];
@@ -900,7 +900,7 @@ BOOL CFastMemLoader::ReadScriptRec( BYTE *pStruct, SScriptParseTree *pParseTree,
 				// memory주소값 설정
 				*(DWORD*)(pStruct+type.nOffset) = (DWORD)pSubMem;
 				// pointer size 값 설정
-				*(int*)(pStruct+type.nOffset-sizeof(void*)) = keyValue.array.size();
+				*(int*)(pStruct+type.nOffset-sizeof(void*)) = (int)keyValue.array.size();
 			}
 		}
 		else

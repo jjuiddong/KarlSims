@@ -186,7 +186,7 @@ bool CThread::RemoveTask(CTask *pTask)
 int CThread::GetTaskCount()
 {
 	AutoCSLock cs(m_TaskCS);
-	return m_Tasks.size();
+	return (int)m_Tasks.size();
 }
 
 
@@ -290,7 +290,7 @@ void CThread::DispatchMessage()
 			{
 				AutoCSLock cs(m_TaskCS);
 				TaskItor t = find_if(m_Tasks.begin(), m_Tasks.end(), 
-					boost::bind( &IsSameId<CTask>, _1, it->wParam) );
+					boost::bind( &IsSameId<CTask>, _1, (int)it->wParam) );
 				if (m_Tasks.end() != t)
 				{
 					(*t)->MessageProc((threadmsg::MSG)it->msg, it->wParam, it->lParam, it->added);

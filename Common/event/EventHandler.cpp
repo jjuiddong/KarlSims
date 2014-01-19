@@ -49,7 +49,7 @@ bool CEventHandler::EventDisconnect(CEventHandler *handler, EventType type)
 {
 	if (EVT_NULL == type)
 	{
-		for (int i=m_EventTable.size()-1; i >= 0; --i)
+		for (int i=(int)m_EventTable.size()-1; i >= 0; --i)
 		{
 			if (m_EventTable[ i].handler == handler)
 			{

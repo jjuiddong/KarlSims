@@ -19,6 +19,10 @@ using namespace evc;
 CCreature::CCreature(CEvc &sample) :
 	m_Sample(sample)
 ,	m_pRoot(NULL)
+,	m_pGenotypeExpr(NULL)
+,	m_IncreaseTime(0)
+,	m_GrowCount(0)
+,	m_IsDispSkinning(true)
 {
 
 }
@@ -32,6 +36,7 @@ CCreature::~CCreature()
 	//}
 	m_Nodes.clear();
 	SAFE_DELETE(m_pRoot);
+	genotype_parser::RemoveExpression(m_pGenotypeExpr);
 }
 
 
@@ -39,46 +44,43 @@ CCreature::~CCreature()
  @brief 
  @date 2013-12-09
 */
-void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, const bool isDispSkinning) //isDispSkinning=true
+void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
+	const int recursiveCount, const bool isDispSkinning) 
+	//recursivCount=2, isDispSkinning=true
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
-	genotype_parser::CGenotypeParser parser;
-	genotype_parser::SExpr *pexpr = parser.Parse(genotypeScriptFileName);
-	m_pRoot = GenerateByGenotype(NULL, pexpr, g_pDbgConfig->generationRecursiveCount, initialPos);
+	m_IsDispSkinning = isDispSkinning;
+
+	m_pRoot = GenerateByGenotype(NULL, m_pGenotypeExpr, recursiveCount, initialPos);
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
+	m_Genome.fitness = 0;
+	m_Genome.chromo.clear();
+	m_Genome.chromo.reserve(64);
+	GetChromo(this, m_pGenotypeExpr, m_Genome.chromo);
+
+	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
+	m_InitialPos.y = 0;
+
+
+	// generate skinning mesh
 	m_TmPalette.resize(m_Nodes.size()); // generate tm palette
 	if (isDispSkinning)
 	{
 		GenerateRenderComposition(m_pRoot);
 
 		PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
-		PxU32 nbShapes0 = rigidActor0->getNbShapes();
-		if (!nbShapes0)
-			return;
-		PxShape** shapes0 = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*nbShapes0);
-		PxU32 nb0 = rigidActor0->getShapes(shapes0, nbShapes0);
-		PX_ASSERT(nb0==nbShapes0);
-		m_Sample.link(m_pRoot->m_pRenderComposition, shapes0[ 0], m_pRoot->GetBody());
-		SAMPLE_FREE(shapes0);
+		PxShape *shape;
+		if (1 == rigidActor0->getShapes(&shape, 1))
+			m_Sample.link(m_pRoot->m_pRenderComposition, shape, m_pRoot->GetBody());
 	}
-
-	m_Genome.fitness = 0;
-	m_Genome.chromo.clear();
-	m_Genome.chromo.reserve(64);
-	GetChromo(this, pexpr, m_Genome.chromo);
-
-	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
-	m_InitialPos.y = 0;
-
-	genotype_parser::RemoveExpression(pexpr);
 }
 
 
 /**
- @brief 
+ @brief generate creature by genome 
  @date 2013-12-13
 */
 void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos)
@@ -98,13 +100,56 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
 
 
 /**
+ @brief progressive generate creature
+ @date 2014-01-17
+*/
+void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const bool isDispSkinning) 
+	//isDispSkinning=true
+{
+	if (m_pRoot)
+	{
+		GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+	}
+	else
+	{
+		genotype_parser::CGenotypeParser parser;
+		m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
+		MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
+		GenerateByGenotype(genotypeScriptFileName, initialPos, 1, isDispSkinning);
+	}
+}
+
+
+/**
+ @brief 
+ @date 2014-01-17
+*/
+void CCreature::GenerateProgressive( CNode *currentNode, const genotype_parser::SExpr *expr )
+{
+	RET(!currentNode);
+
+	BOOST_FOREACH (auto &joint, currentNode->m_Joints)
+	{
+		GenerateProgressive((CNode*)joint->GetActor1(), expr);
+	}
+
+	if (currentNode->m_Joints.empty())
+	{
+		// Generate parts
+		const genotype_parser::SExpr *nodeExpr = FindExpr(currentNode->m_Name);
+		GenerateByGenotype(currentNode, nodeExpr, 1, PxVec3(), false);
+	}
+}
+
+
+/**
  @brief create creature by genotype script
  @date 2013-12-06
 */
 CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
-	const PxVec3 &initialPos, const PxVec3 &randPos, const float dimensionRate, 
+	const PxVec3 &initialPos, const bool isGenerateBody, const PxVec3 &randPos, const float dimensionRate, 
 	const PxVec3 &parentDim, const bool IsTerminal ) 
-	// dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
+	// isGenerateBody=true, randPos=Px(0,0,0), dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
 {
 	if (!pexpr)
 		return NULL;
@@ -112,66 +157,26 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 		return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
 
 	// Generate Body
-	PxVec3 pos = initialPos;
-	pos += RandVec3(randPos, 1.f);
-
-	CNode *pNode = new CNode(m_Sample);
-	pNode->m_Name = pexpr->id;
-	pNode->m_PaletteIndex = m_Nodes.size();
-	pNode->m_IsTerminalNode = IsTerminal;
-
-	PxVec3 dimension(pexpr->dimension.x, pexpr->dimension.y, pexpr->dimension.z);
-	const PxVec3 randShape(pexpr->randShape.x, pexpr->randShape.y, pexpr->randShape.z);
-	const PxVec3 randRange(dimension.x*randShape.x, dimension.y*randShape.y, dimension.z*randShape.z);
-	dimension += RandVec3(randRange, 1.f);
-	dimension = MaximumVec3(dimension, PxVec3(0.1f, 0.1f, 0.1f));
-	dimension *= dimensionRate;
-
-	if (!parentDim.isZero())
+	CNode *pNode = NULL;
+	if (isGenerateBody)
 	{
-		const float parentVolume = parentDim.x * parentDim.y * parentDim.z;
-		const float childVolume = dimension.x * dimension.y * dimension.z;
-		if ((childVolume*1.3f) >= parentVolume)
-		{
-			dimension /= ((childVolume*1.3f) / parentVolume);
-		}
+		PxVec3 tmp;
+		pNode = CreateBody(pexpr, initialPos, randPos, dimensionRate, parentDim, tmp);
+		RETV(!pNode, NULL);
+
+		pNode->m_PaletteIndex = m_Nodes.size();
+		pNode->m_IsTerminalNode = IsTerminal;
+		m_Nodes.push_back(pNode);
+	}
+	else
+	{
+		pNode = parentNode;
 	}
 
-	//const bool IsParentTerminal = (parentNode && parentNode->m_IsTerminalNode);
-	//if (!IsTerminal && (!parentDim.isZero() && parentDim.magnitude() < .2f))
-	//{
-	//	SAFE_DELETE(pNode);
-	//	return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
-	//}
+	RETV(!pNode, NULL);
 
-	MaterialIndex material = GetMaterialType(pexpr->material);
-	pNode->m_MaterialName = pexpr->material;
-	const float mass = pexpr->mass;
-
-	if (boost::iequals(pexpr->shape, "box"))
-	{
-		pNode->m_pBody = m_Sample.createBox(pos, dimension, NULL, m_Sample.getManageMaterial(material), mass);
-	}
-	else if (boost::iequals(pexpr->shape, "sphere"))
-	{
-		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
-	}
-	else if (boost::iequals(pexpr->shape, "root"))
-	{
-		pos = PxVec3(pos.x,0,pos.z);
-		pNode->m_pBody = m_Sample.createBox(pos, PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
-		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
-	}
-
-	if (pNode->m_pBody)
-	{
-		PxShape *shape;
-		if (1 == pNode->m_pBody->getShapes(&shape, 1))
-			pNode->m_pShape = shape;
-	}
-
-	m_Nodes.push_back(pNode);
-
+	const PxVec3 pos = pNode->m_pBody->getGlobalPose().p;
+	PxVec3 dimension = pNode->m_Dimension;
 
 	// Generate Connection (None Terminal Connection)
 	PxRigidDynamic* body = pNode->m_pBody;
@@ -191,7 +196,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
 			PxVec3 nodePos = pos - conPos;
 
-			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, randPos, 
+			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, true, randPos, 
 				dimensionRate*0.7f, dimension);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
@@ -207,6 +212,83 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 		pConnectList = pConnectList->next;
 	}
 
+	return pNode;
+}
+
+
+/**
+ @brief create body
+ @date 2014-01-17
+*/
+CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 &randPos, 
+	const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension)
+{
+	// Generate Body
+	PxVec3 pos = initialPos;
+	pos += RandVec3(randPos, 1.f);
+
+	CNode *pNode = new CNode(m_Sample);
+	pNode->m_Name = expr->id;
+
+	PxVec3 dimension(expr->dimension.x, expr->dimension.y, expr->dimension.z);
+	const PxVec3 randShape(expr->randShape.x, expr->randShape.y, expr->randShape.z);
+	const PxVec3 randRange(dimension.x*randShape.x, dimension.y*randShape.y, dimension.z*randShape.z);
+	dimension += RandVec3(randRange, 1.f);
+	dimension = MaximumVec3(dimension, PxVec3(0.1f, 0.1f, 0.1f));
+	dimension *= dimensionRate;
+
+	if (!parentDim.isZero())
+	{
+		const float parentVolume = parentDim.x * parentDim.y * parentDim.z;
+		const float childVolume = dimension.x * dimension.y * dimension.z;
+		if ((childVolume*1.3f) >= parentVolume)
+		{
+			dimension /= ((childVolume*1.3f) / parentVolume);
+		}
+	}
+
+	//const bool IsParentTerminal = (parentNode && parentNode->m_IsTerminalNode);
+	//if (!IsTerminal && (!parentDim.isZero() && parentDim.magnitude() < .2f))
+	//{
+	//	SAFE_DELETE(pNode);
+	//	return GenerateTerminalNode(parentNode, expr, initialPos, dimensionRate, parentDim);
+	//}
+
+	if (dimension.magnitude() < .1f)
+	{
+		SAFE_DELETE(pNode);
+		return NULL;
+	}
+
+	MaterialIndex material = GetMaterialType(expr->material);
+	pNode->m_MaterialName = expr->material;
+	const float mass = expr->mass;
+
+	if (boost::iequals(expr->shape, "box"))
+	{
+		pNode->m_pBody = m_Sample.createBox(pos, dimension, NULL, m_Sample.getManageMaterial(material), mass);
+	}
+	else if (boost::iequals(expr->shape, "sphere"))
+	{
+		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
+	}
+	else if (boost::iequals(expr->shape, "root"))
+	{ // root node size 0.1, 0.1, 0.1
+		pos = PxVec3(pos.x,0,pos.z);
+		//dimension = PxVec3(0.1f,0.1f,0.1f);
+		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	}
+
+	if (pNode->m_pBody)
+	{
+		PxShape *shape;
+		if (1 == pNode->m_pBody->getShapes(&shape, 1))
+			pNode->m_pShape = shape;
+	}
+
+	pNode->m_Dimension = dimension;
+	outDimension = dimension;
 	return pNode;
 }
 
@@ -237,7 +319,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 				PxVec3 nodePos = pos - conPos;
 
 				CNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
-					nodePos, randPos, dimensionRate, parentDim, true);
+					nodePos, true, randPos, dimensionRate, parentDim, true);
 				if (pChildNode)
 				{
 					PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
@@ -447,6 +529,23 @@ MaterialIndex CCreature::GetMaterialType(const string &materialStr)
 */
 void CCreature::Move(float dtime)
 {
+	m_IncreaseTime += dtime;
+
+	if (m_GrowCount < 3)
+	{
+		if (m_IncreaseTime > 1.f)
+		{
+			++m_GrowCount;
+			m_IncreaseTime = 0;
+			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+			m_TmPalette.resize(m_Nodes.size());
+
+
+
+
+		}
+	}
+
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
 
@@ -604,4 +703,43 @@ PxVec3 CCreature::MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 )
 	val.y = max(vec0.y, vec1.y);
 	val.z = max(vec0.z, vec1.z);
 	return val;
+}
+
+
+/**
+ @brief find exression by name
+ @date 2014-01-17
+*/
+const genotype_parser::SExpr* CCreature::FindExpr( const string &name)
+{
+	auto it = m_GenotypeSymbols.find(name);
+	if (m_GenotypeSymbols.end() != it)
+		return it->second;
+	else
+		return NULL;
+}
+
+
+/**
+ @brief make expression symbol table
+ @date 2014-01-17
+*/
+void CCreature::MakeExprSymbol( const genotype_parser::SExpr *expr, OUT map<string, const genotype_parser::SExpr*> &symbols )
+{
+	using namespace genotype_parser;
+	RET(!expr);
+
+	auto it = symbols.find(expr->id);
+	if (symbols.end() != it)
+		return; // already exist
+
+	symbols[ expr->id] = expr;
+
+	SConnectionList *connectList = expr->connection;
+	while (connectList)
+	{
+		const SConnection *connection = connectList->connect;
+		MakeExprSymbol(connection->expr, symbols);
+		connectList = connectList->next;
+	}
 }

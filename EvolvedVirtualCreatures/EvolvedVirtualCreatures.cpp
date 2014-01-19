@@ -233,22 +233,28 @@ void CEvc::spawnNode(const int key)
 	switch (key)
 	{
 	case SPAWN_DEBUG_OBJECT: 
-		pnode = new evc::CCreature(*this); 
-		pnode->GenerateByGenotype("genotype.txt", pos, g_pDbgConfig->displaySkinning); 
-		m_Creatures.push_back( pnode );
-		break;
-
 	case SPAWN_DEBUG_OBJECT2: 
-		pnode = new evc::CCreature(*this); 
-		pnode->GenerateByGenotype("genotype_box.txt", pos, g_pDbgConfig->displaySkinning); 
-		m_Obstacles.push_back( pnode );	
-		IsCreature = false; 
+	case SPAWN_DEBUG_OBJECT3: 
+	case SPAWN_DEBUG_OBJECT4: 
+	case SPAWN_DEBUG_OBJECT5: 
+	case SPAWN_DEBUG_OBJECT6: 
+		{
+			string fileName[] = {"genotype.txt", "genotype_box.txt", "genotype_herb.txt", "genotype_tree.txt", "genotype_flower.txt" };
+			const int idx = key - SPAWN_DEBUG_OBJECT;
+			if ((sizeof(fileName)/sizeof(string)) <= idx)
+				return;
+
+			pnode = new evc::CCreature(*this); 
+			//pnode->GenerateByGenotype(fileName[ idx], pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateProgressive(fileName[ idx], pos, g_pDbgConfig->displaySkinning); 
+			m_Creatures.push_back( pnode );
+		}
 		break;
 
-	case SPAWN_DEBUG_OBJECT3: 
+	case SPAWN_DEBUG_OBJECT9: 
 		{
 			pnode = new evc::CCreature(*this); 
-			pnode->GenerateByGenotype("genotype_flower.txt", pos, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateByGenotype("genotype_flower.txt", pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
 			//PxVec3 initialPos(-50,10,0);
 			//for (int i=0; i < 30; ++i)

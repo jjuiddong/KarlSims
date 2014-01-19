@@ -159,7 +159,8 @@ Tokentype CGenotypeScanner::GetTokenQ( int nIdx )
 
 const string& CGenotypeScanner::GetTokenStringQ( int nIdx )
 {
-	if (m_Source.empty()) return "";
+	static string emptyString;
+	if (m_Source.empty()) return emptyString;
 	return m_TokQ[ nIdx].str;
 }
 

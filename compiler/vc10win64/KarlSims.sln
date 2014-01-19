@@ -136,8 +136,8 @@ Global
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|Mixed Platforms.ActiveCfg = Debug|x64
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|Mixed Platforms.Build.0 = Debug|x64
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|Win32.ActiveCfg = Release|x64
-		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|x64.ActiveCfg = Debug|x64
-		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|x64.Build.0 = Debug|x64
+		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|x64.ActiveCfg = Release|x64
+		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.checked|x64.Build.0 = Release|x64
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.debug|Mixed Platforms.Build.0 = Debug|x64
 		{8D30BA71-8823-48F1-A45C-3C8ACC1CC9EC}.debug|Win32.ActiveCfg = Debug|x64
@@ -156,8 +156,8 @@ Global
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|Mixed Platforms.ActiveCfg = Release|x64
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|Mixed Platforms.Build.0 = Release|x64
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|Win32.ActiveCfg = Release|x64
-		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|x64.ActiveCfg = Debug|x64
-		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|x64.Build.0 = Debug|x64
+		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|x64.ActiveCfg = Release|x64
+		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.checked|x64.Build.0 = Release|x64
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.debug|Mixed Platforms.Build.0 = Debug|x64
 		{29E20223-9DB1-4C00-9434-BCB99B9E5A7F}.debug|Win32.ActiveCfg = Debug|x64
@@ -176,8 +176,8 @@ Global
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|Mixed Platforms.ActiveCfg = Release|x64
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|Mixed Platforms.Build.0 = Release|x64
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|Win32.ActiveCfg = Release|x64
-		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|x64.ActiveCfg = Debug|x64
-		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|x64.Build.0 = Debug|x64
+		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|x64.ActiveCfg = checked|x64
+		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.checked|x64.Build.0 = checked|x64
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.debug|Mixed Platforms.Build.0 = Debug|x64
 		{BEE3E346-E2E0-4D75-911F-70CFFE2F0C53}.debug|Win32.ActiveCfg = Debug|x64

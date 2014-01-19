@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "GenotypeParser.h"
-
+#include <iostream>
 
 using namespace evc;
 using namespace evc::genotype_parser;
@@ -269,11 +269,11 @@ SVec3 genotype_parser::CGenotypeParser::vec3()
 		{
 			Match(ID);
 			Match(LPAREN);
-			v.x = atof(number().c_str());
+			v.x = (float)atof(number().c_str());
 			Match(COMMA);
-			v.y = atof(number().c_str());
+			v.y = (float)atof(number().c_str());
 			Match(COMMA);
-			v.z = atof(number().c_str());
+			v.z = (float)atof(number().c_str());
 			Match(RPAREN);
 		}
 		else
@@ -311,7 +311,7 @@ SQuat genotype_parser::CGenotypeParser::quat()
 			Match(LPAREN);
 			if (RPAREN != m_Token)
 			{
-				quat.angle = atof(number().c_str());
+				quat.angle = (float)atof(number().c_str());
 				Match(COMMA);
 				quat.dir = vec3();
 			}
@@ -351,11 +351,11 @@ SVec3 genotype_parser::CGenotypeParser::limit()
 	{
 		Match(ID);
 		Match(LPAREN);
-		v.x = atof(number().c_str());
+		v.x = (float)atof(number().c_str());
 		Match(COMMA);
-		v.y = atof(number().c_str());
+		v.y = (float)atof(number().c_str());
 		Match(COMMA);
-		v.z = atof(number().c_str());
+		v.z = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -409,7 +409,7 @@ float genotype_parser::CGenotypeParser::mass()
 	{
 		Match(ID);
 		Match(LPAREN);
-		ret = atof(number().c_str());
+		ret = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -438,7 +438,7 @@ SVec3 genotype_parser::CGenotypeParser::velocity()
 	{
 		Match(ID);
 		Match(LPAREN);
-		v.x = atof(number().c_str());
+		v.x = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -462,7 +462,7 @@ float genotype_parser::CGenotypeParser::period()
 	{
 		Match(ID);
 		Match(LPAREN);
-		ret = atof(number().c_str());
+		ret = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -517,11 +517,11 @@ SVec3 CGenotypeParser::randshape()
 	{
 		Match(ID);
 		Match(LPAREN);
-		v.x = atof(number().c_str());
+		v.x = (float)atof(number().c_str());
 		Match(COMMA);
-		v.y = atof(number().c_str());
+		v.y = (float)atof(number().c_str());
 		Match(COMMA);
-		v.z = atof(number().c_str());
+		v.z = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -550,11 +550,11 @@ SVec3 genotype_parser::CGenotypeParser::randpos()
 	{
 		Match(ID);
 		Match(LPAREN);
-		v.x = atof(number().c_str());
+		v.x = (float)atof(number().c_str());
 		Match(COMMA);
-		v.y = atof(number().c_str());
+		v.y = (float)atof(number().c_str());
 		Match(COMMA);
-		v.z = atof(number().c_str());
+		v.z = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else
@@ -583,11 +583,11 @@ SVec3 genotype_parser::CGenotypeParser::randorient()
 	{
 		Match(ID);
 		Match(LPAREN);
-		v.x = atof(number().c_str());
+		v.x = (float)atof(number().c_str());
 		Match(COMMA);
-		v.y = atof(number().c_str());
+		v.y = (float)atof(number().c_str());
 		Match(COMMA);
-		v.z = atof(number().c_str());
+		v.z = (float)atof(number().c_str());
 		Match(RPAREN);
 	}
 	else

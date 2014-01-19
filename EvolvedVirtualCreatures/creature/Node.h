@@ -52,6 +52,7 @@ namespace evc
 		RenderComposition *m_pRenderComposition;
 		int m_PaletteIndex; // tm palette index
 		PxBounds3 m_worldBounds;
+		PxVec3 m_Dimension;
 
 		// brain
 		CNeuralNet *m_pBrain;

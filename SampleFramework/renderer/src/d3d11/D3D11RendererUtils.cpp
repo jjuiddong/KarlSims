@@ -65,11 +65,11 @@ D3DX11::D3DX11(void)
 	if (m_library)
 	{
 		m_pD3DX11CompileFromFile = (D3DX11COMPILEFROMFILE)GetProcAddress(m_library, "D3DX11CompileFromFileA");
-		RENDERER_ASSERTW(m_pD3DX11CompileFromFile, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
+		RENDERER_ASSERT(m_pD3DX11CompileFromFile, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
 		m_pD3DX11CompileFromMemory = (D3DX11COMPILEFROMMEMORY)GetProcAddress(m_library, "D3DX11CompileFromMemory");
-		RENDERER_ASSERTW(m_pD3DX11CompileFromMemory, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
+		RENDERER_ASSERT(m_pD3DX11CompileFromMemory, L"Unable to find D3DX11 Function D3DX11CompileFromFile in " D3DX11_DLL L".");
 		m_pD3DX11SaveTextureToMemory = (D3DX11SAVETEXTURETOMEMORY)GetProcAddress(m_library, "D3DX11SaveTextureToMemory");
-		RENDERER_ASSERTW(m_pD3DX11SaveTextureToMemory, L"Unable to find D3DX11 Function D3DX11SaveTextureToMemory in " D3DX11_DLL L".");
+		RENDERER_ASSERT(m_pD3DX11SaveTextureToMemory, L"Unable to find D3DX11 Function D3DX11SaveTextureToMemory in " D3DX11_DLL L".");
 	}
 
 	m_compiler_library = LoadLibrary(D3DCOMPILER_DLL);
@@ -85,9 +85,9 @@ D3DX11::D3DX11(void)
 	if (m_compiler_library)
 	{
 		m_pD3DReflect = (D3DREFLECT)GetProcAddress(m_compiler_library, "D3DReflect");
-		RENDERER_ASSERTW(m_pD3DReflect, L"Unable to find D3D Function D3DReflect in " D3DCOMPILER_DLL L".");
+		RENDERER_ASSERT(m_pD3DReflect, L"Unable to find D3D Function D3DReflect in " D3DCOMPILER_DLL L".");
 		m_pD3DCreateBlob = (D3DCREATEBLOB)GetProcAddress(m_compiler_library, "D3DCreateBlob");
-		RENDERER_ASSERTW(m_pD3DCreateBlob, L"Unable to find D3D Function D3DCreateBlob in " D3DCOMPILER_DLL L".");
+		RENDERER_ASSERT(m_pD3DCreateBlob, L"Unable to find D3D Function D3DCreateBlob in " D3DCOMPILER_DLL L".");
 	}
 #endif
 }
