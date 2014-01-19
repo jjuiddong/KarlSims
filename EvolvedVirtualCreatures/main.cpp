@@ -46,6 +46,15 @@ void mainInitialize()
 	if(gApp->isOpen()) gApp->onOpen();
 #endif
 
+	class PxAssertHandler2 : public PxAssertHandler
+	{
+		virtual void operator()(const char* exp, const char* file, int line, bool& ignore) {
+			assert(exp);
+		}
+	};
+	static PxAssertHandler2 assertHandler;
+	physx::PxSetAssertHandler( assertHandler );
+
 	if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
 	//if (!memmonitor::Init(memmonitor::INNER_PROCESS, NULL,"config_evc.json" ))
 	{

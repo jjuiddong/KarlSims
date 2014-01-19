@@ -17,7 +17,8 @@ CNode::CNode(CEvc &sample) :
 ,	m_pBody(NULL)
 ,	m_pShape(NULL)
 ,	m_pParentJointSensor(NULL)
-,	m_pRenderComposition(NULL)
+,	m_pShapeRenderer(NULL)
+,	m_pOriginalShapeRenderer(NULL)
 ,	m_PaletteIndex(0)
 ,	m_IsTerminalNode(false)
 {
@@ -41,6 +42,9 @@ CNode::~CNode()
 		SAFE_DELETE(p);
 	}
 	SAFE_DELETE(m_pParentJointSensor);
+
+	m_Sample.removeRenderObject(m_pShapeRenderer);
+	m_Sample.removeRenderObject(m_pOriginalShapeRenderer);	
 }
 
 

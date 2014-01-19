@@ -46,7 +46,7 @@ namespace evc
 		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
 		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
 
-
+		void GenerateSkinningMesh();
 		void GenerateRenderComposition( CNode *node );
 		PxVec3 RandVec3( const PxVec3 &vec, const float rate );
 		PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );

@@ -239,14 +239,15 @@ void CEvc::spawnNode(const int key)
 	case SPAWN_DEBUG_OBJECT5: 
 	case SPAWN_DEBUG_OBJECT6: 
 		{
-			string fileName[] = {"genotype.txt", "genotype_box.txt", "genotype_herb.txt", "genotype_tree.txt", "genotype_flower.txt" };
+			string fileNames[] = {string("genotype.txt"), string("genotype_box.txt"), 
+				string("genotype_herb.txt"), string("genotype_tree.txt"), string("genotype_flower.txt") };
 			const int idx = key - SPAWN_DEBUG_OBJECT;
-			if ((sizeof(fileName)/sizeof(string)) <= idx)
+			if ((sizeof(fileNames)/sizeof(string)) <= idx)
 				return;
 
 			pnode = new evc::CCreature(*this); 
 			//pnode->GenerateByGenotype(fileName[ idx], pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
-			pnode->GenerateProgressive(fileName[ idx], pos, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateProgressive(fileNames[ idx], pos, g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
 		}
 		break;

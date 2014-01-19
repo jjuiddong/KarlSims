@@ -1032,6 +1032,10 @@ void RendererCompositionShape::ApplyPalette()
 		PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
 		const PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (stride * i));
 
+#ifdef _DEBUG
+		if (!m_TmPalette[ bidx].isSane()) continue;
+#endif
+
 		PxTransform tm0 = m_TmPalette[ bidx] * PxTransform(m_SrcVertex[ i]);
 		PxTransform tm1 = PxTransform(m_TmPalette[ bidx].q) * PxTransform(m_SrcNormal[ i]);
 

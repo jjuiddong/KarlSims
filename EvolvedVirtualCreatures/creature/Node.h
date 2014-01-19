@@ -49,7 +49,8 @@ namespace evc
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;
 		CSensor *m_pParentJointSensor;
-		RenderComposition *m_pRenderComposition;
+		RenderComposition *m_pShapeRenderer;
+		RenderComposition *m_pOriginalShapeRenderer;
 		int m_PaletteIndex; // tm palette index
 		PxBounds3 m_worldBounds;
 		PxVec3 m_Dimension;

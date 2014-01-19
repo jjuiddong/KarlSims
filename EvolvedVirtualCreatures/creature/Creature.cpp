@@ -64,18 +64,8 @@ void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const P
 	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
 	m_InitialPos.y = 0;
 
-
-	// generate skinning mesh
-	m_TmPalette.resize(m_Nodes.size()); // generate tm palette
-	if (isDispSkinning)
-	{
-		GenerateRenderComposition(m_pRoot);
-
-		PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
-		PxShape *shape;
-		if (1 == rigidActor0->getShapes(&shape, 1))
-			m_Sample.link(m_pRoot->m_pRenderComposition, shape, m_pRoot->GetBody());
-	}
+	m_TmPalette.resize(m_Nodes.size());
+	GenerateSkinningMesh();
 }
 
 
@@ -531,21 +521,6 @@ void CCreature::Move(float dtime)
 {
 	m_IncreaseTime += dtime;
 
-	if (m_GrowCount < 3)
-	{
-		if (m_IncreaseTime > 1.f)
-		{
-			++m_GrowCount;
-			m_IncreaseTime = 0;
-			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-			m_TmPalette.resize(m_Nodes.size());
-
-
-
-
-		}
-	}
-
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
 
@@ -557,7 +532,7 @@ void CCreature::Move(float dtime)
 	}
 
 	// update worldbound
-	if (m_pRoot && m_pRoot->m_pRenderComposition)
+	if (m_pRoot && m_pRoot->m_pShapeRenderer)
 	{
 		PxBounds3 worldBound = m_pRoot->m_worldBounds;
 		BOOST_FOREACH (auto &node, m_Nodes)
@@ -573,7 +548,7 @@ void CCreature::Move(float dtime)
 			worldBound.maximum.y = max(worldBound.maximum.y, bound.maximum.y);
 			worldBound.maximum.z = max(worldBound.maximum.z, bound.maximum.z);
 		}
-		m_pRoot->m_pRenderComposition->setWorldBounds(worldBound);
+		m_pRoot->m_pShapeRenderer->setWorldBounds(worldBound);
 	}
 
 	// fitness
@@ -584,6 +559,20 @@ void CCreature::Move(float dtime)
 		PxVec3 len =  pos - m_InitialPos;
 		m_Genome.fitness = len.magnitude();
 	}
+
+	// grow creature
+	if (m_GrowCount < 3)
+	{
+		if (m_IncreaseTime > 1.f)
+		{
+			++m_GrowCount;
+			m_IncreaseTime = 0;
+			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+			m_TmPalette.resize(m_Nodes.size());
+			GenerateSkinningMesh();
+		}
+	}
+
 }
 
 
@@ -610,6 +599,36 @@ const CNeuralNet* CCreature::GetBrain() const
 
 
 /**
+ @brief generate skinning mesh from m_pRoot Node
+ @date 2014-01-19
+*/
+void CCreature::GenerateSkinningMesh()
+{
+	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+
+	GenerateRenderComposition(m_pRoot);
+	//PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
+	//PxShape *shape;
+	//if (1 == rigidActor0->getShapes(&shape, 1))
+	//	m_Sample.link(m_pRoot->m_pShapeRenderer, shape, m_pRoot->GetBody());
+
+	if (m_pRoot && m_pRoot->m_pOriginalShapeRenderer)
+	{
+		if (m_pRoot->m_pShapeRenderer)
+		{
+			m_Sample.addRenderObject( m_pRoot->m_pShapeRenderer );
+		}
+		else
+		{
+			m_pRoot->m_pShapeRenderer = m_pRoot->m_pOriginalShapeRenderer;
+			m_Sample.addRenderObject( m_pRoot->m_pShapeRenderer );
+		}
+	}
+
+}
+
+
+/**
  @brief composite all node shape
  @date 2014-01-05
 */
@@ -625,48 +644,63 @@ void CCreature::GenerateRenderComposition( CNode *node )
 	const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
 	RenderMaterial *material = m_Sample.getManageMaterial(materialIndex);
 
-	PxRigidDynamic *rigidActor0 = node->GetBody();
-	PxU32 nbShapes0 = rigidActor0->getNbShapes();
-	if (!nbShapes0)
-		return;
-	PxShape** shapes0 = (PxShape**)SAMPLE_ALLOC(sizeof(PxShape*)*nbShapes0);
-	PxU32 nb0 = rigidActor0->getShapes(shapes0, nbShapes0);
-	PX_ASSERT(nb0==nbShapes0);
-
-	RenderBaseActor *renderActor0 = m_Sample.getRenderActor(rigidActor0, shapes0[ 0]);
-	if (renderActor0)
+	// generate renderer
+	if (!node->m_pOriginalShapeRenderer)
 	{
-		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), node->m_PaletteIndex, 
-			m_TmPalette, renderActor0->getRenderShape(), material);
+		PxRigidDynamic *rigidActor0 = node->GetBody();
+		PxShape *shape0;
+		if (1 == rigidActor0->getShapes(&shape0,1))
+		{
+			RenderBaseActor *renderActor0 = m_Sample.getRenderActor(rigidActor0, shape0);
+			if (renderActor0)
+			{
+				RenderComposition *newRenderer = new RenderComposition(*m_Sample.getRenderer(), node->m_PaletteIndex, 
+					m_TmPalette, renderActor0->getRenderShape(), material);
 
-		renderActor0->setRendering(false);
-		node->m_pRenderComposition->setEnableCameraCull(true);
+				renderActor0->setRendering(false);
+				newRenderer->setEnableCameraCull(true);
 
-		m_Sample.addRenderObject( node->m_pRenderComposition );
-		m_Sample.removeRenderObject(renderActor0);
-		m_Sample.unlink(renderActor0, shapes0[ 0], rigidActor0);
+				node->m_pOriginalShapeRenderer = newRenderer;
+				//m_Sample.addRenderObject( node->m_pOriginalShapeRenderer );
+				m_Sample.removeRenderObject(renderActor0);
+				m_Sample.unlink(renderActor0, shape0, rigidActor0);
+			}
+		}
 	}
-	SAMPLE_FREE(shapes0);
 
+	// remove shape renderer
+	if (node->m_pShapeRenderer && (node->m_pShapeRenderer != node->m_pOriginalShapeRenderer))
+	{
+		m_Sample.removeRenderObject(node->m_pShapeRenderer);
+		node->m_pShapeRenderer = NULL;
+	}
 
 	// composite child shape
 	BOOST_FOREACH (auto joint, node->m_Joints)
 	{
 		CNode *child = (CNode*)joint->GetActor1();
 
-		RenderComposition *p = node->m_pRenderComposition;
-		node->m_pRenderComposition = new RenderComposition(*m_Sample.getRenderer(), 
+		RenderComposition *parentRenderer = (node->m_pShapeRenderer)? node->m_pShapeRenderer : node->m_pOriginalShapeRenderer;
+		RenderComposition *childRenderer = (child->m_pShapeRenderer)? child->m_pShapeRenderer : child->m_pOriginalShapeRenderer;
+
+		RenderComposition *newRenderer = new RenderComposition(*m_Sample.getRenderer(), 
 			node->m_PaletteIndex, child->m_PaletteIndex,
 			node->m_PaletteIndex, m_TmPalette, 
-			(SampleRenderer::RendererCompositionShape*)p->getRenderShape(), joint->GetTm0(), 
-			(SampleRenderer::RendererCompositionShape*)child->m_pRenderComposition->getRenderShape(), joint->GetTm1());
+			(SampleRenderer::RendererCompositionShape*)parentRenderer->getRenderShape(), joint->GetTm0(), 
+			(SampleRenderer::RendererCompositionShape*)childRenderer->getRenderShape(), joint->GetTm1());
 
-		node->m_pRenderComposition->setEnableCameraCull(true);
+		newRenderer->setEnableCameraCull(true);
 
-		m_Sample.addRenderObject( node->m_pRenderComposition );
-		m_Sample.removeRenderObject(p);
-		m_Sample.removeRenderObject(child->m_pRenderComposition);
-		child->m_pRenderComposition = NULL;
+		// remove shape renderer
+		if (node->m_pShapeRenderer && (node->m_pShapeRenderer != node->m_pOriginalShapeRenderer))
+			m_Sample.removeRenderObject(node->m_pShapeRenderer);
+
+		node->m_pShapeRenderer = newRenderer;
+
+		//m_Sample.addRenderObject( node->m_pShapeRenderer );
+		//m_Sample.removeRenderObject(parentRenderer);
+		//m_Sample.removeRenderObject(child->m_pRenderComposition);
+		//child->m_pRenderComposition = NULL;
 	}
 
 }
