@@ -43,8 +43,9 @@ CNode::~CNode()
 	}
 	SAFE_DELETE(m_pParentJointSensor);
 
-	m_Sample.removeRenderObject(m_pShapeRenderer);
-	m_Sample.removeRenderObject(m_pOriginalShapeRenderer);	
+	m_Sample.removeRenderObject(m_pOriginalShapeRenderer);
+	if (m_pOriginalShapeRenderer != m_pShapeRenderer)
+		m_Sample.removeRenderObject(m_pShapeRenderer);
 }
 
 

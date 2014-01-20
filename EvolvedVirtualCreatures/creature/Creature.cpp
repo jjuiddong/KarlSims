@@ -521,6 +521,19 @@ void CCreature::Move(float dtime)
 {
 	m_IncreaseTime += dtime;
 
+	// grow creature
+	if (m_GrowCount < 3)
+	{
+		if (m_IncreaseTime > 1.f)
+		{
+			++m_GrowCount;
+			m_IncreaseTime = 0;
+			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+			m_TmPalette.resize(m_Nodes.size());
+			GenerateSkinningMesh();
+		}
+	}
+
 	BOOST_FOREACH (auto &node, m_Nodes)
 		node->Move(dtime);
 
@@ -558,19 +571,6 @@ void CCreature::Move(float dtime)
 		pos.y = 0;
 		PxVec3 len =  pos - m_InitialPos;
 		m_Genome.fitness = len.magnitude();
-	}
-
-	// grow creature
-	if (m_GrowCount < 3)
-	{
-		if (m_IncreaseTime > 1.f)
-		{
-			++m_GrowCount;
-			m_IncreaseTime = 0;
-			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-			m_TmPalette.resize(m_Nodes.size());
-			GenerateSkinningMesh();
-		}
 	}
 
 }
@@ -623,6 +623,7 @@ void CCreature::GenerateSkinningMesh()
 			m_pRoot->m_pShapeRenderer = m_pRoot->m_pOriginalShapeRenderer;
 			m_Sample.addRenderObject( m_pRoot->m_pShapeRenderer );
 		}
+		m_TmPalette[ m_pRoot->m_PaletteIndex] = m_pRoot->GetBody()->getGlobalPose();
 	}
 
 }

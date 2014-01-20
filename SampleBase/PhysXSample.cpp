@@ -2091,6 +2091,10 @@ void	PhysXSample::addRenderObject(RenderBaseActor *actor)
 {
 	if(actor)
 	{
+		auto it = std::find(mRenderActors.begin(), mRenderActors.end(), actor);
+		if (mRenderActors.end() != it)
+			return; // Already Exist
+
 		//link(shapeRenderActor, shape, actor);
 		mRenderActors.push_back(actor);
 		//shapeRenderActor->setRenderMaterial(material);
