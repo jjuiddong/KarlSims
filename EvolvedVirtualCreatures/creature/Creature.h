@@ -42,7 +42,7 @@ namespace evc
 		void GenerateProgressive( CNode *currentNode, const genotype_parser::SExpr *expr );
 
 		CNode* CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 &randPos, 
-			const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension);
+			const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal=false);
 		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
 		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
 

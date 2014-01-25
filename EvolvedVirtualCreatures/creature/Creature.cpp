@@ -144,18 +144,23 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 	if (!pexpr)
 		return NULL;
 	if (recursiveCnt < 0)
-		return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
+		return NULL;
+		//return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
 
 	// Generate Body
 	CNode *pNode = NULL;
 	if (isGenerateBody)
 	{
 		PxVec3 tmp;
-		pNode = CreateBody(pexpr, initialPos, randPos, dimensionRate, parentDim, tmp);
-		RETV(!pNode, NULL);
+		pNode = CreateBody(pexpr, initialPos, randPos, dimensionRate, parentDim, tmp, IsTerminal);
+		//RETV(!pNode, NULL);
+		if (!pNode)
+		{
+			return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
+		}
 
 		pNode->m_PaletteIndex = m_Nodes.size();
-		pNode->m_IsTerminalNode = IsTerminal;
+		//pNode->m_IsTerminalNode = IsTerminal;
 		m_Nodes.push_back(pNode);
 	}
 	else
@@ -187,7 +192,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 			PxVec3 nodePos = pos - conPos;
 
 			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, true, randPos, 
-				dimensionRate*0.7f, dimension);
+				dimensionRate*0.7f, dimension, IsTerminal);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
 				PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
@@ -211,14 +216,11 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
  @date 2014-01-17
 */
 CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 &randPos, 
-	const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension)
+	const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal) //isTerminal=false
 {
 	// Generate Body
 	PxVec3 pos = initialPos;
 	pos += RandVec3(randPos, 1.f);
-
-	CNode *pNode = new CNode(m_Sample);
-	pNode->m_Name = expr->id;
 
 	PxVec3 dimension(expr->dimension.x, expr->dimension.y, expr->dimension.z);
 	const PxVec3 randShape(expr->randShape.x, expr->randShape.y, expr->randShape.z);
@@ -244,11 +246,19 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 	//	return GenerateTerminalNode(parentNode, expr, initialPos, dimensionRate, parentDim);
 	//}
 
-	if (dimension.magnitude() < .1f)
+	if (isTerminal)
 	{
-		SAFE_DELETE(pNode);
-		return NULL;
+		if (dimension.magnitude() < .05f)
+			return NULL;
 	}
+	else
+	{
+		if (dimension.magnitude() < .2f)
+			return NULL;
+	}
+
+	CNode *pNode = new CNode(m_Sample);
+	pNode->m_Name = expr->id;
 
 	MaterialIndex material = GetMaterialType(expr->material);
 	pNode->m_MaterialName = expr->material;
@@ -312,6 +322,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 					nodePos, true, randPos, dimensionRate, parentDim, true);
 				if (pChildNode)
 				{
+					pChildNode->m_IsTerminalNode = true;
 					PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
 					CreateJoint(parentNode, pChildNode, connection, newConPos);
 				}
@@ -441,7 +452,7 @@ CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *
 
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_PaletteIndex = m_Nodes.size();
-	pNode->m_IsTerminalNode = IsTerminal;
+	//pNode->m_IsTerminalNode = IsTerminal;
 
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
 	MaterialIndex material = GetMaterialType("red");
