@@ -24,9 +24,9 @@ namespace evc
 	public:
 		CCreature(CEvc &sample);
 		virtual ~CCreature();
-		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, const int recursiveCount=2, const bool isDispSkinning=true);
+		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, const PxVec3 *linVel, const int recursiveCount=2, const bool isDispSkinning=true);
 		void GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos);
-		void GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const bool isDispSkinning=true);
+		void GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos, const PxVec3 *linVel, const bool isDispSkinning=true);
 		void Move(float dtime);
 		const SGenome& GetGenome() const;
 		PxVec3 GetPos() const;
@@ -35,13 +35,13 @@ namespace evc
 
 	protected:
 		CNode* GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
-			const PxVec3 &initialPos, const bool isGenerateBody=true, const PxVec3 &randPos=PxVec3(0,0,0), const float dimensionRate=1.f, 
-			const PxVec3 &parentDim=PxVec3(0,0,0), const bool IsTerminal=false);
+			const PxVec3 &initialPos, const PxVec3 *linVel, const bool isGenerateBody=true, const PxVec3 &randPos=PxVec3(0,0,0), 
+			const float dimensionRate=1.f, const PxVec3 &parentDim=PxVec3(0,0,0), const bool IsTerminal=false);
 		CNode* GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
-			const PxVec3 &initialPos, const float dimensionRate, const PxVec3 &parentDim );
+			const PxVec3 &initialPos, const PxVec3 *linVel, const float dimensionRate, const PxVec3 &parentDim );
 		void GenerateProgressive( CNode *currentNode, const genotype_parser::SExpr *expr );
 
-		CNode* CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 &randPos, 
+		CNode* CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
 			const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal=false);
 		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
 		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
@@ -53,6 +53,7 @@ namespace evc
 		const genotype_parser::SExpr* FindExpr( const string &name );
 		void MakeExprSymbol( const genotype_parser::SExpr *expr, OUT map<string, const genotype_parser::SExpr*> &symbols );
 		MaterialIndex GetMaterialType(const string &materialStr);
+		bool HasTerminalNode(const genotype_parser::SExpr *expr) const;
 
 
 	private:

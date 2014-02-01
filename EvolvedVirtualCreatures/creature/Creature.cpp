@@ -45,14 +45,14 @@ CCreature::~CCreature()
  @date 2013-12-09
 */
 void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
-	const int recursiveCount, const bool isDispSkinning) 
+	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning) 
 	//recursivCount=2, isDispSkinning=true
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
 	m_IsDispSkinning = isDispSkinning;
 
-	m_pRoot = GenerateByGenotype(NULL, m_pGenotypeExpr, recursiveCount, initialPos);
+	m_pRoot = GenerateByGenotype(NULL, m_pGenotypeExpr, recursiveCount, initialPos, linVel);
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
@@ -79,7 +79,7 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
 
 	vector<double> weights;
 	genotype_parser::SExpr *p = BuildExpr(genome.chromo, weights);
-	m_pRoot = GenerateByGenotype(NULL, p, g_pDbgConfig->generationRecursiveCount, initialPos);
+	m_pRoot = GenerateByGenotype(NULL, p, g_pDbgConfig->generationRecursiveCount, initialPos, NULL);
 	m_pRoot->InitBrain(weights);
 
 	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
@@ -93,7 +93,7 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
  @brief progressive generate creature
  @date 2014-01-17
 */
-void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const bool isDispSkinning) 
+void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const PxVec3 *linVel, const bool isDispSkinning) 
 	//isDispSkinning=true
 {
 	if (m_pRoot)
@@ -105,7 +105,7 @@ void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const 
 		genotype_parser::CGenotypeParser parser;
 		m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
 		MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
-		GenerateByGenotype(genotypeScriptFileName, initialPos, 1, isDispSkinning);
+		GenerateByGenotype(genotypeScriptFileName, initialPos, linVel, 1, isDispSkinning);
 	}
 }
 
@@ -127,7 +127,7 @@ void CCreature::GenerateProgressive( CNode *currentNode, const genotype_parser::
 	{
 		// Generate parts
 		const genotype_parser::SExpr *nodeExpr = FindExpr(currentNode->m_Name);
-		GenerateByGenotype(currentNode, nodeExpr, 1, PxVec3(), false);
+		GenerateByGenotype(currentNode, nodeExpr, 1, PxVec3(), NULL, false);
 	}
 }
 
@@ -137,7 +137,7 @@ void CCreature::GenerateProgressive( CNode *currentNode, const genotype_parser::
  @date 2013-12-06
 */
 CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
-	const PxVec3 &initialPos, const bool isGenerateBody, const PxVec3 &randPos, const float dimensionRate, 
+	const PxVec3 &initialPos, const PxVec3 *linVel, const bool isGenerateBody, const PxVec3 &randPos, const float dimensionRate, 
 	const PxVec3 &parentDim, const bool IsTerminal ) 
 	// isGenerateBody=true, randPos=Px(0,0,0), dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
 {
@@ -152,11 +152,11 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 	if (isGenerateBody)
 	{
 		PxVec3 tmp;
-		pNode = CreateBody(pexpr, initialPos, randPos, dimensionRate, parentDim, tmp, IsTerminal);
+		pNode = CreateBody(pexpr, initialPos, linVel, randPos, dimensionRate, parentDim, tmp, IsTerminal);
 		//RETV(!pNode, NULL);
 		if (!pNode)
 		{
-			return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
+			return GenerateTerminalNode(parentNode, pexpr, initialPos, linVel, dimensionRate, parentDim);
 		}
 
 		pNode->m_PaletteIndex = m_Nodes.size();
@@ -191,7 +191,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
 			PxVec3 nodePos = pos - conPos;
 
-			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, true, randPos, 
+			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, linVel, true, randPos, 
 				dimensionRate*0.7f, dimension, IsTerminal);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
@@ -215,7 +215,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
  @brief create body
  @date 2014-01-17
 */
-CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 &randPos, 
+CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
 	const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal) //isTerminal=false
 {
 	// Generate Body
@@ -253,8 +253,15 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 	}
 	else
 	{
-		if (dimension.magnitude() < .2f)
+		if (dimension.magnitude() <= 0.01f) // minimum size
 			return NULL;
+
+		if (dimension.magnitude() < 0.15f)
+		{
+			if (HasTerminalNode(expr))
+				return NULL;
+			dimension = PxVec3(0.01f, 0.01f, 0.01f); // minimum size
+		}
 	}
 
 	CNode *pNode = new CNode(m_Sample);
@@ -266,11 +273,11 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 
 	if (boost::iequals(expr->shape, "box"))
 	{
-		pNode->m_pBody = m_Sample.createBox(pos, dimension, NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createBox(pos, dimension, linVel, m_Sample.getManageMaterial(material), mass);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, linVel, m_Sample.getManageMaterial(material), mass);
 	}
 	else if (boost::iequals(expr->shape, "root"))
 	{ // root node size 0.1, 0.1, 0.1
@@ -298,7 +305,7 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
  @date 2014-01-13
 */
 CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
-	const PxVec3 &initialPos, const float dimensionRate, const PxVec3 &parentDim ) 
+	const PxVec3 &initialPos, const PxVec3 *linVel, const float dimensionRate, const PxVec3 &parentDim ) 
 {
 	RETV(!pexpr, NULL);
 
@@ -319,7 +326,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 				PxVec3 nodePos = pos - conPos;
 
 				CNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
-					nodePos, true, randPos, dimensionRate, parentDim, true);
+					nodePos, linVel, true, randPos, dimensionRate, parentDim, true);
 				if (pChildNode)
 				{
 					pChildNode->m_IsTerminalNode = true;
@@ -788,4 +795,22 @@ void CCreature::MakeExprSymbol( const genotype_parser::SExpr *expr, OUT map<stri
 		MakeExprSymbol(connection->expr, symbols);
 		connectList = connectList->next;
 	}
+}
+
+
+/**
+ @brief return true if Has Terminal Node 
+ @date 2014-02-01
+*/
+bool CCreature::HasTerminalNode(const genotype_parser::SExpr *expr) const
+{
+	genotype_parser::SConnectionList *pConnectList = expr->connection;
+	while (pConnectList)
+	{
+		genotype_parser::SConnection *connection = pConnectList->connect;
+		if (connection->terminalOnly)
+			return true;
+		pConnectList = pConnectList->next;
+	}
+	return false;
 }

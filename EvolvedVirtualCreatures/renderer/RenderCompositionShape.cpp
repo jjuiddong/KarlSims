@@ -597,7 +597,7 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector2( void *positions, vo
 	//v0.normalize();
 	//v2.normalize();
 
-	int shortestLenIdx = 0;
+	//int shortestLenIdx = 0;
 	//if (v0.dot(v2) <= 0)
 	//{
 	//	shortestLenIdx = 0;
@@ -622,7 +622,7 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector2( void *positions, vo
 
 	vector<PxU16> triangle0; triangle0.reserve(3);
 	vector<PxU16> triangle1; triangle1.reserve(3);
-	if (0 == shortestLenIdx) // 0-2
+	//if (0 == shortestLenIdx) // 0-2
 	{
 		triangle0.push_back( faceIndices[ 0] );
 		triangle0.push_back( faceIndices[ 2] );
@@ -632,40 +632,40 @@ void RendererCompositionShape::GenerateTriangleFrom4Vector2( void *positions, vo
 		triangle1.push_back( faceIndices[ 1] );
 		triangle1.push_back( faceIndices[ 3] );
 	}
-	else if (1 == shortestLenIdx) // 0-3
-	{
-		triangle0.push_back( faceIndices[ 0] );
-		triangle0.push_back( faceIndices[ 2] );
-		triangle0.push_back( faceIndices[ 3] );
+	//else if (1 == shortestLenIdx) // 0-3
+	//{
+	//	triangle0.push_back( faceIndices[ 0] );
+	//	triangle0.push_back( faceIndices[ 2] );
+	//	triangle0.push_back( faceIndices[ 3] );
 
-		triangle1.push_back( faceIndices[ 0] );
-		triangle1.push_back( faceIndices[ 1] );
-		triangle1.push_back( faceIndices[ 2] );
-	}
-	else if (2 == shortestLenIdx) // 1-2
-	{
-		triangle0.push_back( faceIndices[ 1] );
-		triangle0.push_back( faceIndices[ 2] );
-		triangle0.push_back( faceIndices[ 3] );
+	//	triangle1.push_back( faceIndices[ 0] );
+	//	triangle1.push_back( faceIndices[ 1] );
+	//	triangle1.push_back( faceIndices[ 2] );
+	//}
+	//else if (2 == shortestLenIdx) // 1-2
+	//{
+	//	triangle0.push_back( faceIndices[ 1] );
+	//	triangle0.push_back( faceIndices[ 2] );
+	//	triangle0.push_back( faceIndices[ 3] );
 
-		triangle1.push_back( faceIndices[ 0] );
-		triangle1.push_back( faceIndices[ 1] );
-		triangle1.push_back( faceIndices[ 3] );
-	}
-	else if (3 == shortestLenIdx) // 1-3
-	{
-		triangle0.push_back( faceIndices[ 1] );
-		triangle0.push_back( faceIndices[ 2] );
-		triangle0.push_back( faceIndices[ 3] );
+	//	triangle1.push_back( faceIndices[ 0] );
+	//	triangle1.push_back( faceIndices[ 1] );
+	//	triangle1.push_back( faceIndices[ 3] );
+	//}
+	//else if (3 == shortestLenIdx) // 1-3
+	//{
+	//	triangle0.push_back( faceIndices[ 1] );
+	//	triangle0.push_back( faceIndices[ 2] );
+	//	triangle0.push_back( faceIndices[ 3] );
 
-		triangle1.push_back( faceIndices[ 0] );
-		triangle1.push_back( faceIndices[ 1] );
-		triangle1.push_back( faceIndices[ 2] );
-	}
-	else
-	{ // error occur
-		return;
-	}
+	//	triangle1.push_back( faceIndices[ 0] );
+	//	triangle1.push_back( faceIndices[ 1] );
+	//	triangle1.push_back( faceIndices[ 2] );
+	//}
+	//else
+	//{ // error occur
+	//	return;
+	//}
 
 	GenerateTriangleFrom3Vector(positions, normals, stride, center, triangle0, outfaceIndices);
 	GenerateTriangleFrom3Vector(positions, normals, stride, center, triangle1, outfaceIndices);

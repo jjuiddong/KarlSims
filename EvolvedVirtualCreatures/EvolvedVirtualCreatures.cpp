@@ -220,13 +220,12 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
  @brief 
  @date 2013-12-03
 */
-void CEvc::spawnNode(const int key)
+void CEvc::spawnNode( const int key )
 {
 	PxSceneWriteLock scopedLock(*mScene);
 
 	PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
-	//pos.y = .5f;
-	//const PxVec3 vel = getCamera().getViewDir() * 20.f;
+	const PxVec3 vel = getCamera().getViewDir() * 20.f;
 
 	evc::CCreature *pnode = NULL;
 	bool IsCreature = true;
@@ -247,7 +246,9 @@ void CEvc::spawnNode(const int key)
 
 			pnode = new evc::CCreature(*this); 
 			//pnode->GenerateByGenotype(fileName[ idx], pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
-			pnode->GenerateProgressive(fileNames[ idx], pos, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateProgressive(fileNames[ idx], pos, 
+				((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL),
+				g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
 		}
 		break;
@@ -255,7 +256,7 @@ void CEvc::spawnNode(const int key)
 	case SPAWN_DEBUG_OBJECT9: 
 		{
 			pnode = new evc::CCreature(*this); 
-			pnode->GenerateByGenotype("genotype_flower.txt", pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateByGenotype("genotype_flower.txt", pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
 			//PxVec3 initialPos(-50,10,0);
 			//for (int i=0; i < 30; ++i)
