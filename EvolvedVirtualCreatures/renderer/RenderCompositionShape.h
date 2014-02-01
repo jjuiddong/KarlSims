@@ -49,6 +49,14 @@ namespace SampleRenderer
 			vector<PxU16> &faceIndices, OUT vector<PxU16> &outfaceIndices
 			);
 
+		void GenerateTriangleFrom4Vector2( void *positions, void *normals, void *bones, void *colors, PxU32 stride, PxU32 startVtxIdx, 
+			PxU16 *indices, PxU32 startIndexIdx, const PxVec3 &center, 
+			vector<PxU16> &faceIndices, OUT vector<PxU16> &outfaceIndices
+			);
+
+		void GenerateTriangleFrom3Vector( void *positions, void *normals, PxU32 stride, const PxVec3 &center,
+			vector<PxU16> &triangle, OUT vector<PxU16> &outTriangle );
+
 		void FindMostCloseFace( 
 			const int findParentBoneIndex, const int findChildBoneIndex,
 			void *positions, PxU32 positionStride, void *normals, PxU32 normalStride,
@@ -58,7 +66,7 @@ namespace SampleRenderer
 			OUT set<PxU16> &vtxIndices0, OUT set<PxU16> &vtxIndices1 );
 
 		void GenerateBoxFromCloseVertex(
-			const set<PxU16> &vtxIdx0, const set<PxU16> &vtxIdx1, PxVec3 center,
+			const set<PxU16> &vtxIdx0, const set<PxU16> &vtxIdx1, const PxVec3 &center,
 			void *positions, void *normals, void *bones, void *colors,
 			PxU32 stride, PxU32 startVtxIdx,
 			PxU16 *indices, PxU32 startIndexIdx,
@@ -68,8 +76,7 @@ namespace SampleRenderer
 			void *positions, PxU32 positionStride, void *normals, PxU32 normalStride,
 			PxU16 *indices, OUT PxVec3 &out );
 
-		void CalculateCenterPoint( const int boneIndex, void *positions, PxU32 positionStride, 
-			void *bones, PxU32 boneStride, const PxU32 numVerts, OUT PxVec3 &out );
+		void CalculateCenterPoint( const int boneIndex, void *positions, void *bones, PxU32 stride, const PxU32 numVerts, OUT PxVec3 &out );
 
 		void CopyToSourceVertex(void *positions, void *normals, PxU32 stride, const int numVerts);
 
