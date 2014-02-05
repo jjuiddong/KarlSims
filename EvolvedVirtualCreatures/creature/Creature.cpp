@@ -35,7 +35,15 @@ CCreature::~CCreature()
 	//	SAFE_DELETE(p);
 	//}
 	m_Nodes.clear();
+
+	if (m_pRoot)
+	{ // render node is already removed
+		if (m_pRoot->m_pShapeRenderer == m_pRoot->m_pOriginalShapeRenderer)
+			m_pRoot->m_pOriginalShapeRenderer = NULL;
+		m_pRoot->m_pShapeRenderer = NULL; // already removed
+	}
 	SAFE_DELETE(m_pRoot);
+
 	genotype_parser::RemoveExpression(m_pGenotypeExpr);
 }
 

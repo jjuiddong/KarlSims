@@ -2953,13 +2953,22 @@ struct FindRenderActor
 
 void PhysXSample::removeRenderObject(RenderBaseActor* renderActor)
 {
+	if (!renderActor)
+		return;
+
 	std::vector<RenderBaseActor*>::iterator renderIter = std::find(mRenderActors.begin(), mRenderActors.end(), renderActor);
+	//if(renderIter != mRenderActors.end())
+	//{
+	//	// ######### PT: TODO: unlink call missing here!!!
+	//	mDeletedRenderActors.push_back((*renderIter));
+	//	mRenderActors.erase(renderIter);
+	//}
+
+	if (mDeletedRenderActors.end() == std::find(mDeletedRenderActors.begin(), mDeletedRenderActors.end(), renderActor))
+		mDeletedRenderActors.push_back(renderActor);
+
 	if(renderIter != mRenderActors.end())
-	{
-		// ######### PT: TODO: unlink call missing here!!!
-		mDeletedRenderActors.push_back((*renderIter));
 		mRenderActors.erase(renderIter);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
