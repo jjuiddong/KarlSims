@@ -1,0 +1,36 @@
+
+Body( box, vec3(0.5,0.5,0.5), material(green), mass(1), randshape(0,0,0),
+
+	joint( fixed, quat(), quat(), vec3(0,-2,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(10),
+		period(10),
+		randpos(1,1,1.5),
+		randorient(0,0,0),
+		Body
+	),
+
+	joint( fixed, quat(), quat(-0.7,Vec3(0,0,1)), vec3(0.5,-0.7,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		Body
+	),
+
+	joint( fixed, quat(), quat(0.7,Vec3(0,0,1)), vec3(-0.5,-0.7,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		Body
+	),
+
+)
+
+
+main( root, vec3(0.5,0.5,0.3), material(green), mass(1),
+
+	joint( fixed, quat(), quat(), vec3(0,-2,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Body
+	)
+)
+
+

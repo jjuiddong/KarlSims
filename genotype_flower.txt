@@ -1,13 +1,21 @@
 
-Leaf( box, vec3(1.7,0.4,0.1), material(blue), mass(1),
+Leaf( box, vec3(0.1, 1.7, 0.4), material(blue), mass(1),
  
-	joint( fixed, quat(), quat(), vec3(2,0,0), 
+	joint( fixed, quat(), quat(), vec3(0,-3,0), 
 		limit(-0.785375, 0.785375, 0.1),
 		velocity(15),
 		period(20),
 		Leaf
 	)
 
+) 
+
+Leaf2( box, vec3(0.1,1.7,0.5), material(blue), mass(1),
+ 
+	joint( fixed, quat(), quat(), vec3(0,-3,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		Leaf2
+	)
 ) 
 
 FlowerLeaf( box, vec3(1.7,0.4,0.1), material(yellow), mass(1) ) 
@@ -62,17 +70,13 @@ Body( box, vec3(0.5,0.5,0.3), material(green), mass(1), randshape(0,0,0),
 		Body
 	),
 
-	joint( fixed, quat(), quat(0.5,Vec3(0,0,1)), vec3(1,-0.4,0), 
+	joint( fixed, quat(), quat(-0.8,Vec3(0,0,1)), vec3(1.2,-0.7,0), 
 		limit(-0.785375, 0.785375, 0.1),
-		velocity(15),
-		period(20),
 		Leaf
 	),
 
-	joint( fixed, quat(), quat(-0.5,Vec3(0,0,1)), vec3(-1,-0.4,0), 
+	joint( fixed, quat(), quat(0.8,Vec3(0,0,1)), vec3(-1.2,-0.7,0), 
 		limit(-0.785375, 0.785375, 0.1),
-		velocity(15),
-		period(20),
 		Leaf
 	),
 
@@ -89,6 +93,20 @@ Body( box, vec3(0.5,0.5,0.3), material(green), mass(1), randshape(0,0,0),
 )
 
 main( root, vec3(0.5,0.5,0.3), material(green), mass(1),
+
+	joint( fixed, quat(), quat(-0.9, vec3(0,0,1)), vec3(1.5,-1,0), 
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Leaf2
+	),
+
+	joint( fixed, quat(), quat(0.9, vec3(0,0,1)), vec3(-1.5,-1,0),
+		limit(-0.785375, 0.785375, 0.1),
+		velocity(15),
+		period(20),
+		Leaf2
+	),
 
 	joint( fixed, quat(), quat(), vec3(0,-2,0), 
 		limit(-0.785375, 0.785375, 0.1),
