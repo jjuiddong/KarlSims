@@ -261,15 +261,18 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 	}
 	else
 	{
-		if (dimension.magnitude() <= 0.01f) // minimum size
+		if (dimension.magnitude() <= 0.15f) // minimum size
 			return NULL;
 
-		if (dimension.magnitude() < 0.15f)
-		{
-			if (HasTerminalNode(expr))
-				return NULL;
-			dimension = PxVec3(0.01f, 0.01f, 0.01f); // minimum size
-		}
+		//if (dimension.magnitude() <= 0.01f) // minimum size
+		//	return NULL;
+
+		//if (dimension.magnitude() < 0.15f)
+		//{
+		//	if (HasTerminalNode(expr))
+		//		return NULL;
+		//	dimension = PxVec3(0.01f, 0.01f, 0.01f); // minimum size
+		//}
 	}
 
 	CNode *pNode = new CNode(m_Sample);
@@ -821,4 +824,25 @@ bool CCreature::HasTerminalNode(const genotype_parser::SExpr *expr) const
 		pConnectList = pConnectList->next;
 	}
 	return false;
+}
+
+
+/**
+ @brief 
+ @date 2014-02-10
+*/
+void CCreature::SetGravity(const PxVec3 &centerOfGravity)
+{
+	BOOST_FOREACH (auto node, m_Nodes)
+	{
+		if (node->m_pBody)
+		{
+			PxTransform pose = node->m_pBody->getGlobalPose();
+			PxVec3 up = pose.p - centerOfGravity;
+			up.normalize();
+		
+			const PxVec3 force = -up * 9.81f * 2.f;
+			node->m_pBody->addForce(force, PxForceMode::eACCELERATION, false);
+		}
+	}
 }

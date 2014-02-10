@@ -39,6 +39,7 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_Age(0)
 ,	m_Gap(10.f)
 {
+	mCreateGroundPlane = false;
 }
 
 CEvc::~CEvc()
@@ -48,9 +49,9 @@ CEvc::~CEvc()
 }
 
 
-void CEvc::newMesh(const RAWMesh& data)
-{
-}
+//void CEvc::newMesh(const RAWMesh& data)
+//{
+//}
 
 //class Console;
 //static void gValue(Console* console, const char* text, void* userData)
@@ -98,16 +99,17 @@ void CEvc::onInit()
 {
 	PhysXSample::onInit();
 
+	srand(timeGetTime());
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
-	mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.0f, 0.0f, 0.0f));
+	mCameraController.init(PxVec3(0.0f, 30.0f, 0.0f), PxVec3(1.0f, 0.0f, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
 	//getPhysics().setParameter();
-	PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::L_ARM, false);
-	PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::R_ARM, false);
-	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::L_ARM, false);
-	PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::R_ARM, false);
+	//PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::L_ARM, false);
+	//PxSetGroupCollisionFlag(NodeGroup::BODY, NodeGroup::R_ARM, false);
+	//PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::L_ARM, false);
+	//PxSetGroupCollisionFlag(NodeGroup::HEAD, NodeGroup::R_ARM, false);
 
 	if (!g_pDbgConfig)
 	{
@@ -120,10 +122,19 @@ void CEvc::onInit()
 		g_pDbgConfig->generationRecursiveCount = 2;
 	}
 
-	srand(timeGetTime());
+	//{
+	//	RAWTexture data;
+	//	data.mName = "divingBoardFloor_diffuse.dds";
+	//	RenderTexture* platformTexture = createRenderTextureFromRawTexture(data);
+	//	mPlatformMaterial = new (RenderMaterial)(*getRenderer(), PxVec3(1.0f, 1.0f, 1.0f), 1.0f, false, 0xffffffff, platformTexture);
+	//	mRenderMaterials.push_back(mPlatformMaterial);
+	//}
+
+	PxSceneWriteLock scopedLock(*mScene);
+	importRAWFile("planet.raw", 2.0f);
 
 
-
+	
 
 	////-------------------------------------------------------------------------------------------------------
 	//CUSTOMVERTEX vertices[] =
@@ -419,6 +430,8 @@ void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
 {
 	//sceneDesc.filterShader = SampleSubmarineFilterShader;
 	//sceneDesc.simulationEventCallback = this;
+
+	sceneDesc.gravity = PxVec3(0);
 	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
 }
 
@@ -473,3 +486,35 @@ void CEvc::RemoveAllCreatures()
 		delete obstacle;
 	m_Obstacles.clear();
 }
+
+
+/**
+ @brief 
+ @date 2014-02-10
+*/
+void CEvc::onSubstep(float dtime)
+{
+	//mPlatformManager.updatePhysicsPlatforms(dtime);
+	PxSceneWriteLock scopedLock(*mScene);
+
+	BOOST_FOREACH (auto creature, m_Creatures)
+	{
+		creature->SetGravity( PxVec3(0,0,0) );
+	}
+
+	//PxU32 nb = (PxU32)mDebugActors.size();
+	//for(PxU32 i=0;i<nb;i++)
+	//{
+	//	PxRigidDynamic* dyna = mDebugActors[i];
+	//	if(dyna->isSleeping())
+	//		continue;
+
+	//	PxTransform pose = dyna->getGlobalPose();
+
+	//	PxVec3 up;
+	//	//mPlanet.getUpVector(up, pose.p);
+	//	const PxVec3 force = -up * 9.81f * 4.0f;
+	//	dyna->addForce(force, PxForceMode::eACCELERATION, false);
+	//}
+}
+

@@ -31,6 +31,7 @@ namespace evc
 		const SGenome& GetGenome() const;
 		PxVec3 GetPos() const;
 		const CNeuralNet* GetBrain() const;
+		void SetGravity(const PxVec3 &centerOfGravity);
 
 
 	protected:

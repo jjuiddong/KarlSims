@@ -48,8 +48,9 @@ public:
 	virtual	void customizeSceneDesc(PxSceneDesc&);
 	virtual	void onSubstepSetup(float dtime, pxtask::BaseTask* cont);
 
-	virtual	void	newMesh(const RAWMesh&);
+	//virtual	void	newMesh(const RAWMesh&);
 	virtual	void	onInit();
+	virtual	void	onSubstep(float dtime);
 
 	virtual void collectInputEvents(std::vector<const SampleFramework::InputEvent*>& inputEvents);
 	virtual void helpRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
@@ -69,6 +70,7 @@ protected:
 
 
 private:
+	RenderMaterial* mPlatformMaterial;
 	list<evc::CCreature*> m_Creatures;
 	list<evc::CCreature*> m_Obstacles;
 	double m_ElapsTime; // fo gentic algorithm epoch
