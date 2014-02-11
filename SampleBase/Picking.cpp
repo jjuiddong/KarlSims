@@ -133,7 +133,9 @@ bool Picking::pick(int x, int y)
 	//	printf("id = %i\n PxTransform transform(PxVec3(%f, %f, %f), PxQuat(%f, %f, %f, %f))\n", (int)actor->userData, t.p.x, t.p.y, t.p.z, t.q.x, t.q.y, t.q.z, t.q.w);
 	}
 	else
+	{
 		mSelectedActor = 0;
+	}
 
 	if(mSelectedActor)
 	{

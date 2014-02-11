@@ -70,9 +70,10 @@ protected:
 
 
 private:
-	RenderMaterial* mPlatformMaterial;
 	list<evc::CCreature*> m_Creatures;
 	list<evc::CCreature*> m_Obstacles;
+	vector<PxRigidActor*> m_Planet; // composite 6 actor
+
 	double m_ElapsTime; // fo gentic algorithm epoch
 	int m_Age;
 	float m_Gap;

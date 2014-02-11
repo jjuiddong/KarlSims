@@ -122,44 +122,11 @@ void CEvc::onInit()
 		g_pDbgConfig->generationRecursiveCount = 2;
 	}
 
-	//{
-	//	RAWTexture data;
-	//	data.mName = "divingBoardFloor_diffuse.dds";
-	//	RenderTexture* platformTexture = createRenderTextureFromRawTexture(data);
-	//	mPlatformMaterial = new (RenderMaterial)(*getRenderer(), PxVec3(1.0f, 1.0f, 1.0f), 1.0f, false, 0xffffffff, platformTexture);
-	//	mRenderMaterials.push_back(mPlatformMaterial);
-	//}
-
 	PxSceneWriteLock scopedLock(*mScene);
 	importRAWFile("planet.raw", 2.0f);
 
-
-	
-
-	////-------------------------------------------------------------------------------------------------------
-	//CUSTOMVERTEX vertices[] =
-	//{
-	//	{ 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, }, // x, y, z, rhw, color
-	//	{ 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
-	//	{  50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
-	//};
-	//IDirect3DDevice9 *d3dDevice = (IDirect3DDevice9*)getRenderer()->getDevice();
-	//if (FAILED(d3dDevice->CreateVertexBuffer( 3 * sizeof( CUSTOMVERTEX ),0, 0,D3DPOOL_DEFAULT, &g_pVB, NULL ) ) )
-	//	return;
-	//VOID* pVertices;
-	//if (FAILED( g_pVB->Lock( 0, sizeof( vertices ), ( void** )&pVertices, 0 ) ) )
-	//	return;
-	//memcpy( pVertices, vertices, sizeof( vertices ) );
-	//g_pVB->Unlock();
-	//const D3DVERTEXELEMENT9 tempDecl[] =
-	//{
-	//	{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITIONT, 0},    //Position
-	//	{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},      //Color
-	//	D3DDECL_END()
-	//};
-	//d3dDevice->CreateVertexDeclaration(tempDecl, &g_decl);
-
-
+	BOOST_FOREACH (auto actor, mPhysicsActors)
+		m_Planet.push_back(actor);
 }
 
 
@@ -180,11 +147,11 @@ void	CEvc::onTickPostRender(float dtime)
 {
 	PhysXSample::onTickPostRender(dtime);
 
-	PxReal vertices[] = {0, 0, 1, 1};
-	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
-	getRenderer()->drawLines2D(2, vertices, colors );
-	PxReal vertices2[] = {1, 0, 0, 1};
-	getRenderer()->drawLines2D(2, vertices2, colors );
+	//PxReal vertices[] = {0, 0, 1, 1};
+	//RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+	//getRenderer()->drawLines2D(2, vertices, colors );
+	//PxReal vertices2[] = {1, 0, 0, 1};
+	//getRenderer()->drawLines2D(2, vertices2, colors );
 
 }
 
@@ -227,6 +194,24 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 }
 
 
+//class PxQueryFilterCallbackOnlyPlanet : public PxQueryFilterCallback
+//{
+//public:
+//	PxRigidActor *m_CheckActor;
+//	PxQueryFilterCallbackOnlyPlanet(PxRigidActor *actor) : m_CheckActor(actor) {}
+//	virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, 
+//		const PxRigidActor* actor, PxHitFlags& queryFlags) override
+//	{
+//		return PxQueryHitType::eNONE;
+//	}
+//
+//	virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit) override
+//	{
+//		return PxQueryHitType::eNONE;
+//	}
+//};
+
+
 /**
  @brief 
  @date 2013-12-03
@@ -237,6 +222,45 @@ void CEvc::spawnNode( const int key )
 
 	PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
 	const PxVec3 vel = getCamera().getViewDir() * 20.f;
+
+
+	// find earth position
+	{
+		PxU32 width, height;
+		mApplication.getPlatform()->getWindowSize(width, height);
+
+		PxVec3 rayOrig, rayDir;
+		mPicking->computeCameraRay(rayOrig, rayDir, width/2, height/2);
+
+		// raycast rigid bodies in scene
+		PxRaycastHit hit; hit.shape = NULL;
+
+		const PxU32 bufferSize = 256;        // [in] size of 'hitBuffer'
+		PxRaycastHit hitBuffer[bufferSize];  // [out] User provided buffer for results
+		PxRaycastBuffer buf(hitBuffer, bufferSize); // [out] Blocking and touching hits will be stored here
+
+		mScene->raycast(rayOrig, rayDir, PX_MAX_F32, buf);
+
+		for (PxU32 i = 0; i < buf.nbTouches; i++)
+		{
+			BOOST_FOREACH (auto planet, m_Planet)
+			{
+				if (buf.touches[ i].actor == planet)
+				{
+					hit = buf.touches[ i];
+					break;
+				}
+			}
+			if (hit.shape)
+				break;
+		}
+
+		if (!hit.shape)
+			return;
+
+		pos = hit.position;
+	}
+
 
 	evc::CCreature *pnode = NULL;
 	bool IsCreature = true;

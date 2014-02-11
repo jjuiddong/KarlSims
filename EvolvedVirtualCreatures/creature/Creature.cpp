@@ -101,7 +101,8 @@ void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos
  @brief progressive generate creature
  @date 2014-01-17
 */
-void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const PxVec3 *linVel, const bool isDispSkinning) 
+void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos,  const PxVec3 *linVel, 
+	const bool isDispSkinning) 
 	//isDispSkinning=true
 {
 	if (m_pRoot)
@@ -277,6 +278,7 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 
 	CNode *pNode = new CNode(m_Sample);
 	pNode->m_Name = expr->id;
+	pNode->m_ShapeName = expr->shape;
 
 	MaterialIndex material = GetMaterialType(expr->material);
 	pNode->m_MaterialName = expr->material;
@@ -292,7 +294,7 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 	}
 	else if (boost::iequals(expr->shape, "root"))
 	{ // root node size 0.1, 0.1, 0.1
-		pos = PxVec3(pos.x,0,pos.z);
+		//pos = PxVec3(pos.x,pos.y,pos.z);
 		//dimension = PxVec3(0.1f,0.1f,0.1f);
 		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
 		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
@@ -395,6 +397,18 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 	PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
 	PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
 		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
+
+
+	// apply gravity direction only have root genotype
+	if (boost::iequals(parentNode->m_ShapeName, "root"))
+	{
+		PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
+		gravDir.normalize();
+		PxQuat gravQ;
+		quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
+		tm1 = tm1 * PxTransform(gravQ);
+	}
+
 
 	PxJoint* pxJoint = NULL;
 	if (boost::iequals(joint->type, "fixed"))

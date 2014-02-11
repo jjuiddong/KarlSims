@@ -41,6 +41,7 @@ namespace evc
 	public:
 		CEvc &m_Sample;
 		string m_Name;
+		string m_ShapeName;
 		string m_MaterialName;
 		bool m_IsTerminalNode;
 		PxRigidDynamic *m_pBody;

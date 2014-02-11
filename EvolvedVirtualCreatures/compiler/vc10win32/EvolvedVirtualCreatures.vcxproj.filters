@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\renderer\RenderCompositionShape.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\utility\Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Creature">
@@ -109,6 +112,9 @@
     </Filter>
     <Filter Include="Renderer">
       <UniqueIdentifier>{73a679d4-7ceb-4126-b60e-5821c3086014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{1ec45e37-762c-4e7e-af04-341754835bb3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -43,3 +43,9 @@ using namespace physx;
 // Global Variabl
 #include "Configure.h"
 extern SDbgConfig *g_pDbgConfig;
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Global Function
+#include "utility/Utility.h"
