@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "VisionSensor.h"
 #include "../EvolvedVirtualCreatures.h"
-#include "node.h"
+#include "physnode.h"
 #include "Creature.h"
 
 
@@ -83,7 +83,7 @@ const vector<double>& CVisionSensor::GetOutput()
  @brief 
  @date 2013-12-19
 */
-void CVisionSensor::SetSensorInfo(CNode *sensorBody, const float length)
+void CVisionSensor::SetSensorInfo(CPhysNode *sensorBody, const float length)
 {
 	m_pSensorBody = sensorBody;
 	m_DetectLength = length;

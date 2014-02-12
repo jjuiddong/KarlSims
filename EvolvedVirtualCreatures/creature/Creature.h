@@ -13,7 +13,7 @@ class RenderComposition;
 namespace evc
 {
 	class CJoint;
-	class CNode;
+	class CPhysNode;
 	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; struct SConnection; }
 
@@ -37,20 +37,20 @@ namespace evc
 	protected:
 		void GenerateByGenotypeFileName(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
 			const PxVec3 *linVel, const int recursiveCount=2, const bool isDispSkinning=true);
-		CNode* GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
+		CPhysNode* GenerateByGenotype( CPhysNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
 			const PxVec3 &initialPos, const PxVec3 *linVel, const bool isGenerateBody=true, const PxVec3 &randPos=PxVec3(0,0,0), 
 			const float dimensionRate=1.f, const PxVec3 &parentDim=PxVec3(0,0,0), const bool IsTerminal=false);
-		CNode* GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
+		CPhysNode* GenerateTerminalNode( CPhysNode *parentNode, const genotype_parser::SExpr *pexpr, 
 			const PxVec3 &initialPos, const PxVec3 *linVel, const float dimensionRate, const PxVec3 &parentDim );
-		void GenerateProgressive( CNode *currentNode, const genotype_parser::SExpr *expr );
+		void GenerateProgressive( CPhysNode *currentNode, const genotype_parser::SExpr *expr );
 
-		CNode* CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
+		CPhysNode* CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
 			const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal=false);
-		void CreateJoint(CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
-		CNode* CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
+		void CreateJoint(CPhysNode *parentNode, CPhysNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos );
+		CPhysNode* CreateSensor(CPhysNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal=false );
 
 		void GenerateSkinningMesh();
-		void GenerateRenderComposition( CNode *node );
+		void GenerateRenderComposition( CPhysNode *node );
 		PxVec3 RandVec3( const PxVec3 &vec, const float rate );
 		PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );
 		const genotype_parser::SExpr* FindExpr( const string &name );
@@ -61,8 +61,8 @@ namespace evc
 
 	private:
 		CEvc &m_Sample;
-		CNode *m_pRoot;
-		vector<CNode*> m_Nodes;
+		CPhysNode *m_pRoot;
+		vector<CPhysNode*> m_Nodes;
 		SGenome m_Genome;
 		PxVec3 m_InitialPos;
 		vector<PxTransform> m_TmPalette;

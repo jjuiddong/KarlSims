@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "Joint.h"
-#include "Node.h"
+#include "physnode.h"
 #include "AngularSensor.h"
 #include "MuscleEffector.h"
 
@@ -10,7 +10,7 @@
 using namespace evc;
 
 // joint=NULL, velocity=1.f, period=1.f
-CJoint::CJoint(CNode *actor0, CNode *actor1, const PxTransform &tm0, const PxTransform &tm1,
+CJoint::CJoint(CPhysNode *actor0, CPhysNode *actor1, const PxTransform &tm0, const PxTransform &tm1,
 	PxJoint *joint, float velocity, float period) :
 	m_pJoint(joint)
 ,	m_pActor0(actor0)

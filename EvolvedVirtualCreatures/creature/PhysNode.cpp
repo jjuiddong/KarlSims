@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "node.h"
+#include "physnode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "Joint.h"
 #include "NeuralNet.h"
@@ -11,7 +11,7 @@
 using namespace evc;
 
 
-CNode::CNode(CEvc &sample) :
+CPhysNode::CPhysNode(CEvc &sample) :
 	m_Sample(sample)
 ,	m_pBrain(NULL)
 ,	m_pBody(NULL)
@@ -26,7 +26,7 @@ CNode::CNode(CEvc &sample) :
 
 }
 
-CNode::~CNode()
+CPhysNode::~CPhysNode()
 {
 	m_pBody = NULL;
 	SAFE_DELETE(m_pBrain);
@@ -54,7 +54,7 @@ CNode::~CNode()
  @brief 
  @date 2013-12-05
 */
-void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
+void CPhysNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
@@ -77,7 +77,7 @@ void CNode::setCollisionGroup(PxRigidActor* actor, PxU32 group)
  @brief Brain is only one in Nodes
  @date 2013-12-10
 */
-void CNode::InitBrain(const vector<double> &weights) // weights = vector<double>()
+void CPhysNode::InitBrain(const vector<double> &weights) // weights = vector<double>()
 {
 	//int count = GetNeuronCount();
 	//RET(count <= 0);
@@ -110,7 +110,7 @@ void CNode::InitBrain(const vector<double> &weights) // weights = vector<double>
  @brief 
  @date 2013-12-03
 */
-void CNode::Move(float dtime)
+void CPhysNode::Move(float dtime)
 {
 	BOOST_FOREACH(auto joint, m_Joints)
 		joint->Move(dtime);
@@ -126,7 +126,7 @@ void CNode::Move(float dtime)
  @brief Update Neuron
  @date 2013-12-10
 */
-void CNode::UpdateNeuron(float dtime)
+void CPhysNode::UpdateNeuron(float dtime)
 {
 	//int count = GetNeuronCount();
 	//RET(count <= 0);
@@ -174,7 +174,7 @@ void CNode::UpdateNeuron(float dtime)
  @brief return total neuron count
  @date 2013-12-10
 */
-int CNode::GetNeuronCount() const
+int CPhysNode::GetNeuronCount() const
 {
 	int count = 0;
 	BOOST_FOREACH(auto &joint, m_Joints)
@@ -195,7 +195,7 @@ int CNode::GetNeuronCount() const
  @brief 
  @date 2013-12-10
 */
-void CNode::GetOutputNerves(OUT vector<double> &out) const
+void CPhysNode::GetOutputNerves(OUT vector<double> &out) const
 {
 	BOOST_FOREACH(auto &joint, m_Joints)
 	{
@@ -215,7 +215,7 @@ void CNode::GetOutputNerves(OUT vector<double> &out) const
  @brief 
  @date 2013-12-20
 */
-void CNode::GetAllSensor(OUT vector<CSensor*> &out) const
+void CPhysNode::GetAllSensor(OUT vector<CSensor*> &out) const
 {
 	BOOST_FOREACH (auto &sensor, m_Sensors)
 	{
@@ -232,7 +232,7 @@ void CNode::GetAllSensor(OUT vector<CSensor*> &out) const
  @brief 
  @date 2013-12-20
 */
-void CNode::GetAllEffector(OUT vector<CEffector*> &out) const
+void CPhysNode::GetAllEffector(OUT vector<CEffector*> &out) const
 {
 	BOOST_FOREACH (auto &effector, m_Effectors)
 	{

@@ -18,11 +18,11 @@ namespace evc
 	class CNeuralNet;
 	namespace genotype_parser { struct SExpr; }
 
-	class CNode
+	class CPhysNode
 	{
 	public:
-		CNode(CEvc &sample);
-		virtual ~CNode();
+		CPhysNode(CEvc &sample);
+		virtual ~CPhysNode();
 		void InitBrain(const vector<double> &weights = vector<double>());
 		void GetOutputNerves(OUT vector<double> &out) const;
 		int GetNeuronCount() const;
@@ -66,7 +66,7 @@ namespace evc
 	};
 
 	
-	inline PxRigidDynamic* CNode::GetBody() { return m_pBody; }
-	inline PxShape* CNode::GetShape() { return m_pShape; }
-	inline const CNeuralNet* CNode::GetBrain() const { return m_pBrain; }
+	inline PxRigidDynamic* CPhysNode::GetBody() { return m_pBody; }
+	inline PxShape* CPhysNode::GetShape() { return m_pShape; }
+	inline const CNeuralNet* CPhysNode::GetBrain() const { return m_pBrain; }
 }

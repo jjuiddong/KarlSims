@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "Creature.h"
-#include "Node.h"
+#include "physnode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "../genoype/GenotypeParser.h"
 #include "Joint.h"
@@ -140,13 +140,13 @@ void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const 
  @brief 
  @date 2014-01-17
 */
-void CCreature::GenerateProgressive( CNode *currentNode, const genotype_parser::SExpr *expr )
+void CCreature::GenerateProgressive( CPhysNode *currentNode, const genotype_parser::SExpr *expr )
 {
 	RET(!currentNode);
 
 	BOOST_FOREACH (auto &joint, currentNode->m_Joints)
 	{
-		GenerateProgressive((CNode*)joint->GetActor1(), expr);
+		GenerateProgressive((CPhysNode*)joint->GetActor1(), expr);
 	}
 
 	if (currentNode->m_Joints.empty())
@@ -162,7 +162,7 @@ void CCreature::GenerateProgressive( CNode *currentNode, const genotype_parser::
  @brief create creature by genotype script
  @date 2013-12-06
 */
-CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
+CPhysNode* CCreature::GenerateByGenotype( CPhysNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
 	const PxVec3 &initialPos, const PxVec3 *linVel, const bool isGenerateBody, const PxVec3 &randPos, const float dimensionRate, 
 	const PxVec3 &parentDim, const bool IsTerminal ) 
 	// isGenerateBody=true, randPos=Px(0,0,0), dimensionRate=1, randPos=PxVec3(0,0,0), IsTerminal=false
@@ -174,7 +174,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 		//return GenerateTerminalNode(parentNode, pexpr, initialPos, dimensionRate, parentDim);
 
 	// Generate Body
-	CNode *pNode = NULL;
+	CPhysNode *pNode = NULL;
 	if (isGenerateBody)
 	{
 		PxVec3 tmp;
@@ -217,7 +217,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
 			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
 			PxVec3 nodePos = pos - conPos;
 
-			CNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, linVel, true, randPos, 
+			CPhysNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, linVel, true, randPos, 
 				dimensionRate*0.7f, dimension, IsTerminal);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
@@ -241,7 +241,7 @@ CNode* CCreature::GenerateByGenotype( CNode* parentNode, const genotype_parser::
  @brief create body
  @date 2014-01-17
 */
-CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
+CPhysNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &initialPos, const PxVec3 *linVel, const PxVec3 &randPos, 
 	const float dimensionRate, const PxVec3 &parentDim, OUT PxVec3 &outDimension, const bool isTerminal) //isTerminal=false
 {
 	// Generate Body
@@ -293,7 +293,7 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 		//}
 	}
 
-	CNode *pNode = new CNode(m_Sample);
+	CPhysNode *pNode = new CPhysNode(m_Sample);
 	pNode->m_Name = expr->id;
 	pNode->m_ShapeName = expr->shape;
 
@@ -335,12 +335,12 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
  @brief 
  @date 2014-01-13
 */
-CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser::SExpr *pexpr, 
+CPhysNode* CCreature::GenerateTerminalNode( CPhysNode *parentNode, const genotype_parser::SExpr *pexpr, 
 	const PxVec3 &initialPos, const PxVec3 *linVel, const float dimensionRate, const PxVec3 &parentDim ) 
 {
 	RETV(!pexpr, NULL);
 
-	CNode *pNode = NULL;
+	CPhysNode *pNode = NULL;
 	PxVec3 pos = initialPos;
 
 	// Generate Terminal Connection
@@ -356,7 +356,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 				PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
 				PxVec3 nodePos = pos - conPos;
 
-				CNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
+				CPhysNode *pChildNode = GenerateByGenotype( parentNode, connection->expr, g_pDbgConfig->generationRecursiveCount, 
 					nodePos, linVel, true, randPos, dimensionRate, parentDim, true);
 				if (pChildNode)
 				{
@@ -368,7 +368,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
 			}
 			else if(boost::iequals(connection->conType, "sensor"))
 			{
-				CNode *pChildNode = CreateSensor(parentNode, connection, pos, true);
+				CPhysNode *pChildNode = CreateSensor(parentNode, connection, pos, true);
 				pNode = pChildNode;
 			}
 		}
@@ -384,7 +384,7 @@ CNode* CCreature::GenerateTerminalNode( CNode *parentNode, const genotype_parser
  @brief 
  @date 2013-12-19
 */
-void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos )
+void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos )
 {
 	RET(!childNode);
 	RET(!parentNode);
@@ -493,14 +493,14 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
  @brief 
  @date 2013-12-19
 */
-CNode* CCreature::CreateSensor(CNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal)
+CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal)
 	// IsTerminal = false
 {
 	RETV(!parentNode, NULL);
 
-	CNode *childNode = NULL;
+	CPhysNode *childNode = NULL;
 
-	CNode *pNode = new CNode(m_Sample);
+	CPhysNode *pNode = new CPhysNode(m_Sample);
 	pNode->m_PaletteIndex = m_Nodes.size();
 	//pNode->m_IsTerminalNode = IsTerminal;
 
@@ -694,13 +694,13 @@ void CCreature::GenerateSkinningMesh()
  @brief composite all node shape
  @date 2014-01-05
 */
-void CCreature::GenerateRenderComposition( CNode *node )
+void CCreature::GenerateRenderComposition( CPhysNode *node )
 {
 	RET(!node);
 
 	BOOST_FOREACH (auto joint, node->m_Joints)
 	{
-		GenerateRenderComposition((CNode*)joint->GetActor1());
+		GenerateRenderComposition((CPhysNode*)joint->GetActor1());
 	}
 
 	const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
@@ -740,7 +740,7 @@ void CCreature::GenerateRenderComposition( CNode *node )
 	// composite child shape
 	BOOST_FOREACH (auto joint, node->m_Joints)
 	{
-		CNode *child = (CNode*)joint->GetActor1();
+		CPhysNode *child = (CPhysNode*)joint->GetActor1();
 
 		RenderComposition *parentRenderer = (node->m_pShapeRenderer)? node->m_pShapeRenderer : node->m_pOriginalShapeRenderer;
 		RenderComposition *childRenderer = (child->m_pShapeRenderer)? child->m_pShapeRenderer : child->m_pOriginalShapeRenderer;

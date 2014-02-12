@@ -141,9 +141,11 @@
     <ClCompile Include="..\..\creature\Effector.cpp" />
     <ClCompile Include="..\..\creature\Joint.cpp" />
     <ClCompile Include="..\..\creature\NeuralNet.cpp" />
-    <ClCompile Include="..\..\creature\Node.cpp" />
+    <ClCompile Include="..\..\creature\PhysNode.cpp" />
     <ClCompile Include="..\..\creature\PhotoSensor.cpp" />
     <ClCompile Include="..\..\creature\VisionSensor.cpp" />
+    <ClCompile Include="..\..\diagram\DiagramController.cpp" />
+    <ClCompile Include="..\..\diagram\DiagramNode.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp" />
     <ClCompile Include="..\..\genetic\Genome.cpp" />
@@ -165,10 +167,12 @@
     <ClInclude Include="..\..\creature\Joint.h" />
     <ClInclude Include="..\..\creature\MuscleEffector.h" />
     <ClInclude Include="..\..\creature\NeuralNet.h" />
-    <ClInclude Include="..\..\creature\Node.h" />
+    <ClInclude Include="..\..\creature\PhysNode.h" />
     <ClInclude Include="..\..\creature\PhotoSensor.h" />
     <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\creature\VisionSensor.h" />
+    <ClInclude Include="..\..\diagram\DiagramController.h" />
+    <ClInclude Include="..\..\diagram\DiagramNode.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
     <ClInclude Include="..\..\genetic\Genome.h" />

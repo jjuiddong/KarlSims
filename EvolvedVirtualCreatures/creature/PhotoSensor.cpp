@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "PhotoSensor.h"
 #include "../EvolvedVirtualCreatures.h"
-#include "node.h"
+#include "physnode.h"
 
 
 using namespace evc;
@@ -43,7 +43,7 @@ const vector<double>& CPhotoSensor::GetOutput()
  @brief 
  @date 2013-12-19
 */
-void CPhotoSensor::SetSensorInfo(CNode *sensorBody, const PxVec3 &dir, const float length)
+void CPhotoSensor::SetSensorInfo(CPhysNode *sensorBody, const PxVec3 &dir, const float length)
 {
 	m_pSensorBody = sensorBody;
 	m_Dir = dir;
