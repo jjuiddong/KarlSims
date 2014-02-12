@@ -39,7 +39,8 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_Age(0)
 ,	m_Gap(10.f)
 {
-	//mCreateGroundPlane = false;
+	mCreateGroundPlane = false;
+	m_IsApplyCustomGravity = true;
 }
 
 CEvc::~CEvc()
@@ -102,8 +103,8 @@ void CEvc::onInit()
 	srand(timeGetTime());
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
-	//mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
-	mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.f, 0.0f, 0.0f));
+	mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
+	//mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.f, 0.0f, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
 	//getPhysics().setParameter();
@@ -123,13 +124,13 @@ void CEvc::onInit()
 		g_pDbgConfig->generationRecursiveCount = 2;
 	}
 
-	//PxSceneWriteLock scopedLock(*mScene);
-	//importRAWFile("planet.raw", 2.0f);
-	//BOOST_FOREACH (auto actor, mPhysicsActors)
-	//	m_Planet.push_back(actor);
+	PxSceneWriteLock scopedLock(*mScene);
+	importRAWFile("planet.raw", 2.0f);
+	BOOST_FOREACH (auto actor, mPhysicsActors)
+		m_Planet.push_back(actor);
 
-	if (m_Ground)
-		m_Planet.push_back(m_Ground);
+	//if (m_Ground)
+	//	m_Planet.push_back(m_Ground);
 }
 
 
@@ -479,7 +480,9 @@ void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
 	//sceneDesc.filterShader = SampleSubmarineFilterShader;
 	//sceneDesc.simulationEventCallback = this;
 
-	//sceneDesc.gravity = PxVec3(0);
+	if (m_IsApplyCustomGravity)
+		sceneDesc.gravity = PxVec3(0);
+
 	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
 }
 
@@ -542,27 +545,13 @@ void CEvc::RemoveAllCreatures()
 */
 void CEvc::onSubstep(float dtime)
 {
-	//mPlatformManager.updatePhysicsPlatforms(dtime);
-	//PxSceneWriteLock scopedLock(*mScene);
-
-	//BOOST_FOREACH (auto creature, m_Creatures)
-	//{
-	//	creature->SetGravity( PxVec3(0,0,0) );
-	//}
-
-	//PxU32 nb = (PxU32)mDebugActors.size();
-	//for(PxU32 i=0;i<nb;i++)
-	//{
-	//	PxRigidDynamic* dyna = mDebugActors[i];
-	//	if(dyna->isSleeping())
-	//		continue;
-
-	//	PxTransform pose = dyna->getGlobalPose();
-
-	//	PxVec3 up;
-	//	//mPlanet.getUpVector(up, pose.p);
-	//	const PxVec3 force = -up * 9.81f * 4.0f;
-	//	dyna->addForce(force, PxForceMode::eACCELERATION, false);
-	//}
+	if (m_IsApplyCustomGravity)
+	{
+		PxSceneWriteLock scopedLock(*mScene);
+		BOOST_FOREACH (auto creature, m_Creatures)
+		{
+			creature->SetGravity( PxVec3(0,0,0) );
+		}
+	}
 }
 
