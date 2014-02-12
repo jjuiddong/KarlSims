@@ -39,7 +39,7 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_Age(0)
 ,	m_Gap(10.f)
 {
-	mCreateGroundPlane = false;
+	//mCreateGroundPlane = false;
 }
 
 CEvc::~CEvc()
@@ -102,7 +102,8 @@ void CEvc::onInit()
 	srand(timeGetTime());
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
-	mCameraController.init(PxVec3(0.0f, 30.0f, 0.0f), PxVec3(1.0f, 0.0f, 0.0f));
+	//mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
+	mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.f, 0.0f, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
 	//getPhysics().setParameter();
@@ -122,11 +123,13 @@ void CEvc::onInit()
 		g_pDbgConfig->generationRecursiveCount = 2;
 	}
 
-	PxSceneWriteLock scopedLock(*mScene);
-	importRAWFile("planet.raw", 2.0f);
+	//PxSceneWriteLock scopedLock(*mScene);
+	//importRAWFile("planet.raw", 2.0f);
+	//BOOST_FOREACH (auto actor, mPhysicsActors)
+	//	m_Planet.push_back(actor);
 
-	BOOST_FOREACH (auto actor, mPhysicsActors)
-		m_Planet.push_back(actor);
+	if (m_Ground)
+		m_Planet.push_back(m_Ground);
 }
 
 
@@ -223,7 +226,6 @@ void CEvc::spawnNode( const int key )
 	PxVec3 pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
 	const PxVec3 vel = getCamera().getViewDir() * 20.f;
 
-
 	// find earth position
 	{
 		PxU32 width, height;
@@ -233,12 +235,11 @@ void CEvc::spawnNode( const int key )
 		mPicking->computeCameraRay(rayOrig, rayDir, width/2, height/2);
 
 		// raycast rigid bodies in scene
-		PxRaycastHit hit; hit.shape = NULL;
-
+		PxRaycastHit hit; 
+		hit.shape = NULL;
 		const PxU32 bufferSize = 256;        // [in] size of 'hitBuffer'
 		PxRaycastHit hitBuffer[bufferSize];  // [out] User provided buffer for results
 		PxRaycastBuffer buf(hitBuffer, bufferSize); // [out] Blocking and touching hits will be stored here
-
 		mScene->raycast(rayOrig, rayDir, PX_MAX_F32, buf);
 
 		for (PxU32 i = 0; i < buf.nbTouches; i++)
@@ -273,25 +274,48 @@ void CEvc::spawnNode( const int key )
 	case SPAWN_DEBUG_OBJECT5: 
 	case SPAWN_DEBUG_OBJECT6: 
 		{
-			string fileNames[] = {string("genotype.txt"), string("genotype_box.txt"), 
-				string("genotype_herb.txt"), string("genotype_tree.txt"), string("genotype_flower.txt") };
+			string fileNames[] = {
+				string("genotype.txt"), 
+				string("genotype_box.txt"), 
+				string("genotype_herb.txt"), 
+				string("genotype_tree.txt"), 
+				string("genotype_flower.txt"), 
+				string("genotype_bug.txt")
+			};
 			const int idx = key - SPAWN_DEBUG_OBJECT;
 			if ((sizeof(fileNames)/sizeof(string)) <= idx)
 				return;
 
+			if (SPAWN_DEBUG_OBJECT2 == key)
+			{
+				pos = getCamera().getPos() + (getCamera().getViewDir()*10.f);
+			}
+			else if (SPAWN_DEBUG_OBJECT6 == key)
+			{
+				PxVec3 dir = pos;
+				dir.normalize();
+				//pos += (dir * 5.f);
+				pos += PxVec3(0,5,0);
+			}
+
 			pnode = new evc::CCreature(*this); 
-			//pnode->GenerateByGenotype(fileName[ idx], pos, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
-			pnode->GenerateProgressive(fileNames[ idx], pos, 
-				((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL),
-				g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
+
+			if (SPAWN_DEBUG_OBJECT6 == key)
+			{
+				pnode->GenerateImmediate(fileNames[ idx], pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+			}
+			else
+			{
+				pnode->GenerateProgressive(fileNames[ idx], pos, ((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL), g_pDbgConfig->displaySkinning); 
+			}
 		}
 		break;
 
 	case SPAWN_DEBUG_OBJECT9: 
 		{
 			pnode = new evc::CCreature(*this); 
-			pnode->GenerateByGenotype("genotype_flower.txt", pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+			pnode->GenerateImmediate("genotype_flower.txt", pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
 			m_Creatures.push_back( pnode );
 			//PxVec3 initialPos(-50,10,0);
 			//for (int i=0; i < 30; ++i)
@@ -455,7 +479,7 @@ void CEvc::customizeSceneDesc(PxSceneDesc& sceneDesc)
 	//sceneDesc.filterShader = SampleSubmarineFilterShader;
 	//sceneDesc.simulationEventCallback = this;
 
-	sceneDesc.gravity = PxVec3(0);
+	//sceneDesc.gravity = PxVec3(0);
 	sceneDesc.flags |= PxSceneFlag::eREQUIRE_RW_LOCK;
 }
 
@@ -519,12 +543,12 @@ void CEvc::RemoveAllCreatures()
 void CEvc::onSubstep(float dtime)
 {
 	//mPlatformManager.updatePhysicsPlatforms(dtime);
-	PxSceneWriteLock scopedLock(*mScene);
+	//PxSceneWriteLock scopedLock(*mScene);
 
-	BOOST_FOREACH (auto creature, m_Creatures)
-	{
-		creature->SetGravity( PxVec3(0,0,0) );
-	}
+	//BOOST_FOREACH (auto creature, m_Creatures)
+	//{
+	//	creature->SetGravity( PxVec3(0,0,0) );
+	//}
 
 	//PxU32 nb = (PxU32)mDebugActors.size();
 	//for(PxU32 i=0;i<nb;i++)

@@ -21,6 +21,7 @@ CNode::CNode(CEvc &sample) :
 ,	m_pOriginalShapeRenderer(NULL)
 ,	m_PaletteIndex(0)
 ,	m_IsTerminalNode(false)
+,	m_IsKinematic(false)
 {
 
 }

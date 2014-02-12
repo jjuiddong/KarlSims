@@ -743,7 +743,8 @@ PhysXSample::PhysXSample(PhysXSampleApplication& app, PxU32 maxSubSteps) :
 	mSimulationTime(0.0f),
 	mPicked(false),
 	mExtendedHelpPage(0),
-	mDebugObjectType(DEBUG_OBJECT_BOX)
+	mDebugObjectType(DEBUG_OBJECT_BOX),
+	m_Ground(NULL)
 {
 	mDebugStepper.setSample(this);
 	mFixedStepper.setSample(this);
@@ -1181,7 +1182,7 @@ void PhysXSample::onInit()
 	mCameraController.setMouseSensitivity(1.0f);
 
 	if(mCreateGroundPlane)
-		createGrid();
+		m_Ground = createGrid();
 
 	LOG_INFO("PhysXSample", "Init sample ok!");
 }

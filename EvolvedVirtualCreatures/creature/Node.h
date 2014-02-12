@@ -9,6 +9,7 @@
 class CEvc;
 class RenderComposition;
 
+
 namespace evc
 {
 	class CEffector;
@@ -44,6 +45,7 @@ namespace evc
 		string m_ShapeName;
 		string m_MaterialName;
 		bool m_IsTerminalNode;
+		bool m_IsKinematic;
 		PxRigidDynamic *m_pBody;
 		PxShape *m_pShape;
 		vector<CJoint*> m_Joints;

@@ -347,6 +347,7 @@ protected:
 					PxU32									mActiveTransformCapacity;
 					bool									mIsFlyCamera;
 					PhysXShapeToRenderActorMap				mPhysXShapeToRenderActorMap;
+					PxRigidActor *m_Ground;
 
 private:
 					PxU32									mMeshTag;

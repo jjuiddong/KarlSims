@@ -52,7 +52,24 @@ CCreature::~CCreature()
  @brief 
  @date 2013-12-09
 */
-void CCreature::GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
+void CCreature::GenerateImmediate(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
+	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning) 
+	//recursivCount=2, isDispSkinning=true
+{
+	genotype_parser::CGenotypeParser parser;
+	m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
+	MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
+	GenerateByGenotypeFileName(genotypeScriptFileName, initialPos, linVel, recursiveCount, isDispSkinning);
+
+	m_GrowCount = recursiveCount;
+}
+
+
+/**
+ @brief 
+ @date 2013-12-09
+*/
+void CCreature::GenerateByGenotypeFileName(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
 	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning) 
 	//recursivCount=2, isDispSkinning=true
 {
@@ -114,7 +131,7 @@ void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const 
 		genotype_parser::CGenotypeParser parser;
 		m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
 		MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
-		GenerateByGenotype(genotypeScriptFileName, initialPos, linVel, 1, isDispSkinning);
+		GenerateByGenotypeFileName(genotypeScriptFileName, initialPos, linVel, 1, isDispSkinning);
 	}
 }
 
@@ -298,6 +315,7 @@ CNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec3 &i
 		//dimension = PxVec3(0.1f,0.1f,0.1f);
 		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
 		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+		pNode->m_IsKinematic = true;
 	}
 
 	if (pNode->m_pBody)
@@ -400,14 +418,14 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 
 
 	// apply gravity direction only have root genotype
-	if (boost::iequals(parentNode->m_ShapeName, "root"))
-	{
-		PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
-		gravDir.normalize();
-		PxQuat gravQ;
-		quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
-		tm1 = tm1 * PxTransform(gravQ);
-	}
+	//if (boost::iequals(parentNode->m_ShapeName, "root"))
+	//{
+	//	PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
+	//	gravDir.normalize();
+	//	PxQuat gravQ;
+	//	quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
+	//	tm1 = tm1 * PxTransform(gravQ);
+	//}
 
 
 	PxJoint* pxJoint = NULL;
@@ -849,6 +867,9 @@ void CCreature::SetGravity(const PxVec3 &centerOfGravity)
 {
 	BOOST_FOREACH (auto node, m_Nodes)
 	{
+		if (node->m_IsKinematic)
+			continue;
+
 		if (node->m_pBody)
 		{
 			PxTransform pose = node->m_pBody->getGlobalPose();

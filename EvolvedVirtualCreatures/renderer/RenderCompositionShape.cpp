@@ -178,7 +178,7 @@ void RendererCompositionShape::CalculateCenterPoint( const int boneIndex, void *
 	void *bones, PxU32 stride, const PxU32 numVerts, OUT PxVec3 &out )
 {
 	int count=0;
-	PxVec3 center;
+	PxVec3 center(0,0,0);
 	for (PxU32 i=0; i < numVerts; ++i)
 	{
 		const PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));

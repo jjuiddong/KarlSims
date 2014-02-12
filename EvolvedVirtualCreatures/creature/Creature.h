@@ -24,7 +24,7 @@ namespace evc
 	public:
 		CCreature(CEvc &sample);
 		virtual ~CCreature();
-		void GenerateByGenotype(const string &genotypeScriptFileName, const PxVec3 &initialPos, const PxVec3 *linVel, const int recursiveCount=2, const bool isDispSkinning=true);
+		void GenerateImmediate(const string &genotypeScriptFileName, const PxVec3 &initialPos, const PxVec3 *linVel, const int recursiveCount=2, const bool isDispSkinning=true);
 		void GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos);
 		void GenerateProgressive(const string &genotypeScriptFileName, const PxVec3 &initialPos, const PxVec3 *linVel, const bool isDispSkinning=true);
 		void Move(float dtime);
@@ -35,6 +35,8 @@ namespace evc
 
 
 	protected:
+		void GenerateByGenotypeFileName(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
+			const PxVec3 *linVel, const int recursiveCount=2, const bool isDispSkinning=true);
 		CNode* GenerateByGenotype( CNode* parentNode, const genotype_parser::SExpr *pexpr, const int recursiveCnt, 
 			const PxVec3 &initialPos, const PxVec3 *linVel, const bool isGenerateBody=true, const PxVec3 &randPos=PxVec3(0,0,0), 
 			const float dimensionRate=1.f, const PxVec3 &parentDim=PxVec3(0,0,0), const bool IsTerminal=false);

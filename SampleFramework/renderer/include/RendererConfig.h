@@ -234,6 +234,7 @@
 #endif
 #else
 #define RENDERER_ASSERT(_exp, _msg)
+#define RENDERER_ASSERTW(_exp, _msg)
 #endif
 
 #define RENDERER_OUTPUT_MESSAGE(_rendererPtr, _msg) \

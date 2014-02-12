@@ -32,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='checked|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <GenerateManifest>false</GenerateManifest>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='profile|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -117,17 +117,17 @@
     <ClCompile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <StringPooling>true</StringPooling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/MP</AdditionalOptions>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>./../../../../Include/foundation;./../../../../Source/foundation/include;./../../../../Include/physxprofilesdk;./../../../../Include/physxvisualdebuggersdk;./../../include;./../../../../Include/common;./../../../../Include/geometry;./../../../../Include/pvd;./../../../../Include/particles;./../../../../Include/cooking;./../../../../Include/extensions;./../../../../Include/characterdynamic;./../../../../Include/vehicle;./../../../../Include/RepX;./../../../../Include;./../../../../Source/GeomUtils/headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Include/physxprofilesdk;$(PHYSX_DIR)Include/physxvisualdebuggersdk;./../../include;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Include/geometry;$(PHYSX_DIR)Include/pvd;$(PHYSX_DIR)Include/particles;$(PHYSX_DIR)Include/cooking;$(PHYSX_DIR)Include/extensions;$(PHYSX_DIR)Include/characterdynamic;$(PHYSX_DIR)Include/vehicle;$(PHYSX_DIR)Include/RepX;$(PHYSX_DIR)Include;$(PHYSX_DIR)Source/GeomUtils/headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;PX_PHYSX_DLL_NAME_POSTFIX=CHECKED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <WarningLevel>Level3</WarningLevel>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
