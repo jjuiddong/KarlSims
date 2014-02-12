@@ -55,12 +55,20 @@ void mainInitialize()
 	static PxAssertHandler2 assertHandler;
 	physx::PxSetAssertHandler( assertHandler );
 
-	if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0),"config_evc.json" ))
+#ifdef PX_CHECKED
+	string configFileName = "config_evc_checked.json";
+#elif PX_DEBUG
+	string configFileName = "config_evc_debug.json";
+#endif
+
+	if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0), configFileName))
 	//if (!memmonitor::Init(memmonitor::INNER_PROCESS, NULL,"config_evc.json" ))
 	{
 	//	MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
 		//assert(0);
 	}
+
+
 }
 
 void mainTerminate()
