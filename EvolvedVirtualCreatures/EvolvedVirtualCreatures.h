@@ -77,6 +77,7 @@ private:
 	double m_ElapsTime; // fo gentic algorithm epoch
 	int m_Age;
 	float m_Gap;
+	bool m_IsApplyCustomGravity;
 };
 
 

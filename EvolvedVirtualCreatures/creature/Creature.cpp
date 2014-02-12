@@ -417,15 +417,15 @@ void CCreature::CreateJoint( CNode *parentNode, CNode *childNode, genotype_parse
 		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
 
-	// apply gravity direction only have root genotype
-	//if (boost::iequals(parentNode->m_ShapeName, "root"))
-	//{
-	//	PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
-	//	gravDir.normalize();
-	//	PxQuat gravQ;
-	//	quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
-	//	tm1 = tm1 * PxTransform(gravQ);
-	//}
+	 //apply gravity direction only have root genotype
+	if (boost::iequals(parentNode->m_ShapeName, "root"))
+	{
+		PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
+		gravDir.normalize();
+		PxQuat gravQ;
+		quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
+		tm1 = tm1 * PxTransform(gravQ);
+	}
 
 
 	PxJoint* pxJoint = NULL;
@@ -876,7 +876,7 @@ void CCreature::SetGravity(const PxVec3 &centerOfGravity)
 			PxVec3 up = pose.p - centerOfGravity;
 			up.normalize();
 		
-			const PxVec3 force = -up * 9.81f * 2.f;
+			const PxVec3 force = -up * 9.81f * 1.f;
 			node->m_pBody->addForce(force, PxForceMode::eACCELERATION, false);
 		}
 	}
