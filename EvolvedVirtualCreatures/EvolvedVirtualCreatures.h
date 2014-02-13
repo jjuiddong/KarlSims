@@ -1,27 +1,18 @@
 /**
  @filename EvolvedVirtualCreatures.h
  
- Evolving Virtual Creature Main class
+ Evolving Virtual Creature Main class (E.V.C)
 */
 
 #pragma once
 
 #include "PhysXSample.h"
 
-
-struct NodeGroup
-{
-	enum Enum
-	{
-		HEAD		= (1 << 0),
-		BODY		= (1 << 1),
-		L_ARM		= (1 << 2),
-		R_ARM		= (1 << 3),
-	};
-};
-
-
-namespace evc { class CCreature; }
+namespace evc 
+{ 
+	class CCreature;
+	class CDiagramController;
+}
 
 // Evc, Evolved Virtual Creatures
 DECLARE_TYPE_NAME(CEvc)
@@ -66,6 +57,7 @@ protected:
 	void pickup();
 	void gotoNextGenration();
 	virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val);
+	virtual void onPointerInputEvent(const SampleFramework::InputEvent& ie, physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val) override;
 	void RemoveAllCreatures();
 
 
@@ -73,8 +65,9 @@ private:
 	list<evc::CCreature*> m_Creatures;
 	list<evc::CCreature*> m_Obstacles;
 	vector<PxRigidActor*> m_Planet; // composite 6 actor
+	evc::CDiagramController *m_DiagramController;
 
-	double m_ElapsTime; // fo gentic algorithm epoch
+	double m_ElapsTime; // for gentic algorithm epoch
 	int m_Age;
 	float m_Gap;
 	bool m_IsApplyCustomGravity;

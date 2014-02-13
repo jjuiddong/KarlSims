@@ -32,6 +32,7 @@ namespace evc
 		PxVec3 GetPos() const;
 		const CNeuralNet* GetBrain() const;
 		void SetGravity(const PxVec3 &centerOfGravity);
+		genotype_parser::SExpr* GetGenotype();
 
 
 	protected:
@@ -77,4 +78,5 @@ namespace evc
 
 
 	inline const SGenome& CCreature::GetGenome() const { return m_Genome; }
+	inline genotype_parser::SExpr* CCreature::GetGenotype() { return m_pGenotypeExpr; }
 }

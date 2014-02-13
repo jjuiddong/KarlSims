@@ -6,19 +6,22 @@
 #pragma once
 
 
+class RenderBaseActor;
 namespace evc
 {
 
 	class CDiagramNode
 	{
 	public:
+		CDiagramNode();
+		virtual ~CDiagramNode();
 
 
 	protected:
 
 
-	private:
-
+	public:
+		RenderBaseActor *m_pRenderNode;
 	};
 
 }

@@ -21,17 +21,19 @@ namespace evc
 		CDiagramController(CEvc &sample);
 		virtual ~CDiagramController();
 
-		void SetGenotype(const genotype_parser::SExpr *pexpr);
+		void SetGenotype(const genotype_parser::SExpr *expr);
 		void Move(float dtime);
 
 		
 	protected:
-		//void Layout();
+		CDiagramNode* CreateDiagramNode(const genotype_parser::SExpr *expr);
+		void RemoveDiagram(CDiagramNode *node);
+		void Layout(CDiagramNode *root);
 
 
 	private:
+		CEvc &m_Sample;
 		CDiagramNode *m_pRootDiagram;
 
 	};
-
 }

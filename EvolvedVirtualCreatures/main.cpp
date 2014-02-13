@@ -55,10 +55,10 @@ void mainInitialize()
 	static PxAssertHandler2 assertHandler;
 	physx::PxSetAssertHandler( assertHandler );
 
-#ifdef PX_CHECKED
-	string configFileName = "config_evc_checked.json";
-#elif PX_DEBUG
+#ifdef _DEBUG
 	string configFileName = "config_evc_debug.json";
+#else
+	string configFileName = "config_evc_checked.json";
 #endif
 
 	if (!memmonitor::Init(memmonitor::INNER_PROCESS,(HINSTANCE)::GetModuleHandle(0), configFileName))
@@ -67,7 +67,6 @@ void mainInitialize()
 	//	MessageBoxA(NULL, memmonitor::GetLastError().c_str(), "ERROR", MB_OK);
 		//assert(0);
 	}
-
 
 }
 
@@ -78,7 +77,6 @@ void mainTerminate()
 	DELETESINGLE(gSampleCommandLine);
 	releaseSampleAllocator();	
 }
-
 
 bool mainContinue()
 {

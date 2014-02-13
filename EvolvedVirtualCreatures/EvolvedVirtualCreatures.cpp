@@ -22,6 +22,7 @@
 #include "Picking.h"
 #include "Creature/Creature.h"
 #include "genetic/GeneticAlgorithm.h"
+#include "diagram/DiagramController.h"
 
 
 using namespace SampleRenderer;
@@ -38,6 +39,7 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_ElapsTime(NULL)
 ,	m_Age(0)
 ,	m_Gap(10.f)
+,	m_DiagramController(NULL)
 {
 	mCreateGroundPlane = false;
 	m_IsApplyCustomGravity = true;
@@ -47,6 +49,7 @@ CEvc::~CEvc()
 {
 	RemoveAllCreatures();
 	evc::CGeneticAlgorithm::Release();
+	SAFE_DELETE(m_DiagramController);
 }
 
 
@@ -86,13 +89,13 @@ CEvc::~CEvc()
 
 
 
-// A structure for our custom vertex type
-struct CUSTOMVERTEX
-{
-	FLOAT x, y, z, rhw; // The transformed position for the vertex
-	DWORD color;        // The vertex color
-};
-
+//// A structure for our custom vertex type
+//struct CUSTOMVERTEX
+//{
+//	FLOAT x, y, z, rhw; // The transformed position for the vertex
+//	DWORD color;        // The vertex color
+//};
+//
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 //IDirect3DVertexDeclaration9* g_decl = 0;
 
@@ -131,6 +134,9 @@ void CEvc::onInit()
 
 	//if (m_Ground)
 	//	m_Planet.push_back(m_Ground);
+
+	m_DiagramController = new evc::CDiagramController(*this);
+
 }
 
 
@@ -151,11 +157,11 @@ void	CEvc::onTickPostRender(float dtime)
 {
 	PhysXSample::onTickPostRender(dtime);
 
-	//PxReal vertices[] = {0, 0, 1, 1};
-	//RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
-	//getRenderer()->drawLines2D(2, vertices, colors );
-	//PxReal vertices2[] = {1, 0, 0, 1};
-	//getRenderer()->drawLines2D(2, vertices2, colors );
+	PxReal vertices[] = {0, 0, 1, 1};
+	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+	getRenderer()->drawLines2D(2, vertices, colors );
+	PxReal vertices2[] = {1, 0, 0, 1};
+	getRenderer()->drawLines2D(2, vertices2, colors );
 
 }
 
@@ -180,7 +186,6 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(STEP_ONE_FRAME, WKEY_SPACE,				XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	//DIGITAL_INPUT_EVENT_DEF(RELEASE_CURSOR, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(GOTO_NEXT_GENERATION, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
-
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
@@ -422,6 +427,26 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		default:
 			PhysXSample::onDigitalInputEvent(ie,val);
 			break;
+		}
+	}
+}
+
+
+/**
+ @brief pointer input event
+ @date 2014-02-12
+*/
+void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie, 
+	physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val)
+{
+	PhysXSample::onPointerInputEvent(ie, x, y, dx, dy, val);
+
+	// Mouse LButton Down
+	if ((GetKeyState(VK_LBUTTON) & 0x80) != 0)
+	{
+		if (!m_Creatures.empty())
+		{
+			m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
 		}
 	}
 }

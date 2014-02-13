@@ -71,7 +71,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;PHYSX_PROFILE_SDK;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;PHYSX_PROFILE_SDK;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./../../../SampleBase;./../../../PxToolkit/include;./../../../SampleFramework/framework/include;./../../../SampleFramework/renderer/include;./../../../SampleFramework/platform/include;$(PHYSX_DIR)Source/shared/general/shared;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Source/Common/src;$(PHYSX_DIR)Source/GeomUtils/headers;$(PHYSX_DIR)Source/GeomUtils/include;$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Source/PhysXVehicle/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -114,8 +114,8 @@
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>$(OutDir)/$(ProjectName)CHECKED.map</MapFileName>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <AdditionalOptions>Winmm.lib /LIBPATH:../../lib/win64 /LIBPATH:$(PHYSX_DIR)Lib/win64 PhysX3CommonDEBUG_x64.lib PhysX3DEBUG_x64.lib PhysX3CookingDEBUG_x64.lib PhysX3CharacterKinematicDEBUG_x64.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PxTaskDEBUG.lib /DEBUG %(AdditionalOptions)</AdditionalOptions>
-      <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>Winmm.lib /LIBPATH:../../lib/win64 /LIBPATH:$(PHYSX_DIR)Lib/win64 PhysX3CommonCHECKED_x64.lib PhysX3CHECKED_x64.lib PhysX3CookingCHECKED_x64.lib PhysX3CharacterKinematicCHECKED_x64.lib PhysX3ExtensionsCHECKED.lib PhysX3VehicleCHECKED.lib PhysXProfileSDKCHECKED.lib PhysXVisualDebuggerSDKCHECKED.lib PxTaskCHECKED.lib /DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)/$(ProjectName)CHECKED.pdb</ProgramDatabaseFile>
     </Link>
