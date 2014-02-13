@@ -19,9 +19,11 @@
     <ClCompile Include="..\..\creature\Effector.cpp" />
     <ClCompile Include="..\..\creature\Joint.cpp" />
     <ClCompile Include="..\..\creature\NeuralNet.cpp" />
-    <ClCompile Include="..\..\creature\Node.cpp" />
     <ClCompile Include="..\..\creature\PhotoSensor.cpp" />
+    <ClCompile Include="..\..\creature\PhysNode.cpp" />
     <ClCompile Include="..\..\creature\VisionSensor.cpp" />
+    <ClCompile Include="..\..\diagram\DiagramController.cpp" />
+    <ClCompile Include="..\..\diagram\DiagramNode.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\genetic\Genome.cpp" />
     <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp" />
@@ -42,10 +44,12 @@
     <ClInclude Include="..\..\creature\Joint.h" />
     <ClInclude Include="..\..\creature\MuscleEffector.h" />
     <ClInclude Include="..\..\creature\NeuralNet.h" />
-    <ClInclude Include="..\..\creature\Node.h" />
     <ClInclude Include="..\..\creature\PhotoSensor.h" />
+    <ClInclude Include="..\..\creature\PhysNode.h" />
     <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\creature\VisionSensor.h" />
+    <ClInclude Include="..\..\diagram\DiagramController.h" />
+    <ClInclude Include="..\..\diagram\DiagramNode.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\genetic\Genome.h" />
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
@@ -131,7 +135,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;PHYSX_PROFILE_SDK;PX_DEBUG;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalIncludeDirectories>./../../../SampleBase;./../../../PxToolkit/include;./../../../SampleFramework/framework/include;./../../../SampleFramework/renderer/include;./../../../SampleFramework/platform/include;$(PHYSX_DIR)Source/shared/general/shared;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Source/Common/src;$(PHYSX_DIR)Source/GeomUtils/headers;$(PHYSX_DIR)Source/GeomUtils/include;$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Include/common;$(PHYSX_DIR)Source/PhysXVehicle/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <StringPooling>true</StringPooling>

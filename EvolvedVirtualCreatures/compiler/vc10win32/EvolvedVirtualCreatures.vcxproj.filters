@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\creature\NeuralNet.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\creature\Node.cpp">
-      <Filter>Creature</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\genoype\GenotypeParser.cpp">
       <Filter>Genotype</Filter>
     </ClCompile>
@@ -43,6 +40,15 @@
     <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\creature\PhysNode.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\DiagramController.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\DiagramNode.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -64,9 +70,6 @@
       <Filter>Creature</Filter>
     </ClInclude>
     <ClInclude Include="..\..\creature\NeuralNet.h">
-      <Filter>Creature</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\creature\Node.h">
       <Filter>Creature</Filter>
     </ClInclude>
     <ClInclude Include="..\..\creature\Sensor.h">
@@ -99,6 +102,15 @@
     <ClInclude Include="..\..\utility\Utility.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\creature\PhysNode.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\DiagramController.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\DiagramNode.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Creature">
@@ -115,6 +127,9 @@
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{1ec45e37-762c-4e7e-af04-341754835bb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Diagram">
+      <UniqueIdentifier>{1210f029-2088-44bb-ad95-00d34a3618d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
