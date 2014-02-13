@@ -37,7 +37,7 @@ CFrame::CFrame(wxWindow* parent) : wxFrame(parent, -1, _("wxMemMonitor"),
 ,	m_pLogWnd(NULL)
 ,	m_pPropWnd(NULL)
 {
-	const bool IsInitSuccess = InitMemoryMonitor( GetConfigFileName() );
+	const std::pair<bool,string> initMemResult = InitMemoryMonitor( GetConfigFileName() );
 
 	// notify wxAUI which frame to use
 	m_mgr.SetManagedWindow(this);
@@ -59,10 +59,13 @@ CFrame::CFrame(wxWindow* parent) : wxFrame(parent, -1, _("wxMemMonitor"),
 	m_pMemTree = memTree;
 	m_pLogWnd = logWnd;
 	m_pPropWnd = propWnd;
-	
-	if (!IsInitSuccess)
+		
+	if (initMemResult.first)
+		GetLogWindow()->PrintText( "pdb path : " + initMemResult.second + "\n" );
+	else
 		GetLogWindow()->PrintText( GetLastError() );
-	//if (IsInitSuccess)
+
+	//if (initMemResult.first)
 	{
 		visualizer::OpenVisualizerScript( "autoexp.txt" );
 		ReadConfigFile( GetConfigFileName() );

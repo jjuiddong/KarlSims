@@ -575,7 +575,7 @@ SVisDispDesc visualizer::MakeProperty_Pointer_Preview( SVisDispDesc parentDispde
 	if (SymTagUDT == baseSymTag)
 	{
 		ss << symbol.mem.name;// << " 0x" << newPtr;
-		ss << (char*)(CheckValidAddress(newPtr)? " " : " memory access deny");
+		ss << (char*)(CheckValidStringAddress(newPtr)? " " : " {memory access deny}");
 		//ss << " (" << typeName << ")";
 	}
 	else if (SymTagBaseType == baseSymTag)
@@ -588,14 +588,14 @@ SVisDispDesc visualizer::MakeProperty_Pointer_Preview( SVisDispDesc parentDispde
 		if (btChar == btype)
 		{
 			ss << symbol.mem.name;// << " 0x" << newPtr << " {\"";
-			ss << (char*)(CheckValidAddress(newPtr)? newPtr : " memory access deny")  << "\"}";
+			ss << (char*)(CheckValidStringAddress(newPtr)? " " : " {memory access deny}");
 		}
 	}
 
 	if (ss.str().empty()) // default pointer ÀÛ¾÷
 	{
 		ss << symbol.mem.name;// << " 0x" << newPtr;
-		ss << (char*)(CheckValidAddress(newPtr)? " " : " memory access deny");
+		ss << (char*)(CheckValidStringAddress(newPtr)? " " : " {memory access deny}");
 		//ss << " (" << typeName << ")";
 	}
 

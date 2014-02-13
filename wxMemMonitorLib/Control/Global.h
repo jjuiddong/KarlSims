@@ -22,7 +22,7 @@ namespace memmonitor
 	typedef  std::map<std::string, SMemInfo> MapType;
 
 
-	bool							InitMemoryMonitor(const std::string &configFileName);
+	std::pair<bool,string> InitMemoryMonitor(const std::string &configFileName);
 	bool							ReadConfigFile(const std::string &fileName);
 	bool							RepositioningWindow();
 	void							WriteWindowPosition();

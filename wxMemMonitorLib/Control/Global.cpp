@@ -218,22 +218,24 @@ _variant_t memmonitor::wxVariant2Variant(const VARTYPE &vartype, const wxVariant
 //------------------------------------------------------------------------
 // open configfile, json file format 
 //------------------------------------------------------------------------
-bool	memmonitor::InitMemoryMonitor(const std::string &configFileName)
+std::pair<bool,string>	memmonitor::InitMemoryMonitor(const std::string &configFileName)
 {
+	typedef std::pair<bool,string> RetType;
+	string pdbPath;
+
 	try
 	{
 		using boost::property_tree::ptree;
 		using std::string;
 		ptree props;
 		boost::property_tree::read_json(configFileName.c_str(), props);
-		string pdbPath = props.get<string>("pdbpath");
+		pdbPath = props.get<string>("pdbpath");
 
 		// Pdb Load
 		if (!dia::Init(pdbPath))
 		{
-			SetErrorMsg(
-				format("%s Pdb 파일이 없습니다.\n", pdbPath.c_str()) );
-			return false;
+			SetErrorMsg(format("%s Pdb 파일이 없습니다.\n", pdbPath.c_str()) );
+			return RetType(false,"");
 		}
 
 		if (OUTER_PROCESS == GetExecuteType())
@@ -244,7 +246,7 @@ bool	memmonitor::InitMemoryMonitor(const std::string &configFileName)
 				SetErrorMsg(
 					format("%s  이름의 공유메모리가 없습니다.\n", 
 					shareMemoryName.c_str()) );
-				return false;
+				return RetType(false,"");
 			}
 		}
 
@@ -252,10 +254,10 @@ bool	memmonitor::InitMemoryMonitor(const std::string &configFileName)
 	catch (std::exception &e)
 	{
 		SetErrorMsg( format("\"%s\" json script Err!! [%s]\n",  configFileName.c_str(), e.what()) );
-		return false;
+		return RetType(false,"");
 	}
 
-	return true;
+	return RetType(true, pdbPath);
 }
 
 

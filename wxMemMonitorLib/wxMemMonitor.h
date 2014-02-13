@@ -76,7 +76,7 @@ namespace memmonitor
 	bool		FindMemoryInfo(const std::string &name, OUT SMemInfo &info);
 	void*	MemoryMapping(void *srcPtr );
 	std::string ParseObjectName(const std::string &objectName);
-	bool		CheckValidAddress(const void *ptr );
+	bool		CheckValidStringAddress(const void *ptr );
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////
