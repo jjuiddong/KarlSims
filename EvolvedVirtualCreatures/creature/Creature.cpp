@@ -29,21 +29,8 @@ CCreature::CCreature(CEvc &sample) :
 
 CCreature::~CCreature()
 {
-	//m_pRoot = NULL;
-	//BOOST_FOREACH (auto &p, m_Nodes)
-	//{
-	//	SAFE_DELETE(p);
-	//}
 	m_Nodes.clear();
-
-	if (m_pRoot)
-	{ // render node is already removed
-		if (m_pRoot->m_pShapeRenderer == m_pRoot->m_pOriginalShapeRenderer)
-			m_pRoot->m_pOriginalShapeRenderer = NULL;
-		m_pRoot->m_pShapeRenderer = NULL; // already removed
-	}
 	SAFE_DELETE(m_pRoot);
-
 	genotype_parser::RemoveExpression(m_pGenotypeExpr);
 }
 
@@ -500,16 +487,13 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 	RETV(!parentNode, NULL);
 
 	CPhysNode *childNode = NULL;
-
 	CPhysNode *pNode = new CPhysNode(m_Sample);
 	pNode->m_PaletteIndex = m_Nodes.size();
 	//pNode->m_IsTerminalNode = IsTerminal;
 
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
-	MaterialIndex material = GetMaterialType("red");
-	{
-		pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.getManageMaterial(material), 1.f);
-	}
+	//MaterialIndex material = GetMaterialType("red");
+	pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.GetMaterial(PxVec3(0.75f,0,0)), 1.f);
 	m_Nodes.push_back(pNode);
 	childNode = pNode;
 
@@ -559,20 +543,20 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
  @brief genotype script material field to MaterialIndex value
  @date 2013-12-07
 */
-MaterialIndex CCreature::GetMaterialType(const string &materialStr)
-{
-	const static string materials[] = {"grey", "red", "green", "blue", "yellow"};
-	const int size = sizeof(materials) / sizeof(string);
-
-	for (int i=0; i < size; ++i)
-	{
-		if (materialStr == materials[ i])
-		{
-			return (MaterialIndex)(i + MATERIAL_GREY);
-		}
-	}
-	return MATERIAL_GREY;
-}
+//MaterialIndex CCreature::GetMaterialType(const string &materialStr)
+//{
+//	const static string materials[] = {"grey", "red", "green", "blue", "yellow"};
+//	const int size = sizeof(materials) / sizeof(string);
+//
+//	for (int i=0; i < size; ++i)
+//	{
+//		if (materialStr == materials[ i])
+//		{
+//			return (MaterialIndex)(i + MATERIAL_GREY);
+//		}
+//	}
+//	return MATERIAL_GREY;
+//}
 
 
 /**

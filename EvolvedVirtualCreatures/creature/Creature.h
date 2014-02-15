@@ -56,7 +56,7 @@ namespace evc
 		PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );
 		const genotype_parser::SExpr* FindExpr( const string &name );
 		void MakeExprSymbol( const genotype_parser::SExpr *expr, OUT map<string, const genotype_parser::SExpr*> &symbols );
-		MaterialIndex GetMaterialType(const string &materialStr);
+		//MaterialIndex GetMaterialType(const string &materialStr);
 		bool HasTerminalNode(const genotype_parser::SExpr *expr) const;
 
 
