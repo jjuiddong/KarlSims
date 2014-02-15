@@ -56,8 +56,11 @@ namespace evc { namespace genotype_parser {
 		// mass -> mass(num)
 		float mass();
 
-		// material -> material( id )
-		string material();
+		// material -> material( material_arg )
+		SVec3 material();
+
+		// material_arg -> id | rgb
+		SVec3 rgbValue();
 
 		// velocity -> velocity(num)
 		SVec3 velocity();

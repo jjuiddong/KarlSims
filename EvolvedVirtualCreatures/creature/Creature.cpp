@@ -297,23 +297,24 @@ CPhysNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec
 	pNode->m_Name = expr->id;
 	pNode->m_ShapeName = expr->shape;
 
-	MaterialIndex material = GetMaterialType(expr->material);
-	pNode->m_MaterialName = expr->material;
+	//MaterialIndex material = GetMaterialType(expr->material);
+	RenderMaterial *material = m_Sample.GetMaterial(PxVec3(expr->material.x, expr->material.y, expr->material.z));
+	pNode->m_MaterialDiffuse = PxVec3(expr->material.x, expr->material.y, expr->material.z);
 	const float mass = expr->mass;
 
 	if (boost::iequals(expr->shape, "box"))
 	{
-		pNode->m_pBody = m_Sample.createBox(pos, dimension, linVel, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createBox(pos, dimension, linVel, material, mass);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, linVel, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, linVel, material, mass);
 	}
 	else if (boost::iequals(expr->shape, "root"))
 	{ // root node size 0.1, 0.1, 0.1
 		//pos = PxVec3(pos.x,pos.y,pos.z);
 		//dimension = PxVec3(0.1f,0.1f,0.1f);
-		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, m_Sample.getManageMaterial(material), mass);
+		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, material, mass);
 		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 		pNode->m_IsKinematic = true;
 	}
@@ -703,8 +704,9 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 		GenerateRenderComposition((CPhysNode*)joint->GetActor1());
 	}
 
-	const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
-	RenderMaterial *material = m_Sample.getManageMaterial(materialIndex);
+	//const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
+	//RenderMaterial *material = m_Sample.getManageMaterial(materialIndex);
+	RenderMaterial *material = m_Sample.GetMaterial(PxVec3(node->m_MaterialDiffuse.x, node->m_MaterialDiffuse.y, node->m_MaterialDiffuse.z));
 
 	// generate renderer
 	if (!node->m_pOriginalShapeRenderer)

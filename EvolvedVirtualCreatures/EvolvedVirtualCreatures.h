@@ -24,6 +24,10 @@ public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
 
+	RenderMaterial* GetMaterial(const PxVec3 &rgb);
+	const list<evc::CCreature*>& GetAllCreature();
+	const list<evc::CCreature*>& GetAllObstacle();
+
 
 	// Implements PxSimulationEventCallback
 	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
@@ -48,9 +52,6 @@ public:
 	virtual	void descriptionRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
 	virtual PxU32 getDebugObjectTypes() const;
 
-	const list<evc::CCreature*>& GetAllCreature();
-	const list<evc::CCreature*>& GetAllObstacle();
-
 
 protected:
 	void spawnNode(const int key);
@@ -58,14 +59,16 @@ protected:
 	void gotoNextGenration();
 	virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val);
 	virtual void onPointerInputEvent(const SampleFramework::InputEvent& ie, physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val) override;
+	virtual void onShutdown();
 	void RemoveAllCreatures();
 
 
 private:
 	list<evc::CCreature*> m_Creatures;
 	list<evc::CCreature*> m_Obstacles;
-	vector<PxRigidActor*> m_Planet; // composite 6 actor
+	vector<PxRigidActor*> m_Planet; // composite ground physx actor
 	evc::CDiagramController *m_DiagramController;
+	map<double, RenderMaterial*> m_Materials; // key=r*100,g*10,b, value = material
 
 	double m_ElapsTime; // for gentic algorithm epoch
 	int m_Age;

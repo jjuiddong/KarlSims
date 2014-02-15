@@ -1,11 +1,11 @@
 /**
  @filename DiagramNode.h
  
- 
 */
 #pragma once
 
 
+class CEvc;
 class RenderBaseActor;
 namespace evc
 {
@@ -13,7 +13,7 @@ namespace evc
 	class CDiagramNode
 	{
 	public:
-		CDiagramNode();
+		CDiagramNode(CEvc &sample);
 		virtual ~CDiagramNode();
 
 
@@ -21,6 +21,8 @@ namespace evc
 
 
 	public:
+		CEvc &m_Sample;
+		vector<CDiagramNode*> m_ConnectNodes;
 		RenderBaseActor *m_pRenderNode;
 	};
 

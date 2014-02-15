@@ -40,16 +40,27 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_Age(0)
 ,	m_Gap(10.f)
 ,	m_DiagramController(NULL)
+,	m_IsApplyCustomGravity(false)
 {
-	mCreateGroundPlane = false;
-	m_IsApplyCustomGravity = true;
+	mCreateGroundPlane = true;
+	//m_IsApplyCustomGravity = true;
 }
 
 CEvc::~CEvc()
 {
+}
+
+void CEvc::onShutdown()
+{
 	RemoveAllCreatures();
 	evc::CGeneticAlgorithm::Release();
 	SAFE_DELETE(m_DiagramController);
+
+	BOOST_FOREACH (auto kv, m_Materials)
+		kv.second->release();
+	m_Materials.clear();
+
+	PhysXSample::onShutdown();
 }
 
 
@@ -106,8 +117,8 @@ void CEvc::onInit()
 	srand(timeGetTime());
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
-	mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
-	//mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.f, 0.0f, 0.0f));
+	//mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
+	mCameraController.init(PxVec3(0.0f, 10.0f, 0.0f), PxVec3(0.f, 0.0f, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
 	//getPhysics().setParameter();
@@ -127,13 +138,18 @@ void CEvc::onInit()
 		g_pDbgConfig->generationRecursiveCount = 2;
 	}
 
-	PxSceneWriteLock scopedLock(*mScene);
-	importRAWFile("planet.raw", 2.0f);
-	BOOST_FOREACH (auto actor, mPhysicsActors)
-		m_Planet.push_back(actor);
-
-	//if (m_Ground)
-	//	m_Planet.push_back(m_Ground);
+	if (mCreateGroundPlane)
+	{
+		if (m_Ground)
+			m_Planet.push_back(m_Ground);
+	}
+	else
+	{
+		PxSceneWriteLock scopedLock(*mScene);
+		importRAWFile("planet.raw", 2.0f);
+		BOOST_FOREACH (auto actor, mPhysicsActors)
+			m_Planet.push_back(actor);
+	}
 
 	m_DiagramController = new evc::CDiagramController(*this);
 
@@ -580,3 +596,21 @@ void CEvc::onSubstep(float dtime)
 	}
 }
 
+
+// return material
+RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb)
+{
+	const double key = rgb.x*100.f + rgb.y*10.f + rgb.z;
+	auto it = m_Materials.find(key);
+	if (m_Materials.end() != it)
+		return it->second;
+
+	const PxReal c = 0.75f;
+	const PxReal opacity = 1.0f;
+	const bool doubleSided = false;
+	const PxU32 id = 0xffffffff;
+	RenderMaterial *newMaterial = SAMPLE_NEW2(RenderMaterial)(*getRenderer(), rgb,	opacity, doubleSided, id, NULL);
+
+	m_Materials[ key] = newMaterial;
+	return newMaterial;
+}

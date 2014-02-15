@@ -68,7 +68,7 @@ namespace evc { namespace genotype_parser {
 		string shape;
 		SVec3 dimension;
 		SVec3 randShape;
-		string material;
+		SVec3 material;
 		float mass;
 		SConnectionList *connection;
 		int refCount;

@@ -368,21 +368,21 @@ SVec3 genotype_parser::CGenotypeParser::limit()
 
 
 /**
- @brief material -> material( id )
+ @brief material -> material( rgbValue )
  @date 2013-12-07
 */
-string genotype_parser::CGenotypeParser::material()
+SVec3 genotype_parser::CGenotypeParser::material()
 {
 	if (ID != m_Token)
-		return "";
+		return SVec3(0.5f, 0.5f, 0.5f);
 
-	string ret = "";
+	SVec3 ret(0.5f, 0.5f, 0.5f);
 	const string tok = m_pScan->GetTokenStringQ(0);
 	if (boost::iequals(tok, "material"))
 	{
 		Match(ID);
 		Match(LPAREN);
-		ret = id();
+		ret = rgbValue();
 		Match(RPAREN);
 	}
 	else
@@ -391,6 +391,70 @@ string genotype_parser::CGenotypeParser::material()
 	}
 
 	return ret;
+}
+
+
+// material_arg -> id | rgb
+SVec3 genotype_parser::CGenotypeParser::rgbValue()
+{
+	SVec3 v;
+	v.x = v.y = v.z = 0.f;
+
+	if (ID == m_Token)
+	{
+		const string tok = m_pScan->GetTokenStringQ(0);
+		if (boost::iequals(tok, "rgb"))
+		{
+			Match(ID);
+			Match(LPAREN);
+			v.x = (float)atof(number().c_str());
+			Match(COMMA);
+			v.y = (float)atof(number().c_str());
+			Match(COMMA);
+			v.z = (float)atof(number().c_str());
+			Match(RPAREN);
+		}
+		else if (boost::iequals(tok, "grey"))
+		{
+			Match(ID);
+			v.x = 0.5f, v.y = 0.5f, v.z = 0.5f;			
+		}
+		else if (boost::iequals(tok, "red"))
+		{
+			Match(ID);
+			v.x = 0.75f, v.y = 0, v.z = 0;
+		}
+		else if (boost::iequals(tok, "green"))
+		{
+			Match(ID);
+			v.x = 0, v.y = 0.75f, v.z = 0;
+		}
+		else if (boost::iequals(tok, "blue"))
+		{
+			Match(ID);
+			v.x = 0, v.y = 0, v.z = 0.75f;
+		}
+		else if (boost::iequals(tok, "yellow"))
+		{
+			Match(ID);
+			v.x = 0.75f, v.y = 0.75f, v.z = 0;
+		}
+		else if (boost::iequals(tok, "white"))
+		{
+			Match(ID);
+			v.x = 0.75f, v.y = 0.75f, v.z = 0.75f;
+		}
+		else
+		{
+			SyntaxError( "undeclare token %s, must declare 'rgb'\n", m_pScan->GetTokenStringQ(0).c_str() );
+		}
+	}
+	else
+	{
+		SyntaxError( "vec3 type need id string\n" );
+	}
+
+	return v;
 }
 
 

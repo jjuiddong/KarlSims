@@ -1127,12 +1127,12 @@ void PhysXSampleApplication::onInit()
 		const PxU32 id = 0xffffffff;
 
 		mManagedMaterials[MATERIAL_GREY]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.5f, 0.5f, 0.5f),	opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_RED]		= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, 0.0f, 0.0f),		opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_GREEN]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, c, 0.0f),		opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_BLUE]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, 0.0f, c),		opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_YELLOW]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, 0.0f),			opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_WHITE]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, c),			opacity, doubleSided, id, NULL);
-		mManagedMaterials[MATERIAL_FLAT]	= SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.5f, 0.5f, 0.5f),	opacity, doubleSided, id, NULL, true, true);
+		mManagedMaterials[MATERIAL_RED]  = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, 0.0f, 0.0f),		opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_GREEN] = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, c, 0.0f),		opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_BLUE] = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.0f, 0.0f, c),		opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_YELLOW] = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, 0.0f),			opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_WHITE] = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(c, c, c),			opacity, doubleSided, id, NULL);
+		mManagedMaterials[MATERIAL_FLAT] = SAMPLE_NEW2(RenderMaterial)(*renderer, PxVec3(0.5f, 0.5f, 0.5f),	opacity, doubleSided, id, NULL, true, true);
 	}
 
 	getNextSample();

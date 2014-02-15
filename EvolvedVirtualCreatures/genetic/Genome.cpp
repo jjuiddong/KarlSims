@@ -153,7 +153,10 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 	chromo.push_back( pexpr->mass );
 
 	// material
-	chromo.push_back( GetMaterialTypeIndex(pexpr->material) );
+	//chromo.push_back( GetMaterialTypeIndex(pexpr->material) );
+	chromo.push_back(pexpr->material.x);
+	chromo.push_back(pexpr->material.y);
+	chromo.push_back(pexpr->material.z);
 
 	// connection count
 	int connectCount = 0;
@@ -292,7 +295,10 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 	pexpr->dimension.y = chromo[ index++];
 	pexpr->dimension.z = chromo[ index++];
 	pexpr->mass = chromo[ index++];
-	pexpr->material = GetMaterialType(chromo[ index++]);
+	//pexpr->material = GetMaterialType(chromo[ index++]);
+	pexpr->material.x = chromo[ index++];
+	pexpr->material.y = chromo[ index++];
+	pexpr->material.z = chromo[ index++];
 
 	SConnectionList *pPrevConnection = NULL;
 	const int connectionCount = (int)chromo[ index++];
