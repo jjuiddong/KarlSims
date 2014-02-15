@@ -99,14 +99,40 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	diagrams[ expr] = diagNode; // insert
 
 	SConnectionList *connection = expr->connection;
-	PxVec3 offset(3,0,0);
+	PxVec3 offset(4,0,0);
 	while (connection)
 	{
+		const PxVec3 newNodePos = pos + offset;
 		SConnection *node_con = connection->connect;
-		CDiagramNode *newNode = CreateDiagramNode(pos+offset, node_con->expr, diagrams);
-		diagNode->m_ConnectNodes.push_back(newNode);
+		CDiagramNode *newDiagNode = CreateDiagramNode(newNodePos, node_con->expr, diagrams);
 
-		offset += PxVec3(0,3,0);
+		if (newDiagNode != diagNode)
+		{
+			SDiagramConnection diagramConnection;
+			diagramConnection.connectNode = newDiagNode;
+
+			// transition arrow direction
+			PxVec3 arrowPos = (pos + newNodePos) / 2.f;
+			PxVec3 dir = newNodePos - pos;
+			const float len = dir.magnitude();
+			dir.normalize();
+
+			PxTransform arrowTm(arrowPos);
+			PxQuat arrowDir;
+			quatRotationArc(arrowDir, dir, PxVec3(0,1,0));
+			arrowTm = arrowTm * PxTransform(arrowDir);
+			//
+
+			diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(0.05f, len/2.f, 0.05f));
+			diagramConnection.transitionArrow->setTransform( arrowTm );
+			diagramConnection.transitionArrow->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0.f, 0.f, 0.f), false) );
+			m_Sample.addRenderObject(diagramConnection.transitionArrow);
+
+			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
+
+			offset += PxVec3(0,3,0);
+		}
+
 		connection = connection->next;
 	}
 
@@ -126,10 +152,12 @@ void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &d
 
 	diagrams.insert(node);
 
-	BOOST_FOREACH (auto conNode, node->m_ConnectNodes)
+	BOOST_FOREACH (auto conNode, node->m_ConnectDiagrams)
 	{
-		RemoveDiagram(conNode, diagrams);
+		m_Sample.removeRenderObject(conNode.transitionArrow);
+		RemoveDiagram(conNode.connectNode, diagrams);
 	}
+	node->m_ConnectDiagrams.clear();
 
 	SAFE_DELETE(node);
 }

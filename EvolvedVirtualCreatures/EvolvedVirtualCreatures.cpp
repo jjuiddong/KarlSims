@@ -461,6 +461,7 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 	{
 		if (!m_Creatures.empty())
 		{
+			PxSceneWriteLock scopedLock(*mScene);
 			m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
 		}
 	}
