@@ -54,7 +54,9 @@ namespace SampleRenderer
 																			RenderTexture* texture,
 																			bool lit = true,
 																			bool flat = false,
-																			bool instanced = false);
+																			bool instanced = false,
+																			bool applyVertexColor=true
+																			);
 
 															RenderMaterial(SampleRenderer::Renderer& renderer, 
 																			SampleRenderer::RendererMaterial* mat, 

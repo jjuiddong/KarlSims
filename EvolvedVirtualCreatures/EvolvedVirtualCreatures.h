@@ -24,7 +24,7 @@ public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
 
-	RenderMaterial* GetMaterial(const PxVec3 &rgb);
+	RenderMaterial* GetMaterial(const PxVec3 &rgb, bool applyVertexColor=true);
 	const list<evc::CCreature*>& GetAllCreature();
 	const list<evc::CCreature*>& GetAllObstacle();
 
@@ -68,7 +68,7 @@ private:
 	list<evc::CCreature*> m_Obstacles;
 	vector<PxRigidActor*> m_Planet; // composite ground physx actor
 	evc::CDiagramController *m_DiagramController;
-	map<double, RenderMaterial*> m_Materials; // key=r*100,g*10,b, value = material
+	map<int, RenderMaterial*> m_Materials; // key=r*100,g*10,b, value = material
 
 	double m_ElapsTime; // for gentic algorithm epoch
 	int m_Age;

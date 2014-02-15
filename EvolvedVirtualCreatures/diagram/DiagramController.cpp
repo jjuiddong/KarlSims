@@ -20,6 +20,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 CDiagramController::~CDiagramController()
 {
 	RemoveDiagram(m_pRootDiagram);
+	m_pRootDiagram = NULL;
 
 }
 
@@ -31,6 +32,7 @@ CDiagramController::~CDiagramController()
 void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 {
 	RemoveDiagram(m_pRootDiagram);
+	m_pRootDiagram = NULL;
 
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
 	m_pRootDiagram = CreateDiagramNode(PxVec3(0,0,0), expr, diagrams);
@@ -89,9 +91,10 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	}
 
 	diagNode->m_pRenderNode->setTransform(PxTransform(pos));
+	diagNode->m_pRenderNode->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0, 0.75f, 0), false) );
 	m_Sample.addRenderObject(diagNode->m_pRenderNode);
 
-	RETV(!expr, NULL); // if sensor node return
+	RETV(!expr, diagNode); // if sensor node return
 
 	diagrams[ expr] = diagNode; // insert
 

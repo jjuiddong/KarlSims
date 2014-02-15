@@ -16,5 +16,5 @@ CDiagramNode::CDiagramNode(CEvc &sample) :
 CDiagramNode::~CDiagramNode()
 {
 	m_Sample.removeRenderObject(m_pRenderNode);
-
+	m_pRenderNode = NULL;
 }

@@ -152,7 +152,6 @@ void CEvc::onInit()
 	}
 
 	m_DiagramController = new evc::CDiagramController(*this);
-
 }
 
 
@@ -598,9 +597,11 @@ void CEvc::onSubstep(float dtime)
 
 
 // return material
-RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb)
+RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb, bool applyVertexColor) // applyVertexColor=true
 {
-	const double key = rgb.x*100.f + rgb.y*10.f + rgb.z;
+	int key = (int)(rgb.x*1000000 + rgb.y*10000 + rgb.z*100);
+	key = key*10 + applyVertexColor;
+
 	auto it = m_Materials.find(key);
 	if (m_Materials.end() != it)
 		return it->second;
@@ -609,7 +610,8 @@ RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb)
 	const PxReal opacity = 1.0f;
 	const bool doubleSided = false;
 	const PxU32 id = 0xffffffff;
-	RenderMaterial *newMaterial = SAMPLE_NEW2(RenderMaterial)(*getRenderer(), rgb,	opacity, doubleSided, id, NULL);
+	RenderMaterial *newMaterial = SAMPLE_NEW2(RenderMaterial)(*getRenderer(), rgb,	opacity, doubleSided, id, NULL, 
+		true, false, false, applyVertexColor);
 
 	m_Materials[ key] = newMaterial;
 	return newMaterial;

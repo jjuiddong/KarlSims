@@ -43,8 +43,11 @@ const char* defaultMaterialLitVertexShader = "vertex/staticmesh.cg";
 const char* defaultMaterialTexturedUnlitFragmentShader = "fragment/sample_diffuse_and_texture.cg";
 const char* defaultMaterialTexturedLitFragmentShader = "fragment/sample_diffuse_and_texture.cg";
 const char* defaultMaterialFragmentShader = "fragment/sample_diffuse_no_texture.cg";
+const char* defaultMaterialFragmentShader_vertexcolor = "fragment/sample_vertexcolor_no_texture.cg";
 
-RenderMaterial::RenderMaterial(Renderer& renderer, const PxVec3& diffuseColor, PxReal opacity, bool doubleSided, PxU32 id, RenderTexture* texture, bool lit, bool flat, bool instanced) :
+
+RenderMaterial::RenderMaterial(Renderer& renderer, const PxVec3& diffuseColor, PxReal opacity, 
+	bool doubleSided, PxU32 id, RenderTexture* texture, bool lit, bool flat, bool instanced, bool applyVertexColor) :
 	mRenderMaterial			(NULL),
 	mRenderMaterialInstance	(NULL),
 	mID						(id),
@@ -101,7 +104,10 @@ RenderMaterial::RenderMaterial(Renderer& renderer, const PxVec3& diffuseColor, P
 	}
 	else
 	{
-		matDesc.fragmentShaderPath	= defaultMaterialFragmentShader;
+		if (applyVertexColor)
+			matDesc.fragmentShaderPath	= defaultMaterialFragmentShader_vertexcolor;
+		else
+			matDesc.fragmentShaderPath	= defaultMaterialFragmentShader;
 	}
 	PX_ASSERT(matDesc.isValid());
 
