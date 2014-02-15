@@ -3,7 +3,8 @@ KarlSims
 ========
 
 Evolved Virtual Creatures of Karl Sims Project 1994 with DX3D, PhysX, Genetic Algorithm, Neural Net Algorithm, Genotype Script Parser
-- http://www.karlsims.com/evolved-virtual-creatures.html
+- HomPage: http://jjuiddong.co.kr/wiki/index.php/Evolved_Virtual_Creatures
+- KarlSims HomPage : http://www.karlsims.com/evolved-virtual-creatures.html
 - summary paper https://github.com/jjuiddong/KarlSims/wiki
 - IDE - vs2010
 - DX3D - DX 9.0
