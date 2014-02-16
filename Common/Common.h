@@ -65,9 +65,9 @@ typedef unsigned short u_short;
 #ifndef SAFE_DELETEA
 	#define SAFE_DELETEA(p) {if (p) { delete[] p; p=NULL;} }
 #endif
-//#ifndef SAFE_RELEASE
-//	#define SAFE_RELEASE(p) {if (p) { p->Release(); p=NULL;} }
-//#endif
+#ifndef DX_SAFE_RELEASE
+	#define DX_SAFE_RELEASE(p) {if (p) { p->Release(); p=NULL;} }
+#endif
 
 #ifndef IN
 	#define IN

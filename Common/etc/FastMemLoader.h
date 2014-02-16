@@ -19,6 +19,8 @@
 //		<key, value> 형태의 스크립트로 수정
 //		** 모든 기능이 잘 돌아가게 수정 완료함 ** 
 //
+// 2014-02-16
+//		
 //
 // FastMemLoader로 생성한 메모리를 자동으로 제거해주는 함수 추가하자.
 // 스크립트에서 중괄호 안에서 속성값을 설정할 수 있게 하자.
@@ -65,7 +67,10 @@ protected:
 		_SScriptData();
 		_SScriptData( const char *str );
 
-		enum STATE { NameParse, KeyValueParse};
+		enum STATE 
+		{ 
+			NameParse, KeyValueParse, 
+		};
 		STATE state;
 		std::string name;
 		std::list<SScriptDataKeyValue> keyValueList;
@@ -89,12 +94,6 @@ protected:
 		_tagSMemberType( const std::string &tName, const std::string &vName, int size, int elemtSize,
 			int offset, VALUETYPE type ):
 			nSize(size), nElementSize(elemtSize), nOffset(offset), typeName(tName), valueName(vName), eType(type) {}
-		VALUETYPE eType;
-		std::string typeName;
-		std::string valueName;
-		int nOffset;			// 구조체에서 어느 위치에 저장되어야 하는지를 저장한다.
-		int nSize; // (type_data, (type_pointer = sizeof(void*)) (type_array = typesize * arraysize)
-		int nElementSize;		// 배열이나, 포인터에 상관없이 타입의 크기를 저장한다.
 
 		BOOL operator==(const _tagSMemberType &rhs)
 			{ 
@@ -104,6 +103,13 @@ protected:
 					return typeName == rhs.typeName;
 			}
 
+		VALUETYPE eType;
+		std::string typeName;
+		std::string valueName;
+		int nOffset; // 구조체에서 어느 위치에 저장되어야 하는지를 저장한다.
+		int nSize; // (type_data, (type_pointer = sizeof(void*)) (type_array = typesize * arraysize)
+		int nElementSize; // 배열이나, 포인터에 상관없이 타입의 크기를 저장한다.
+
 	} SMemberType;
 
 	typedef std::list<SMemberType> MemberList;
@@ -111,14 +117,15 @@ protected:
 
 	typedef struct _tagSDataStructure
 	{
-		MemberList *pMember;	// 멤버 변수 타입 리스트
-		int size;				// 타입 사이즈 (바이트단위)
-		BOOL pointer;			// 멤버에 포인터가 존재하면 TRUE 그렇지않다면 FALSE
 		_tagSDataStructure() : pMember(NULL) {}
 		_tagSDataStructure( MemberList *p, int s, BOOL pt ) : pMember(p), size(s),pointer(pt) {}
 		BOOL FindMemberKey( const std::string &key, OUT SMemberType *pType ) const;
 		BOOL FindMemberType( const std::string &type, OUT SMemberType *pType ) const;
 		MemberItor FindMemberType( MemberItor beginIt, const std::string &type, OUT SMemberType *pType ) const;
+
+		MemberList *pMember; // 멤버 변수 타입 리스트
+		int size; // 타입 사이즈 (바이트단위)
+		BOOL pointer; // 멤버에 포인터가 존재하면 TRUE 그렇지않다면 FALSE
 
 	} SDataStructure;
 

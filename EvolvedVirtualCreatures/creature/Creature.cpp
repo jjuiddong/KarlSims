@@ -11,7 +11,7 @@
 #include "VisionSensor.h"
 #include "MuscleEffector.h"
 #include "../renderer/RenderComposition.h"
-#include "../renderer/RenderCompositionShape.h"
+#include "../renderer/RendererCompositionShape.h"
 
 
 using namespace evc;

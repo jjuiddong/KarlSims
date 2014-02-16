@@ -38,17 +38,17 @@ namespace SampleRenderer
 	class Renderer;
 }
 
-	class RenderMeshActor : public RenderBaseActor
-	{
-		public:
-					RenderMeshActor(SampleRenderer::Renderer& renderer,
-								const PxVec3* verts, PxU32 numVerts,
-								const PxVec3* vertexNormals,
-								const PxReal* uvs,
-								const PxU16* faces16, const PxU32* faces32, PxU32 numFaces, bool flipWinding=false
-								);
-					RenderMeshActor(const RenderMeshActor&);
-		virtual		~RenderMeshActor();
-	};
+class RenderMeshActor : public RenderBaseActor
+{
+public:
+		RenderMeshActor(SampleRenderer::Renderer& renderer,
+					const PxVec3* verts, PxU32 numVerts,
+					const PxVec3* vertexNormals,
+					const PxReal* uvs,
+					const PxU16* faces16, const PxU32* faces32, PxU32 numFaces, bool flipWinding=false
+					);
+		RenderMeshActor(const RenderMeshActor&);
+virtual		~RenderMeshActor();
+};
 
 #endif

@@ -1,0 +1,43 @@
+GPJ
+BMMFORM
+{
+	OBJECT_TYPE type=1
+	MATERIALGROUP count=1
+	{
+		MATERIAL id=0
+		{
+			DIFFUSE [x=0.588 y=0.588 z=0.588 a=1]
+			AMBIENT [x=0.588 y=0.588 z=0.588 a=1]
+			SPECULAR [x=0.9 y=0.9 z=0.9 a=1]
+			EMISSIVE [x=0.588 y=0.588 z=0.588 a=0]
+			POWER val=0.0
+		}
+	}
+	MESHGROUP count=1
+	{
+		MESH id=0 name="Arrow" -1 -1
+		{
+			VERTEXNORMAL count=0
+			{
+			}
+			VERTEXNORMALTEX count=4
+			{
+				VECNORMTEX [x=0,y=0,z=0] [nx=0,ny=-1,nz=0] [u=0.5,v=1]
+				VECNORMTEX [x=1,y=0,z=0] [nx=0,ny=-2.79253,nz=0] [u=0.75,v=1]
+				VECNORMTEX [x=1,y=0,z=0] [nx=0,ny=-2.79253,nz=0] [u=0.75,v=1]
+				VECNORMTEX [x=1,y=0,z=0] [nx=0,ny=-2.79253,nz=0] [u=0.75,v=1]
+			}
+			INDEX count=2
+			{
+				IDX [x=0,y=1,z=2]
+				IDX [x=0,y=2,z=3]
+			}
+			VERTEXWEIGHT count=0
+			{
+			}
+		}
+	}
+	BONEGROUP count=0
+	{
+	}
+}

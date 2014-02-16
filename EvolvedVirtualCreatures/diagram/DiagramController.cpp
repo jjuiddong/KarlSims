@@ -19,7 +19,8 @@ CDiagramController::CDiagramController(CEvc &sample) :
 
 CDiagramController::~CDiagramController()
 {
-	RemoveDiagram(m_pRootDiagram);
+	set<CDiagramNode*> diags;
+	RemoveDiagram(m_pRootDiagram, diags);
 	m_pRootDiagram = NULL;
 
 }
@@ -31,7 +32,8 @@ CDiagramController::~CDiagramController()
 */
 void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 {
-	RemoveDiagram(m_pRootDiagram);
+	set<CDiagramNode*> diags;
+	RemoveDiagram(m_pRootDiagram, diags);
 	m_pRootDiagram = NULL;
 
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;

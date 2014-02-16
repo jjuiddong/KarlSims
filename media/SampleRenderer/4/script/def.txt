@@ -1,0 +1,381 @@
+GPJ
+
+MAT
+{
+	float x
+	float y
+	float z
+	float w
+}
+OBJECT_TYPE
+{
+	int type
+}
+DIFFUSE 
+{
+	float x
+	float y
+	float z
+	float a
+}
+AMBIENT 
+{
+	float x
+	float y
+	float z
+	float a
+}
+SPECULAR 
+{
+	float x
+	float y
+	float z
+	float a
+}
+EMISSIVE 
+{ 
+	float x
+	float y
+	float z
+	float a
+} 
+OPACITY
+{ 
+	float val
+}
+POWER 
+{ 
+	float val
+}
+TEXTURE
+{
+	char[128] name
+}
+
+MATERIAL
+{
+	int 		id
+	DIFFUSE
+	AMBIENT
+	SPECULAR
+	EMISSIVE
+	POWER
+	TEXTURE
+}
+MATERIALGROUP
+{
+	int 		count
+	MATERIAL*
+}
+
+LOCALTM
+{
+	MAT
+	MAT
+	MAT
+	MAT
+}
+
+VEC
+{
+	float x
+	float y
+	float z
+}
+
+VECNORM
+{
+	float	x
+	float	y
+	float	z
+	float	nx
+	float	ny
+	float	nz
+}
+VECNORMTEX
+{
+	float	x
+	float	y
+	float	z
+
+	float	nx
+	float	ny
+	float	nz
+
+	float	u
+	float	v
+}
+
+WORLDTM
+{
+	MAT
+	MAT
+	MAT
+	MAT
+}
+
+VERTEX
+{
+	int	count
+	VEC*
+}
+
+VERTEXNORMAL
+{
+	int		count
+	VECNORM*
+}
+VERTEXNORMALTEX
+{
+	int		count
+	VECNORMTEX*
+}
+IDX
+{
+	short	x
+	short	y
+	short	z
+}
+INDEX
+{
+	int	count
+	IDX*
+}
+FRAME_POS
+{
+	float	t
+	float	x
+	float	y
+	float	z
+}
+
+FRAME_ROT
+{
+	float	t
+	float	x
+	float	y
+	float	z
+	float	w
+}
+
+FRAME_SCALE
+{
+	float	t
+	float	x
+	float	y
+	float	z
+}
+
+KEY_POS
+{
+	int		count
+	FRAME_POS*
+}
+KEY_ROT
+{
+	int		count
+	FRAME_ROT*
+}
+KEY_SCALE
+{
+	int		count
+	FRAME_SCALE*
+}
+KEY
+{
+	int		id
+	float		startT
+	float		endT
+	KEY_POS
+	KEY_ROT
+	KEY_SCALE
+}
+
+WEIGHTINFO
+{
+	int	bone
+	float	w
+}
+
+VTXWEIGHT
+{
+	int		id
+	int 		count
+	WEIGHTINFO*
+}
+
+VERTEXWEIGHT
+{
+	int 		count
+	VTXWEIGHT*
+}
+
+MESH
+{
+	int 		id
+	char[32] 	name
+	int		parentId
+	int		materialId
+	VERTEXNORMAL
+	VERTEXNORMALTEX
+	INDEX
+	VERTEXWEIGHT
+	dummy	$ material
+	dummy	$ vertex buffer
+	dummy	$ index buffer
+}
+
+MESHGROUP
+{
+	int count
+	MESH*
+}
+
+BONE
+{
+	int		id
+	char[32]	name
+	int		parentId
+	LOCALTM 
+	WORLDTM 
+}
+
+BONEGROUP
+{
+	int	count
+	BONE*
+}
+
+ANIMATION
+{
+	int	id
+	float	startT
+	float	endT
+	KEY_POS
+	KEY_ROT
+	KEY_SCALE
+}
+
+ANIMATIONGROUP
+{
+	int 		id
+	char[32] 	name
+	int 		count
+	ANIMATION*
+}
+
+ANIFORM
+{
+	int	count
+	ANIMATIONGROUP*
+}
+
+ANIINFO
+{
+	char[32]
+	char[64]
+}
+
+ANILIST
+{
+	int
+	ANIINFO*	
+}
+
+BMMFORM
+{
+	OBJECT_TYPE
+	MATERIALGROUP
+	MESHGROUP
+	BONEGROUP
+}
+
+ALPHA 
+{
+	int
+	int*
+}
+
+
+ALPHATEXTURE 
+{
+	int
+	ALPHA*
+}
+
+TILE
+{
+	int
+	char[64]
+	int
+	VERTEXNORMALTEX
+	VERTEXNORMALTEX
+	ALPHATEXTURE
+}
+
+TERRAINOBJECT
+{
+	char[64]
+	float
+	float
+	float
+
+	float
+	float
+	float
+	float
+
+	float
+}
+
+
+OBJECTTOTAL
+{
+	int
+	TERRAINOBJECT*	
+}
+
+
+TILEFORM
+{
+	int		
+	int		
+	int
+	int
+	char[64]
+	int
+	TILE*
+	OBJECTTOTAL
+
+}
+
+
+CONTROL
+{
+	int
+	int
+	int
+	char[64]
+	int
+	int
+	int
+	int
+	int
+	int
+}
+
+SCENECOUNT
+{
+	int
+}
+
+
+SCENE
+{
+	int
+	int
+	CONTROL*
+	SCENECOUNT
+	SCENE*
+}
+

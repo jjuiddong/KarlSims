@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "RenderComposition.h"
-#include "RenderCompositionShape.h"
+#include "RendererCompositionShape.h"
 #include "RendererShape.h"
 #include "RaycastCCD.h"
 

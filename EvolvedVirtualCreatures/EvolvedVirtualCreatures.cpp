@@ -23,6 +23,8 @@
 #include "Creature/Creature.h"
 #include "genetic/GeneticAlgorithm.h"
 #include "diagram/DiagramController.h"
+#include "utility/FileLoader.h"
+#include "renderer/RenderModelActor.h"
 
 
 using namespace SampleRenderer;
@@ -59,6 +61,8 @@ void CEvc::onShutdown()
 	BOOST_FOREACH (auto kv, m_Materials)
 		kv.second->release();
 	m_Materials.clear();
+
+	CFileLoader::Release();
 
 	PhysXSample::onShutdown();
 }
@@ -114,6 +118,8 @@ void CEvc::onInit()
 {
 	PhysXSample::onInit();
 
+	CFileLoader::Get()->Init(NULL);
+
 	srand(timeGetTime());
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
@@ -152,6 +158,12 @@ void CEvc::onInit()
 	}
 
 	m_DiagramController = new evc::CDiagramController(*this);
+
+	//CFileLoader::Get()->LoadModel("bmm.txt");
+	CRenderModelActor *arrow = new CRenderModelActor(*getRenderer(), "bmm.txt");
+	arrow->setTransform(PxTransform(PxVec3(0,0,0)));
+	addRenderObject(arrow);
+
 }
 
 

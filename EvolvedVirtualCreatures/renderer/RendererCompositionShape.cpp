@@ -1,6 +1,6 @@
 
 #include "stdafx.h"
-#include "RenderCompositionShape.h"
+#include "RendererCompositionShape.h"
 
 #include <Renderer.h>
 #include <RendererVertexBuffer.h>

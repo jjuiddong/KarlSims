@@ -28,7 +28,7 @@ namespace evc
 	protected:
 		CDiagramNode* CreateDiagramNode(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
 			map<const genotype_parser::SExpr*, CDiagramNode*> &diagrams);
-		void RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams=set<CDiagramNode*>());
+		void RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams);
 		void Layout(CDiagramNode *root);
 
 

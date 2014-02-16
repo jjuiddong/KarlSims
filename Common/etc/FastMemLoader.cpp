@@ -50,7 +50,6 @@ void CFastMemLoader::SScriptDataKeyValue::AddValue( char *str )
 	{
 		array.push_back( str );
 	}
-
 }
 
 CFastMemLoader::_SScriptData::_SScriptData() 
@@ -99,7 +98,15 @@ CFastMemLoader::_SScriptData& CFastMemLoader::_SScriptData::operator << ( char *
 			}
 			else
 			{
-				if (!keyValueList.empty())
+				if (keyValueList.empty())
+				{
+					//keyValueList.push_back(SScriptDataKeyValue());
+
+					//SScriptDataKeyValue &value = keyValueList.back();
+					//value.key = name;
+					//value.AddValue( str );
+				}
+				else
 				{
 					SScriptDataKeyValue &value = keyValueList.back();
 					value.AddValue( str );

@@ -35,7 +35,6 @@
 
 namespace SampleRenderer
 {
-
 	class Renderer;
 	class RendererMesh;
 

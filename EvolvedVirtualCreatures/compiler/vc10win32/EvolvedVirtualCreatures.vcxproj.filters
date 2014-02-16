@@ -37,9 +37,6 @@
     <ClCompile Include="..\..\renderer\RenderComposition.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\creature\PhysNode.cpp">
       <Filter>Creature</Filter>
     </ClCompile>
@@ -48,6 +45,18 @@
     </ClCompile>
     <ClCompile Include="..\..\diagram\DiagramNode.cpp">
       <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utility\FileLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderModelActor.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererModelShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +105,6 @@
     <ClInclude Include="..\..\renderer\RenderComposition.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\renderer\RenderCompositionShape.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\utility\Utility.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -110,6 +116,21 @@
     </ClInclude>
     <ClInclude Include="..\..\diagram\DiagramNode.h">
       <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utility\structdef.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utility\FileLoader.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderModelActor.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererModelShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererCompositionShape.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
