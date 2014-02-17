@@ -18,7 +18,7 @@
 #include <comdef.h> // for _variant_t
 
 #define  BOOST_DATE_TIME_NO_LIB // boost/interprocess
-#define  BOOST_SPIRIT_THREADSAFE // boost spirits thread safe mode
+//#define  BOOST_SPIRIT_THREADSAFE // boost spirits thread safe mode
 #pragma warning(disable: 4355) // disable warning, using this pointer in constructor 
 
 

@@ -19,7 +19,7 @@ static SBaseType g_BaseType[] =
 	{ "char", sizeof(char) },
 	{ "short", sizeof(short) },
 	{ "size", sizeof(int) },
-	{ "dummy", sizeof(int) }
+	{ "dummy", sizeof(ptr_type) }
 };
 const int g_BaseTypeSize = sizeof(g_BaseType) / sizeof(SBaseType);
 
@@ -435,11 +435,11 @@ BOOL CFastMemLoader::WriteBin( FILE *fp, void *pStruct, const char *typeName )
 		case TYPE_POINTER:
 			{
 				// 현재 filePos를 저장한다.
-				DWORD curPos = ftell( fp );
-				DWORD pointerOffset = curPos - nFileStartPos;
-				fseek( fp, wsp.nFilePos, SEEK_SET ); // pointer값이 Update될곳으로 이동
-				fwrite( &pointerOffset, sizeof(DWORD), 1, fp );
-				fseek( fp, curPos, SEEK_SET ); // 다시 돌아옴
+				ptr_type curPos = ftell( fp );
+				ptr_type pointerOffset = curPos - nFileStartPos;
+				fseek( fp, (long)wsp.nFilePos, SEEK_SET ); // pointer값이 Update될곳으로 이동
+				fwrite( &pointerOffset, sizeof(ptr_type), 1, fp );
+				fseek( fp, (long)curPos, SEEK_SET ); // 다시 돌아옴
 				fwrite( wsp.pStruct, type.size, wsp.nPointerSize, fp ); // writeSize = type.size * pointerSize
 
 				// struct에서 pointer 와 filepos 얻음
@@ -543,8 +543,8 @@ BOOL CFastMemLoader::WriteScript( FILE *fp, void *pStruct, const char *typeName,
 				}
 
 				// ** pointer type이 나오기전에 먼저 size값이 저장되어있다.
-				int *psize = (int*)(psrc - sizeof(void*)); // pointersize 를 얻는다.
-				BYTE* pPointerAdress = (BYTE*)*(DWORD*)psrc;
+				int *psize = (int*)(psrc - sizeof(int)); // pointersize 를 얻는다.
+				BYTE* pPointerAdress = (BYTE*)*(ptr_type*)psrc;
 
 				TokenItor titor = m_DataStructureMap.find( type.typeName );
 				if( m_DataStructureMap.end() == titor )
@@ -614,7 +614,7 @@ int CFastMemLoader::ReadBinMem( BYTE *pReadMem, const char *typeName )
 	if( m_DataStructureMap.end() == itor ) return 0;
 
 	// pointer offset값 보정
-	if (!ReadRec( (DWORD)pReadMem, pReadMem, itor->second.pMember ))
+	if (!ReadRec( (ptr_type)pReadMem, pReadMem, itor->second.pMember ))
 		return 0;
 
 	return 1;
@@ -650,8 +650,8 @@ BOOL CFastMemLoader::IsPointer( MemberList *pList )
 		else if( TYPE_STRUCT == itor->eType )
 		{
 			TokenItor titor = m_DataStructureMap.find( itor->typeName );
-			if( m_DataStructureMap.end() == titor ) return FALSE; // error !!
-			if( titor->second.pointer )
+			if (m_DataStructureMap.end() == titor) return FALSE; // error !!
+			if (titor->second.pointer)
 				return TRUE;
 		}
 		++itor;
@@ -691,22 +691,22 @@ BOOL CFastMemLoader::AddType( const char *szTypeName, int nSize, int nOffset, co
 // pStruct : File에 쓰여진 Data Pointer
 // pMList : pStruct 의 멤버리스트
 //-----------------------------------------------------------------------------//
-BOOL CFastMemLoader::CollectPointerRec( DWORD curFilePos, BYTE *pStruct, MemberList *pMList, queue<SWsp> *pWspList )
+BOOL CFastMemLoader::CollectPointerRec( ptr_type curFilePos, BYTE *pStruct, MemberList *pMList, queue<SWsp> *pWspList )
 {
 	BOOL result = TRUE;
-	DWORD filePos = curFilePos;
+	ptr_type filePos = curFilePos;
 	MemberItor it = pMList->begin();
-	while( it != pMList->end() )
+	while (it != pMList->end())
 	{
 		SMemberType t = *it;
 
 		if( TYPE_POINTER == it->eType )
 		{
 			// ** pointer type이 나오기전에 먼저 size값이 저장되어 있어야한다.
-			int *pSize = (int*)(pStruct - sizeof(void*)); // pointersize 를 얻는다.
+			int *pSize = (int*)(pStruct - sizeof(int)); // pointersize 를 얻는다.
 			if( 0 < *pSize )
 			{
-				DWORD dwAddress = *(DWORD*)pStruct;
+				ptr_type dwAddress = *(ptr_type*)pStruct;
 				pWspList->push( SWsp(it->typeName, TYPE_POINTER, filePos, *pSize, (BYTE*)dwAddress ) );
 			}
 		}
@@ -770,7 +770,7 @@ BOOL CFastMemLoader::CollectPointerRec( DWORD curFilePos, BYTE *pStruct, MemberL
 // pointer offset값 보정
 // member변수를 하나씩검사해서 type이 pointer일경우 dwOffset값만큼 보정한다.
 //-----------------------------------------------------------------------------//
-BOOL CFastMemLoader::ReadRec( DWORD dwOffset, BYTE *pStruct, MemberList *pMList )
+BOOL CFastMemLoader::ReadRec( ptr_type dwOffset, BYTE *pStruct, MemberList *pMList )
 {
 	MemberItor mitor = pMList->begin();
 	while( mitor != pMList->end() )
@@ -780,11 +780,11 @@ BOOL CFastMemLoader::ReadRec( DWORD dwOffset, BYTE *pStruct, MemberList *pMList 
 		if( TYPE_POINTER == mitor->eType )
 		{
 			// size값이 0 보다 클때만 보정함
-			int *pSize = (int*)(pStruct - sizeof(void*)); // pointersize 를 얻는다.
+			int *pSize = (int*)(pStruct - sizeof(int)); // pointersize 를 얻는다.
  			if( 0 < *pSize )
 			{
-				*(DWORD*)pStruct += dwOffset; // Poiner값 보정
-				BYTE* pPointerAdress = (BYTE*)*(DWORD*)pStruct;
+				*(ptr_type*)pStruct += dwOffset; // Poiner값 보정
+				BYTE* pPointerAdress = (BYTE*)*(ptr_type*)pStruct;
 
 				TokenItor titor = m_DataStructureMap.find( mitor->typeName );
 				if( m_DataStructureMap.end() == titor ) 
@@ -891,6 +891,8 @@ BOOL CFastMemLoader::ReadScriptRec( BYTE *pStruct, SScriptParseTree *pParseTree,
 			if (nSize > 0)
 			{
 				BYTE *pSubMem = new BYTE[ nSize];
+				ZeroMemory(pSubMem, nSize);
+
 				int offset = 0;
 				std::list<std::string>::iterator ait = keyValue.array.begin();
 				while (keyValue.array.end() != ait)
@@ -901,9 +903,9 @@ BOOL CFastMemLoader::ReadScriptRec( BYTE *pStruct, SScriptParseTree *pParseTree,
 					++ait;
 				}
 				// memory주소값 설정
-				*(DWORD*)(pStruct+type.nOffset) = (DWORD)pSubMem;
+				*(ptr_type*)(pStruct+type.nOffset) = (ptr_type)pSubMem;
 				// pointer size 값 설정
-				*(int*)(pStruct+type.nOffset-sizeof(void*)) = (int)keyValue.array.size();
+				*(int*)(pStruct+type.nOffset-sizeof(int)) = (int)keyValue.array.size();
 			}
 		}
 		else
@@ -977,9 +979,9 @@ BOOL CFastMemLoader::ReadScriptRec( BYTE *pStruct, SScriptParseTree *pParseTree,
 					}
 
 					// memory주소값 설정
-					*(DWORD*)(pStruct+type.nOffset) = (DWORD)pSubMem;
+					*(ptr_type*)(pStruct+type.nOffset) = (ptr_type)pSubMem;
 					// pointer size 값 설정
-					*(int*)(pStruct+type.nOffset-sizeof(void*)) = nCount;
+					*(int*)(pStruct+type.nOffset-sizeof(int)) = nCount;
 				}
 			}
 			break;

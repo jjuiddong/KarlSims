@@ -78,7 +78,7 @@
       <AdditionalOptions>/EHsc /D MEDIA_FROM_BIN= /MP</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./../../include;./../../../renderer/include;./../../../platform/include;./../../../../PxToolkit/include;$(PHYSX_DIR)externals/targa/1;$(PHYSX_DIR)externals/OpenAutomate/inc;$(PHYSX_DIR)Source/shared/general/PxIOStream/include;$(PHYSX_DIR)Source/shared/general/PxIOStream/public;$(PHYSX_DIR)Source/shared/general/string_parsing/include;$(PHYSX_DIR)Source/shared/general/shared;$(PHYSX_DIR)Source/foundation/include;$(PHYSX_DIR)Include/foundation;$(PHYSX_DIR)Include/physxprofilesdk;$(PHYSX_DIR)Include/physxvisualdebuggersdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>PHYSX_PROFILE_SDK;WIN32;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PHYSX_PROFILE_SDK;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_ALLOW_MSC_VER_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;_DEBUG;PX_DEBUG;PX_CHECKED;PX_SUPPORT_VISUAL_DEBUGGER;PX_NVTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <WarningLevel>Level3</WarningLevel>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>

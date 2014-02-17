@@ -149,7 +149,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			const float arrowScale = 0.05f;
 			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "bmm.txt");
 			arrow->setTransform(PxTransform(arrowPos, PxQuat(0.9f,PxVec3(0,0,1))));
-			arrow->setMeshScale(PxMeshScale(PxVec3(1,1,1)*arrowScale,PxQuat(0,PxVec3(0,0,0))));
+			arrow->setMeshScale(PxMeshScale(PxVec3(1,1,1)*arrowScale,PxQuat(0,PxVec3(1,0,0))));
 			m_Sample.addRenderObject(arrow);
 
 			diagramConnection.transitionArrow = arrow;

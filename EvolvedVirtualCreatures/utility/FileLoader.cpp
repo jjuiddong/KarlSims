@@ -91,7 +91,7 @@ SBMMLoader* CFileLoader::LoadModel( const string &szFileName )
 //		WriteScripttoBinary_Model( (SBMMLoader*)item.pItem, binfile );
 	}
 
-	ModifyTextureFilename( &((SBMMLoader*)item.pItem)->mtrl );
+	//ModifyTextureFilename( &((SBMMLoader*)item.pItem)->mtrl );
 
 	// VertexBuffer, IndexBuffer를 생성한다.
 	//CreateVertexBuffer( (SBMMLoader*)item.pItem );

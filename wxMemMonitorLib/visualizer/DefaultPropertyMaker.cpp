@@ -484,7 +484,7 @@ void visualizer::MakeProperty_Data(SVisDispDesc parentDispdesc, const SSymbolInf
 // Pointer type Preview
 //------------------------------------------------------------------------
 SVisDispDesc visualizer::MakeProperty_ArrayData(SVisDispDesc parentDispdesc, 
-												 const SSymbolInfo &symbol )
+												 const SSymbolInfo &symbol)
 {
 	wxPGProperty *pParentProp = parentDispdesc.prop;
 	wxPGProperty *pProp = NULL;

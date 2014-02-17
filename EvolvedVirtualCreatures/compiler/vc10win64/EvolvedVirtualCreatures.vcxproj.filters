@@ -37,9 +37,6 @@
     <ClCompile Include="..\..\renderer\RenderComposition.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\diagram\DiagramController.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
@@ -48,6 +45,18 @@
     </ClCompile>
     <ClCompile Include="..\..\diagram\DiagramNode.cpp">
       <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utility\FileLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererModelShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderModelActor.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +106,6 @@
     <ClInclude Include="..\..\renderer\RenderComposition.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\renderer\RenderCompositionShape.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\diagram\DiagramController.h">
       <Filter>Diagram</Filter>
     </ClInclude>
@@ -108,6 +114,24 @@
     </ClInclude>
     <ClInclude Include="..\..\diagram\DiagramNode.h">
       <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererCompositionShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utility\Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utility\FileLoader.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utility\structdef.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererModelShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderModelActor.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +149,9 @@
     </Filter>
     <Filter Include="Diagram">
       <UniqueIdentifier>{f7c77720-5e1d-4869-98f8-98720ed7329a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{0b73a7de-a1e9-46d7-921e-266d91f4003d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

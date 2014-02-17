@@ -23,8 +23,6 @@
 #include "Creature/Creature.h"
 #include "genetic/GeneticAlgorithm.h"
 #include "diagram/DiagramController.h"
-#include "utility/FileLoader.h"
-#include "renderer/RenderModelActor.h"
 
 
 using namespace SampleRenderer;

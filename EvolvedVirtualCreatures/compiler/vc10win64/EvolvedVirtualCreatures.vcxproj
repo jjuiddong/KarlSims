@@ -153,11 +153,14 @@
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp" />
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\renderer\RenderComposition.cpp" />
-    <ClCompile Include="..\..\renderer\RenderCompositionShape.cpp" />
+    <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp" />
+    <ClCompile Include="..\..\renderer\RendererModelShape.cpp" />
+    <ClCompile Include="..\..\renderer\RenderModelActor.cpp" />
     <ClCompile Include="..\..\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='checked|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\utility\FileLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Configure.h" />
@@ -179,9 +182,14 @@
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
     <ClInclude Include="..\..\renderer\RenderComposition.h" />
-    <ClInclude Include="..\..\renderer\RenderCompositionShape.h" />
+    <ClInclude Include="..\..\renderer\RendererCompositionShape.h" />
+    <ClInclude Include="..\..\renderer\RendererModelShape.h" />
+    <ClInclude Include="..\..\renderer\RenderModelActor.h" />
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
+    <ClInclude Include="..\..\utility\FileLoader.h" />
+    <ClInclude Include="..\..\utility\structdef.h" />
+    <ClInclude Include="..\..\utility\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\compiler\vc10win64\Common.vcxproj">

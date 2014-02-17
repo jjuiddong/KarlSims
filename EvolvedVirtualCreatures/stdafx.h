@@ -13,6 +13,8 @@
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
+#define BOOST_LIB_DIAGNOSTIC
+
 
 #include "../../../Common/Common.h"
 #include "../wxMemMonitorLib/wxMemMonitor.h"
@@ -50,3 +52,5 @@ extern SDbgConfig *g_pDbgConfig;
 // Global Function
 #include "utility/Utility.h"
 #include "utility/FileLoader.h"
+
+
