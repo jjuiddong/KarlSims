@@ -100,11 +100,7 @@ CFastMemLoader::_SScriptData& CFastMemLoader::_SScriptData::operator << ( char *
 			{
 				if (keyValueList.empty())
 				{
-					//keyValueList.push_back(SScriptDataKeyValue());
-
-					//SScriptDataKeyValue &value = keyValueList.back();
-					//value.key = name;
-					//value.AddValue( str );
+					// nothing~
 				}
 				else
 				{

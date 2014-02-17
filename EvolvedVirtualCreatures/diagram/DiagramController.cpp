@@ -6,6 +6,7 @@
 #include "RenderBoxActor.h"
 #include "RenderSphereActor.h"
 #include "../genoype/GenotypeParser.h"
+#include "../renderer/RenderModelActor.h"
 
 
 using namespace evc;
@@ -78,22 +79,24 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 
 	const bool IsSensorNode = !expr;
 	CDiagramNode *diagNode = new CDiagramNode(m_Sample);
+	PxVec3 dimmension = expr? Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
 
 	if (IsSensorNode)
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(1,1,1));
+		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimmension);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), 1.f);
+		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), dimmension.x);
 	}
 	else
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(1,1,1));
+		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimmension);
 	}
 
+	PxVec3 material = expr? Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
 	diagNode->m_pRenderNode->setTransform(PxTransform(pos));
-	diagNode->m_pRenderNode->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0, 0.75f, 0), false) );
+	diagNode->m_pRenderNode->setRenderMaterial( m_Sample.GetMaterial(material, false) );
 	m_Sample.addRenderObject(diagNode->m_pRenderNode);
 
 	RETV(!expr, diagNode); // if sensor node return
@@ -125,7 +128,8 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			arrowTm = arrowTm * PxTransform(arrowDir);
 			//
 
-			diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(0.05f, len/2.f, 0.05f));
+			const float arrowScale = 0.03f;
+			diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(arrowScale, len/2.f, arrowScale));
 			diagramConnection.transitionArrow->setTransform( arrowTm );
 			diagramConnection.transitionArrow->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0.f, 0.f, 0.f), false) );
 			m_Sample.addRenderObject(diagramConnection.transitionArrow);
@@ -133,6 +137,23 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
 
 			offset += PxVec3(0,3,0);
+		}
+		else
+		{
+			SDiagramConnection diagramConnection;
+			diagramConnection.connectNode = newDiagNode;
+
+			const float dimmensionY = node_con->expr? node_con->expr->dimension.y : 1.f;
+			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimmensionY+0.2f,0);
+
+			const float arrowScale = 0.05f;
+			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "bmm.txt");
+			arrow->setTransform(PxTransform(arrowPos, PxQuat(0.9f,PxVec3(0,0,1))));
+			arrow->setMeshScale(PxMeshScale(PxVec3(1,1,1)*arrowScale,PxQuat(0,PxVec3(0,0,0))));
+			m_Sample.addRenderObject(arrow);
+
+			diagramConnection.transitionArrow = arrow;
+			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
 		}
 
 		connection = connection->next;

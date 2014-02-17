@@ -13,11 +13,11 @@ class CRenderModelActor : public RenderBaseActor
 public:
 	CRenderModelActor(SampleRenderer::Renderer& renderer, const string &fileName);
 	virtual ~CRenderModelActor();
-
-
-protected:
-
+	bool IsLoadSuccess();
 
 private:
-
+	bool m_IsLoaddSuccess;
 };
+
+
+inline bool CRenderModelActor::IsLoadSuccess() { return m_IsLoaddSuccess; }

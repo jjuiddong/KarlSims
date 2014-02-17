@@ -1436,7 +1436,8 @@ static std::vector<std::string> split(const std::string &s, char delim) {
 }
 #endif
 
-void SampleRenderer::Renderer::print(PxU32* x, PxU32* y, const char** text, PxU32 textCount, PxReal scale, PxReal shadowOffset, RendererColor* textColors, bool forceFixWidthNumbers)
+void SampleRenderer::Renderer::print(PxU32* x, PxU32* y, const char** text, PxU32 textCount, 
+	PxReal scale, PxReal shadowOffset, RendererColor* textColors, bool forceFixWidthNumbers)
 {
 	// we split string containing '\n' in a vector of strings. This prevents from need to have a really big vertex/index buffer for text in GLES2 renderer
 #if defined(RENDERER_TABLET)

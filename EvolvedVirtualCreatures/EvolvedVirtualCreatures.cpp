@@ -159,11 +159,6 @@ void CEvc::onInit()
 
 	m_DiagramController = new evc::CDiagramController(*this);
 
-	//CFileLoader::Get()->LoadModel("bmm.txt");
-	CRenderModelActor *arrow = new CRenderModelActor(*getRenderer(), "bmm.txt");
-	arrow->setTransform(PxTransform(PxVec3(0,0,0)));
-	addRenderObject(arrow);
-
 }
 
 
@@ -189,6 +184,9 @@ void	CEvc::onTickPostRender(float dtime)
 	getRenderer()->drawLines2D(2, vertices, colors );
 	PxReal vertices2[] = {1, 0, 0, 1};
 	getRenderer()->drawLines2D(2, vertices2, colors );
+
+	//renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
+	getRenderer()->print(100, 100,  "test" );
 
 }
 

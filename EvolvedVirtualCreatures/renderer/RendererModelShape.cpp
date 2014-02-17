@@ -47,17 +47,8 @@ RendererModelShape::RendererModelShape(Renderer& renderer, const SBMMLoader &loa
 			for(PxU32 i=0; i<numVerts; i++)
 			{
 				memcpy(vertPositions, &verts[ i].v, sizeof(verts[ i].v));
-
-				//if(normals)
-				//	memcpy(vertNormals, normals+i, sizeof(PxVec3));
-				//else
-					//memset(vertNormals, 0, sizeof(PxVec3));
 				memcpy(vertNormals, &verts[ i].n, sizeof(verts[ i].n));
-
-				//if(uvs)
-				//	memcpy(vertUVs, uvs+i*2, sizeof(PxReal)*2);
-				//else
-					memset(vertUVs, 0, sizeof(PxReal)*2);
+				memcpy(vertUVs, &verts[ i].tu, sizeof(PxReal)*2);
 
 				vertPositions = (void*)(((PxU8*)vertPositions) + positionStride);
 				vertNormals = (void*)(((PxU8*)vertNormals) + normalStride);
