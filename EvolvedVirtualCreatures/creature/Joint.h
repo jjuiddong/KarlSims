@@ -17,6 +17,7 @@ namespace evc
 		CJoint(CPhysNode *actor0, CPhysNode *actor1, const PxTransform &tm0, const PxTransform &tm1, 
 			PxJoint *joint=NULL, float velocity=1.f, float period=1.f);
 		virtual ~CJoint();
+
 		void Move(float dtime);
 		double GetAngle() const;
 		const CPhysNode* GetActor0() const;

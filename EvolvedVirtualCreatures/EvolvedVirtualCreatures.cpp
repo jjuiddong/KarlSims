@@ -170,6 +170,8 @@ void CEvc::customizeRender()
 	//d3dDevice->SetVertexDeclaration(g_decl);
 	//d3dDevice->SetStreamSource( 0, g_pVB, 0, sizeof( CUSTOMVERTEX ) );
 	//d3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 1 );
+	if (m_DiagramController)
+		m_DiagramController->Render();
 }
 
 
@@ -184,7 +186,7 @@ void	CEvc::onTickPostRender(float dtime)
 	getRenderer()->drawLines2D(2, vertices2, colors );
 
 	//renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
-	getRenderer()->print(100, 100,  "test" );
+	//getRenderer()->print(100, 100,  "test" );
 
 }
 
@@ -485,6 +487,9 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 	PxSceneWriteLock scopedLock(*mScene);
 
 	PhysXSample::onSubstepSetup(dtime, cont);
+
+	if (m_DiagramController)
+		m_DiagramController->Move(dtime);
 
 	BOOST_FOREACH (auto &creature, m_Creatures)
 		creature->Move(dtime);

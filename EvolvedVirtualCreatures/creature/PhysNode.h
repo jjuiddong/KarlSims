@@ -48,7 +48,7 @@ namespace evc
 		bool m_IsTerminalNode;
 		bool m_IsKinematic;
 		PxRigidDynamic *m_pBody;
-		PxShape *m_pShape;
+		PxShape *m_pShape; // reference
 		vector<CJoint*> m_Joints;
 		vector<CSensor*> m_Sensors;
 		vector<CEffector*> m_Effectors;

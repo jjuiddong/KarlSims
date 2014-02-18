@@ -73,7 +73,6 @@ namespace evc
 		genotype_parser::SExpr *m_pGenotypeExpr;
 		map<string, const genotype_parser::SExpr*> m_GenotypeSymbols;
 		bool m_IsDispSkinning;
-
 	};
 
 

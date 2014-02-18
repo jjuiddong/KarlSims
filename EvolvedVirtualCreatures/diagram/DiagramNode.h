@@ -9,33 +9,31 @@ class CEvc;
 class RenderBaseActor;
 namespace evc
 {
-
 	class CDiagramNode;
+
+	// SDiagramConnection struct
 	struct SDiagramConnection
 	{
 		RenderBaseActor *transitionArrow;
 		CDiagramNode *connectNode;
-
 		SDiagramConnection() : transitionArrow(NULL), connectNode(NULL) {}
 	};
 
 
+	// CDiagramNode class
 	class CDiagramNode
 	{
 	public:
 		CDiagramNode(CEvc &sample);
 		virtual ~CDiagramNode();
-
-
-	protected:
+		void	Render();
 
 
 	public:
 		CEvc &m_Sample;
-		//vector<CDiagramNode*> m_ConnectNodes;
-		vector<SDiagramConnection> m_ConnectDiagrams;
-
+		string m_Name;
 		RenderBaseActor *m_pRenderNode;
+		vector<SDiagramConnection> m_ConnectDiagrams;
 	};
 
 }

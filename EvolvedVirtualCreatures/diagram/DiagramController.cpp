@@ -37,8 +37,17 @@ void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 	RemoveDiagram(m_pRootDiagram, diags);
 	m_pRootDiagram = NULL;
 
+	m_Diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
 	m_pRootDiagram = CreateDiagramNode(PxVec3(0,0,0), expr, diagrams);
+}
+
+
+// Render
+void CDiagramController::Render()
+{
+	BOOST_FOREACH (auto node, m_Diagrams)
+		node->Render();
 }
 
 
@@ -79,19 +88,21 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 
 	const bool IsSensorNode = !expr;
 	CDiagramNode *diagNode = new CDiagramNode(m_Sample);
-	PxVec3 dimmension = expr? Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
+	diagNode->m_Name = expr? expr->id : "sensor";
+	PxVec3 dimension = expr? Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
+	m_Diagrams.push_back(diagNode);
 
 	if (IsSensorNode)
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimmension);
+		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimension);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), dimmension.x);
+		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), dimension.x);
 	}
 	else
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimmension);
+		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimension);
 	}
 
 	PxVec3 material = expr? Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
@@ -143,8 +154,8 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			const float dimmensionY = node_con->expr? node_con->expr->dimension.y : 1.f;
-			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimmensionY+0.2f,0);
+			const float dimensionY = node_con->expr? node_con->expr->dimension.y : 1.f;
+			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimensionY+0.2f,0);
 
 			const float arrowScale = 0.05f;
 			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "bmm.txt");

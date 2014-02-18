@@ -22,9 +22,6 @@ namespace evc
 		void SetSensorInfo(CPhysNode *sensorBody, const float length); 
 
 
-	protected:
-
-
 	private:
 		CEvc &m_Sample;
 		CPhysNode *m_pSensorBody;

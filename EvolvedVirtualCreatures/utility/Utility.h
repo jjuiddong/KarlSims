@@ -33,3 +33,10 @@ inline const PxVec3 Vec3toPxVec3(const evc::genotype_parser::SVec3 &rhs)
 {
 	return PxVec3(rhs.x, rhs.y, rhs.z);
 }
+
+
+inline void convert2D3D9(D3DMATRIX &dxmat, const physx::PxMat44 &mat)
+{
+	PxMat44 mat44 = mat.getTranspose();
+	memcpy(&dxmat._11, mat44.front(), 4 * 4 * sizeof (float));
+}

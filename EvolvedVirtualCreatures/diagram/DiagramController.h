@@ -22,6 +22,7 @@ namespace evc
 		virtual ~CDiagramController();
 
 		void SetGenotype(const genotype_parser::SExpr *expr);
+		void Render();
 		void Move(float dtime);
 
 		
@@ -35,6 +36,7 @@ namespace evc
 	private:
 		CEvc &m_Sample;
 		CDiagramNode *m_pRootDiagram;
+		vector<CDiagramNode*> m_Diagrams;
 
 	};
 }
