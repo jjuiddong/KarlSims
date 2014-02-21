@@ -2,8 +2,6 @@
 #include "stdafx.h"
 #include "RenderComposition.h"
 #include "RendererCompositionShape.h"
-#include "RendererShape.h"
-#include "RaycastCCD.h"
 
 
 using namespace physx;

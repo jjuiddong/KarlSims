@@ -2,16 +2,6 @@
 #include "stdafx.h"
 #include "RendererCompositionShape.h"
 
-#include <Renderer.h>
-#include <RendererVertexBuffer.h>
-#include <RendererVertexBufferDesc.h>
-#include <RendererIndexBuffer.h>
-#include <RendererIndexBufferDesc.h>
-#include <RendererMesh.h>
-#include <RendererMeshDesc.h>
-#include <RendererMemoryMacros.h>
-#include <RenderMaterial.h>
-
 
 using namespace SampleRenderer;
 

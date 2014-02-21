@@ -90,12 +90,12 @@ namespace SampleRenderer
 
 
 	private:
-		RendererVertexBuffer *m_vertexBuffer;
-		RendererIndexBuffer  *m_indexBuffer;
 		vector<PxVec3> m_SrcVertex;
 		vector<PxVec3> m_SrcNormal;
 		int m_PaletteIndex;
 		const vector<PxTransform> &m_TmPalette;
+		RendererVertexBuffer *m_vertexBuffer;
+		RendererIndexBuffer  *m_indexBuffer;
 	};
 
 

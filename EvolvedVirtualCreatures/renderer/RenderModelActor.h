@@ -15,12 +15,15 @@ public:
 	CRenderModelActor(SampleRenderer::Renderer& renderer, const string &fileName);
 	virtual ~CRenderModelActor();
 	bool IsLoadSuccess();
+	virtual void update(float deltaTime) override;
+	virtual void render(SampleRenderer::Renderer& renderer, RenderMaterial* material=NULL, bool wireFrame = false) override;
+
 
 private:
-	bool m_IsLoaddSuccess;
+	bool m_isLoadSuccess;
 	CBone_ *m_bone;
-
+	ANI_TYPE m_aniType;
 };
 
 
-inline bool CRenderModelActor::IsLoadSuccess() { return m_IsLoaddSuccess; }
+inline bool CRenderModelActor::IsLoadSuccess() { return m_isLoadSuccess; }

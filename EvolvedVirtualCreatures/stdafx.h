@@ -31,6 +31,22 @@ using std::stringstream;
 
 
 ///////////////////////////////////////////////////////////////////////////////
+// PhysX Sample Renderer
+#include <Renderer.h>
+#include <RendererVertexBuffer.h>
+#include <RendererVertexBufferDesc.h>
+#include <RendererIndexBuffer.h>
+#include <RendererIndexBufferDesc.h>
+#include <RendererMesh.h>
+#include <RendererMeshDesc.h>
+#include <RendererMemoryMacros.h>
+#include <RendererShape.h>
+#include <RaycastCCD.h>
+#include <RenderMaterial.h>
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 // PhysX
 #include "PxPhysicsAPI.h"
 #include "extensions/PxExtensionsAPI.h"
