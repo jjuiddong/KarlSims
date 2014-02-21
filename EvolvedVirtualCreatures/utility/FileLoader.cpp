@@ -10,12 +10,6 @@
 
 const float FRAME = (1000.f / 30.f);
 
-//IDirect3DDevice9 *CFileLoader::s_pDevice=NULL;
-//CFileLoader::ModelMap CFileLoader::s_ModelMap;
-//CFileLoader::KeyMap CFileLoader::s_KeyMap;
-//CFileLoader::TextureMap CFileLoader::s_TextureMap;
-//CFastMemLoader CFileLoader::s_MemLoader;
-
 CFileLoader::CFileLoader() :
 	m_pDevice(NULL)
 {

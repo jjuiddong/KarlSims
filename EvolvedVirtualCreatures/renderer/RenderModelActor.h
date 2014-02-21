@@ -8,6 +8,7 @@
 
 namespace SampleRenderer { class Renderer; }
 
+class CBone_;
 class CRenderModelActor : public RenderBaseActor
 {
 public:
@@ -17,6 +18,8 @@ public:
 
 private:
 	bool m_IsLoaddSuccess;
+	CBone_ *m_bone;
+
 };
 
 

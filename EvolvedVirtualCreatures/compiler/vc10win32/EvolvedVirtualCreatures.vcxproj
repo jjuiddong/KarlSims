@@ -30,15 +30,20 @@
     <ClCompile Include="..\..\genoype\GenotypeParser.cpp" />
     <ClCompile Include="..\..\genoype\GenotypeScanner.cpp" />
     <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\renderer\3dNode.cpp" />
+    <ClCompile Include="..\..\renderer\Bone.cpp" />
     <ClCompile Include="..\..\renderer\RenderComposition.cpp" />
     <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp" />
+    <ClCompile Include="..\..\renderer\RendererSkinModelShape.cpp" />
     <ClCompile Include="..\..\renderer\RenderModelActor.cpp" />
     <ClCompile Include="..\..\renderer\RendererModelShape.cpp" />
+    <ClCompile Include="..\..\renderer\Track.cpp" />
     <ClCompile Include="..\..\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='checked|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\utility\FileLoader.cpp" />
+    <ClCompile Include="..\..\utility\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\creature\AngularSensor.h" />
@@ -58,10 +63,14 @@
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
+    <ClInclude Include="..\..\renderer\3dNode.h" />
+    <ClInclude Include="..\..\renderer\Bone.h" />
     <ClInclude Include="..\..\renderer\RenderComposition.h" />
     <ClInclude Include="..\..\renderer\RendererCompositionShape.h" />
+    <ClInclude Include="..\..\renderer\RendererSkinModelShape.h" />
     <ClInclude Include="..\..\renderer\RenderModelActor.h" />
     <ClInclude Include="..\..\renderer\RendererModelShape.h" />
+    <ClInclude Include="..\..\renderer\Track.h" />
     <ClInclude Include="..\..\stdafx.h" />
     <ClInclude Include="..\..\targetver.h" />
     <ClInclude Include="..\..\utility\FileLoader.h" />
@@ -160,7 +169,7 @@
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalOptions>Winmm.lib /LIBPATH:../lib/win32 PhysX3CommonDEBUG_x86.lib PhysX3DEBUG_x86.lib PhysX3CookingDEBUG_x86.lib PhysX3CharacterKinematicDEBUG_x86.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PxTaskDEBUG.lib /DEBUG </AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>../../vld/lib/Win32/vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../vld/lib/Win32/vld.lib;d3dx9d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

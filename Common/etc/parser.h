@@ -2,7 +2,7 @@
 /*
 	Script Parser 클래스
 
-	2003-03-11	programer: jaejung
+	2003-03-11	programer: jjuiddong
 	2003-09-19	template 클래스로 수정
 	2005-01-11	Token 분리하기 쉽게 수정 (macro 추가)
 

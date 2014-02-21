@@ -465,7 +465,7 @@ fn GetBoneId name =
 	for i=1 to g_varSetBones.count do
 	(
 		if name == g_varSetBones[i].name then
-			return i
+			return i as integer
 	)
 	return 0
 )
@@ -808,37 +808,51 @@ fn CollectVertexWeightByPhysique obj =
 (
 	print " ---------- CollectVertexWeightByPhysique ----------- "	
 	if classof obj != Editable_mesh then return undefined
+	print obj
+		
 
-	local pm
-	max modify mode
-	pm = physiqueOps.getPhysiqueModifier obj
-	if pm == undefined then return undefined
-	bones = physiqueOps.getBones obj modifier:pm
-	if bones == undefined then return undefined
+--	local pm
+--	max modify mode
+--	pm = physiqueOps.getPhysiqueModifier obj
+--	if pm == undefined then return undefined
+--	bones = physiqueOps.getBones obj modifier:pm
+--	if bones == undefined then return undefined
+	
+	nvpx.PhysiqueLoad obj
 
-	nVertCount = physiqueOps.getVertexCount obj modifier:pm
+--	nVertCount = physiqueOps.getVertexCount obj modifier:pm
+	nBoneCount = nvpx.PhysiqueGetNumBones obj 
 --	if bones != undefined then nBoneCount = bones.count
 --	else return undefined
+	
+	format "nBoneCount = % \n" nBoneCount
 
-	if nVertCount == 0 then return undefined
+	if nBoneCount == 0 then return undefined
 
 --	ow.nBoneCount = nBoneCount
 
 	setVarPhysique = #()
 
-	for i = 1 to nVertCount do
+	for i = 1 to nBoneCount do
 	(
 		local phys = PHYSIQDATA #()
 		local varSW = #()
 
-		local nVertWeightCount = physiqueOps.getVertexBoneCount obj i modifier:pm
+--		local nVertWeightCount = physiqueOps.getVertexBoneCount obj i modifier:pm
+		local bone0 = nvpx.PhysiqueGetBone obj i
+		local nVertWeightCount = nvpx.PhysiqueGetNumBoneVertices obj bone
+		
 		if 0 < nVertWeightCount then
 		(
 			for k = 1 to nVertWeightCount do 
 			(
 				local vw = WEIGHT 0 0
-				vw.BoneName = (physiqueOps.getVertexBone obj i k modifier:pm).name
-				vw.Weight = (physiqueOps.getVertexWeight obj i k modifier:pm)
+--				vw.BoneName = (physiqueOps.getVertexBone obj i k modifier:pm).name
+				vw.BoneName = bone0.name
+				--vw.Weight = (physiqueOps.getVertexWeight obj i k modifier:pm)
+				local points = nvpx.PhysiqueGetBoneVertex obj bone0 k
+				
+				vw.Weight = 0
 
 				append varSW vw
 			)
@@ -851,6 +865,7 @@ fn CollectVertexWeightByPhysique obj =
 
 	setVarRet = #()
 
+	
 	undo on
 	(
 		ConvertToMesh obj
@@ -905,7 +920,7 @@ fn GetObjectMaterialId obj =
 		(
 			if obj.material == g_varSetMaterials[i] then
 			(
-				return i
+				return i as integer
 			)
 		)
 	)
@@ -1084,6 +1099,8 @@ fn WriteMeshInfo obj tab =
 
 fn WriteBoneInfo obj tab = 
 (
+	print "##### WriteBoneInfo ####"
+	
 	TabStep tab;
 	format "BONE id=% \"name=%\" parentId=%\n" ((GetObjectId obj)-1) obj.name ((GetParentObjectId obj)-1) to:Outfile
 )
@@ -1597,7 +1614,7 @@ fn WriteVertexWeight obj tab =
 
 	for i=1 to ret.count do
 	(
-		TabStep (tab+1);	format "VTXWEIGHT id=% count=%\n" (ret[i].vtxidx-1) (ret[i].varSetVtxWeight.count) to:Outfile
+		TabStep (tab+1);	format "VTXWEIGHT id=% count=%\n" ((ret[i].vtxidx-1) as integer) (ret[i].varSetVtxWeight.count) to:Outfile
 		TabStep (tab+1);	format "{\n" to:Outfile
 		for j=1 to ret[i].varSetVtxWeight.count do
 		(

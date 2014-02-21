@@ -178,7 +178,7 @@ void D3D9RendererMaterial::ShaderConstants::bindEnvironment(IDirect3DDevice9& d3
 	{
 #define SET_MATRIX(_name)                         \
 	if(_name)                                     \
-	{                                             \
+		{                                             \
 		const D3DXMATRIX xm(shaderEnv._name);     \
 		table->SetMatrix(&d3dDevice, _name, &xm); \
 	}
@@ -212,6 +212,11 @@ void D3D9RendererMaterial::ShaderConstants::bindEnvironment(IDirect3DDevice9& d3
 
 #define SET_FLOAT(_name) \
 	if(_name) table->SetFloat(&d3dDevice, _name, shaderEnv._name);
+
+		if (projMatrix)
+		{
+			int a= 0;
+		}
 
 		SET_MATRIX(modelMatrix)
 		SET_MATRIX(viewMatrix)

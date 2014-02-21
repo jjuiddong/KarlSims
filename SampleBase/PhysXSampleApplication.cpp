@@ -81,6 +81,7 @@
 #include "extensions/ps3/PxPS3Extension.h"
 #endif
 
+
 using namespace physx;
 using namespace SampleRenderer;
 using namespace SampleFramework;
@@ -758,6 +759,7 @@ void PhysXSampleApplication::onRender()
 		{
 			if (mSample)
 				mSample->render();
+
 			renderer->render(mCamera.getViewMatrix(), mCamera.getProjMatrix());
 		}
 
