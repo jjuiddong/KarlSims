@@ -141,7 +141,7 @@ void RenderBaseActor::render(Renderer& renderer, RenderMaterial* material, bool 
 	mRendererMeshContext.fillMode			= wireFrame ? RendererMeshContext::LINE : RendererMeshContext::SOLID;
 	mRendererMeshContext.material			= m->mRenderMaterial;
 	mRendererMeshContext.materialInstance	= m->mRenderMaterialInstance;
-	mRendererMeshContext.mesh				= mRendererShape->getMesh();
+	mRendererMeshContext.mesh				= mRendererShape? mRendererShape->getMesh() : NULL;
 	mRendererMeshContext.transform			= &mScaledTransform;
 
 	renderer.queueMeshForRender(mRendererMeshContext);

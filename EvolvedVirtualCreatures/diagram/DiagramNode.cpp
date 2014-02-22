@@ -31,7 +31,7 @@ void	CDiagramNode::Render()
 	tm.p.x = -tm.p.x; // change left hand axis
 
 	D3DXMATRIX m;
-	convertD3D9(m, tm);
+	utility::convertD3D9(m, tm);
 
 	D3DXMATRIX mProj;
 	D3DXMatrixPerspectiveFovLH(&mProj, 55.f * PxPi / 180.0f, 800.f/600.f, 0.1f, 10000.f);

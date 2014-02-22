@@ -9,8 +9,12 @@ RendererSkinModelShape::RendererSkinModelShape(Renderer& renderer, const SBMMLoa
 	RendererShape(renderer)
 ,	m_loader(loader)
 ,	m_palette(palette)
+,	m_physiq(NULL)
 {
 	//RENDERER_ASSERT(faces16 || faces32, "Needs either 16bit or 32bit indices.");
+	if (0 < loader.m.size)
+		m_physiq = &loader.m.pMesh->physiq;
+
 	PxU32 numVerts = loader.m.pMesh->vnt.size;
 	SVtxNormTex *verts = loader.m.pMesh->vnt.pV;
 
@@ -110,33 +114,29 @@ RendererSkinModelShape::~RendererSkinModelShape()
 
 void RendererSkinModelShape::ApplyPalette()
 {
+	RET(m_loader.m.size <= 0);
+	RET(!m_palette);
+
 	PxU32 stride = 0;
 	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
 	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
-	void *bones = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX, stride);
-
-	const PxU32 paletteSize = m_TmPalette.size();
-	const PxU32 numVerts = m_vertexBuffer->getMaxVertices();
-	for (PxU32 i=0; i < numVerts; ++i)
+	
+	SVtxNormTex *srcVerts = m_loader.m.pMesh->vnt.pV;
+	for (int i=0; i < m_physiq->size; ++i)
 	{
-		PxVec3 &p = *(PxVec3*)(((PxU8*)positions) + (stride * i));
-		PxVec3 &n = *(PxVec3*)(((PxU8*)normals) + (stride * i));
-		const PxU32 &bidx  =  *(PxU32*)(((PxU8*)bones) + (stride * i));
-		if (bidx >= paletteSize)
-			continue;
+		const int idx = m_physiq->p[ i].vtx;
+		const int offset = idx * stride;
+		Vector3 *pVtx = (Vector3*)(((PxU8*)positions) + offset);
+		*pVtx = Vector3(0,0,0);
 
-#ifdef _DEBUG
-		if (!m_TmPalette[ bidx].isSane()) continue;
-#endif
-
-		PxTransform tm0 = m_TmPalette[ bidx] * PxTransform(m_SrcVertex[ i]);
-		PxTransform tm1 = PxTransform(m_TmPalette[ bidx].q) * PxTransform(m_SrcNormal[ i]);
-
-		p = tm0.p;
-		n = tm1.p;
+		for( int k=0; k < m_physiq->p[ i].size; ++k )
+		{
+			SWeight *w = &m_physiq->p[ i].w[ k];
+			Vector3 v = *(Vector3*)&srcVerts[ idx] * m_palette[ w->bone];
+			*pVtx += v * w->weight;
+		}
 	}
 
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
-	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_BONEINDEX);
 }

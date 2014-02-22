@@ -122,7 +122,7 @@ const Matrix44& Quaternion::GetMatrix() const
 	m._44 = 1.0F;
 /**/
 
-	//D3DXMatrixRotationQuaternion( (D3DXMATRIX*)&m, (D3DXQUATERNION*)this );
+	D3DXMatrixRotationQuaternion( (D3DXMATRIX*)&m, (D3DXQUATERNION*)this );
 	return m;
 } //Quaternion::GetMatrix4
 
@@ -201,20 +201,26 @@ void Quaternion::SetOrientation( const Vector3& vDir, const Vector3& vUp )
 //--------------------------------
 void Quaternion::SetRotationArc( const Vector3& v0, const Vector3& v1 )
 {
-	Vector3 vCross = v0.CrossProduct( v1 );
-
-	float fDot = v0.DotProduct( v1 );
-	float s = (float)sqrt( ( 1.0F + fDot ) * 2.0F );
-	if( 0.1f >  s )
+	Vector3 vCross = v0.CrossProduct(v1);
+	const float len = vCross.Length();
+	if (len <= 0.01f)
 	{
 		x = 0; y = 1; z = 0; w = 0;
 		return;
 	}
 
+	float fDot = v0.DotProduct( v1 );
+	float s = (float)sqrtf((1.0f + fDot) * 2.0f);
+	//if (0.1f >  s)
+	//{
+	//	x = 0; y = 1; z = 0; w = 0;
+	//	return;
+	//}
+
 	x = vCross.x / s;
 	y = vCross.y / s;
 	z = vCross.z / s;
-	w = s * 0.5F;
+	w = s * 0.5f;
 } //Quaternion::SetRotationArc
 
 //--------------------------------

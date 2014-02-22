@@ -411,7 +411,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 		PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
 		gravDir.normalize();
 		PxQuat gravQ;
-		quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
+		utility::quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
 		tm1 = tm1 * PxTransform(gravQ);
 	}
 

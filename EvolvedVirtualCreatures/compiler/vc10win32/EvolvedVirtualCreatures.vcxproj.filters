@@ -73,6 +73,15 @@
     <ClCompile Include="..\..\renderer\RendererSkinModelShape.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderBezierActor.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererBezierShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\MeshCompositionUtility.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -157,6 +166,15 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\renderer\RendererSkinModelShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderBezierActor.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererBezierShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\MeshCompositionUtility.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>

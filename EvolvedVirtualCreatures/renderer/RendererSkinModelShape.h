@@ -18,10 +18,9 @@ namespace SampleRenderer
 
 	private:
 		const SBMMLoader &m_loader;
-		vector<PxVec3> m_SrcVertex;
-		vector<PxVec3> m_SrcNormal;
+		const SPhysiqueLoader *m_physiq;
+
 		Matrix44 *m_palette;
-		vector<PxTransform> m_TmPalette;
 		RendererVertexBuffer* m_vertexBuffer;
 		RendererIndexBuffer*	m_indexBuffer;
 	};

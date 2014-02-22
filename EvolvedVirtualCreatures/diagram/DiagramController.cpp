@@ -7,6 +7,8 @@
 #include "RenderSphereActor.h"
 #include "../genoype/GenotypeParser.h"
 #include "../renderer/RenderModelActor.h"
+#include "../renderer/RenderBezierActor.h"
+
 
 
 using namespace evc;
@@ -89,7 +91,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	const bool IsSensorNode = !expr;
 	CDiagramNode *diagNode = new CDiagramNode(m_Sample);
 	diagNode->m_Name = expr? expr->id : "sensor";
-	PxVec3 dimension = expr? Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
+	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
 	m_Diagrams.push_back(diagNode);
 
 	if (IsSensorNode)
@@ -101,11 +103,11 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), dimension.x);
 	}
 	else
-	{
+	{ // Sensor
 		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimension);
 	}
 
-	PxVec3 material = expr? Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
+	PxVec3 material = expr? utility::Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
 	diagNode->m_pRenderNode->setTransform(PxTransform(pos));
 	diagNode->m_pRenderNode->setRenderMaterial( m_Sample.GetMaterial(material, false) );
 	m_Sample.addRenderObject(diagNode->m_pRenderNode);
@@ -128,22 +130,35 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			diagramConnection.connectNode = newDiagNode;
 
 			// transition arrow direction
-			PxVec3 arrowPos = (pos + newNodePos) / 2.f;
+			//PxVec3 arrowPos = (pos + newNodePos) / 2.f;
 			PxVec3 dir = newNodePos - pos;
 			const float len = dir.magnitude();
 			dir.normalize();
 
-			PxTransform arrowTm(arrowPos);
-			PxQuat arrowDir;
-			quatRotationArc(arrowDir, dir, PxVec3(0,1,0));
-			arrowTm = arrowTm * PxTransform(arrowDir);
+			PxVec3 c = dir.cross(PxVec3(0,0,1));
+
+			//PxTransform arrowTm(arrowPos);
+			//PxQuat arrowDir;
+			//utility::quatRotationArc(arrowDir, dir, PxVec3(0,1,0));
+			//arrowTm = arrowTm * PxTransform(arrowDir);
 			//
 
-			const float arrowScale = 0.03f;
-			diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(arrowScale, len/2.f, arrowScale));
-			diagramConnection.transitionArrow->setTransform( arrowTm );
-			diagramConnection.transitionArrow->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0.f, 0.f, 0.f), false) );
+			vector<PxVec3> points;
+			points.push_back( pos );
+			points.push_back( pos + (dir*len*0.5f) - c*1.f );
+			points.push_back( points[1] );
+			points.push_back( newNodePos );
+
+			//const float arrowScale = 0.03f;
+			CRenderBezierActor *arrow = new CRenderBezierActor(*m_Sample.getRenderer(), points);
+			PxTransform tm=arrow->getTransform();
+			diagramConnection.transitionArrow = arrow;
+			//diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(arrowScale, len/2.f, arrowScale));
+			//diagramConnection.transitionArrow->setTransform( arrowTm );
+			//diagramConnection.transitionArrow->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0.f, 0.f, 0.f), false) );
 			m_Sample.addRenderObject(diagramConnection.transitionArrow);
+
+			//arrow->setTransform(PxTransform(arrowPos));
 
 			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
 
@@ -158,10 +173,11 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimensionY+0.2f,0);
 
 			const float arrowScale = 0.05f;
-			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "lineArrow.txt");
+			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "arrow.txt");
 			arrow->setTransform(PxTransform(arrowPos, PxQuat(0.9f,PxVec3(0,0,1))));
 			arrow->setMeshScale(PxMeshScale(PxVec3(1,1,1)*arrowScale,PxQuat(0,PxVec3(1,0,0))));
-			m_Sample.addRenderObject(arrow);
+			m_Sample.addRenderObject(arrow);	
+
 
 			diagramConnection.transitionArrow = arrow;
 			diagNode->m_ConnectDiagrams.push_back(diagramConnection);

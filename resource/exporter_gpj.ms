@@ -1102,7 +1102,7 @@ fn WriteBoneInfo obj tab =
 	print "##### WriteBoneInfo ####"
 	
 	TabStep tab;
-	format "BONE id=% \"name=%\" parentId=%\n" ((GetObjectId obj)-1) obj.name ((GetParentObjectId obj)-1) to:Outfile
+	format "BONE id=% name=\"%\" parentId=%\n" ((GetObjectId obj)-1) obj.name ((GetParentObjectId obj)-1) to:Outfile
 )
 
 

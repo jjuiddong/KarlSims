@@ -1,0 +1,97 @@
+GPJ
+ANIFORM count=1
+{
+	ANIMATIONGROUP id=0 name="ani_name" count=6
+	{
+		ANIMATION id=0 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=0.0,y=0.0,z=0.0] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+		ANIMATION id=1 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=6.03248,y=0.0,z=-1.2219e-006] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+		ANIMATION id=2 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=6.38473,y=0.0,z=0.0] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+		ANIMATION id=3 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=6.38051,y=0.0,z=-1.49011e-007] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+		ANIMATION id=4 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=6.26557,y=0.0,z=-2.26498e-006] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+		ANIMATION id=5 startT=0f endT=100f
+		{
+			KEY_POS count=1
+			{
+				FRAME_POS t=1f [x=6.61253,y=0.0,z=0.0] 
+			}
+			KEY_ROT count=1
+			{
+				FRAME_ROT t=0f [x=0.0 y=0.0 z=0.0 w=1.0]
+			}
+			KEY_SCALE count=1
+			{
+				FRAME_SCALE t=1f [x=1.0, y=1.0, z=1.0] 
+			}
+		}
+	}
+}

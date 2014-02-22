@@ -1883,7 +1883,7 @@ BMMFORM
 	}
 	BONEGROUP count=6
 	{
-		BONE id=0 "name=Bone001" parentId=-1
+		BONE id=0 name="Bone001" parentId=-1
 		{
 			LOCALTM 
 			{
@@ -1900,7 +1900,7 @@ BMMFORM
 				MAT [x=0.0,y=0.0,z=0.0,w=1.0]
 			}
 		}
-		BONE id=1 "name=Bone002" parentId=0
+		BONE id=1 name="Bone002" parentId=0
 		{
 			LOCALTM 
 			{
@@ -1917,7 +1917,7 @@ BMMFORM
 				MAT [x=0.0,y=6.03248,z=-3.11559e-006,w=1.0]
 			}
 		}
-		BONE id=2 "name=Bone003" parentId=1
+		BONE id=2 name="Bone003" parentId=1
 		{
 			LOCALTM 
 			{
@@ -1934,7 +1934,7 @@ BMMFORM
 				MAT [x=0.0,y=12.4172,z=0.0,w=1.0]
 			}
 		}
-		BONE id=3 "name=Bone004" parentId=2
+		BONE id=3 name="Bone004" parentId=2
 		{
 			LOCALTM 
 			{
@@ -1951,7 +1951,7 @@ BMMFORM
 				MAT [x=0.0,y=18.7977,z=-1.08717e-006,w=1.0]
 			}
 		}
-		BONE id=4 "name=Bone005" parentId=3
+		BONE id=4 name="Bone005" parentId=3
 		{
 			LOCALTM 
 			{
@@ -1968,7 +1968,7 @@ BMMFORM
 				MAT [x=0.0,y=25.0633,z=-1.83977e-007,w=1.0]
 			}
 		}
-		BONE id=5 "name=Bone006" parentId=4
+		BONE id=5 name="Bone006" parentId=4
 		{
 			LOCALTM 
 			{

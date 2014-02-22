@@ -32,7 +32,10 @@
     <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\renderer\3dNode.cpp" />
     <ClCompile Include="..\..\renderer\Bone.cpp" />
+    <ClCompile Include="..\..\renderer\MeshCompositionUtility.cpp" />
+    <ClCompile Include="..\..\renderer\RenderBezierActor.cpp" />
     <ClCompile Include="..\..\renderer\RenderComposition.cpp" />
+    <ClCompile Include="..\..\renderer\RendererBezierShape.cpp" />
     <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp" />
     <ClCompile Include="..\..\renderer\RendererSkinModelShape.cpp" />
     <ClCompile Include="..\..\renderer\RenderModelActor.cpp" />
@@ -65,7 +68,10 @@
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
     <ClInclude Include="..\..\renderer\3dNode.h" />
     <ClInclude Include="..\..\renderer\Bone.h" />
+    <ClInclude Include="..\..\renderer\MeshCompositionUtility.h" />
+    <ClInclude Include="..\..\renderer\RenderBezierActor.h" />
     <ClInclude Include="..\..\renderer\RenderComposition.h" />
+    <ClInclude Include="..\..\renderer\RendererBezierShape.h" />
     <ClInclude Include="..\..\renderer\RendererCompositionShape.h" />
     <ClInclude Include="..\..\renderer\RendererSkinModelShape.h" />
     <ClInclude Include="..\..\renderer\RenderModelActor.h" />

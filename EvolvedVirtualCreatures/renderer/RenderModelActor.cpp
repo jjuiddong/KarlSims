@@ -8,6 +8,7 @@
 
 using namespace SampleRenderer;
 
+
 CRenderModelActor::CRenderModelActor(SampleRenderer::Renderer& renderer, const string &fileName) :
 	m_isLoadSuccess(false)
 ,	m_bone(NULL)
@@ -15,20 +16,22 @@ CRenderModelActor::CRenderModelActor(SampleRenderer::Renderer& renderer, const s
 	SBMMLoader *loader = CFileLoader::Get()->LoadModel(fileName);
 	m_aniType = (ANI_TYPE)loader->type;
 
-	if (ANI_SKIN == m_aniType)
-	{
-		m_bone = new CBone_();
-		m_bone->Load(0, &loader->b, false, &loader->m);
-	}
-
 	if (loader)
 	{
 		RendererShape *rs = NULL;
 		switch (m_aniType)
 		{
-		case ANI_SKIN: new RendererSkinModelShape(renderer, *loader, m_bone->GetPalette()); break;
-		default: rs = rs = new RendererModelShape(renderer, *loader); break;
+		case ANI_SKIN: 
+			m_bone = new CBone_();
+			m_bone->Load(0, &loader->b, false, &loader->m);
+			rs = new RendererSkinModelShape(renderer, *loader, m_bone->GetPalette()); 
+			break;
+
+		default: 
+			rs = new RendererModelShape(renderer, *loader); 
+			break;
 		}
+
 		setRenderShape(rs);
 		m_isLoadSuccess = true;
 	}
@@ -50,19 +53,17 @@ void CRenderModelActor::render(SampleRenderer::Renderer& renderer, RenderMateria
 {
 	if (ANI_SKIN == m_aniType)
 	{
-		((RendererSkinModelShape*)getRenderShape())->ApplyPalette();
+		if (m_bone)
+			m_bone->Animate(1);
+
+		//m_bone->GetPalette()[ 0].SetRotationX(1.f);
+		//m_bone->GetPalette()[ 1].SetRotationX(.5f);
+		//m_bone->GetPalette()[ 2].SetRotationX(.5f);
+
+		RendererSkinModelShape *rs = (RendererSkinModelShape*)getRenderShape();
+		if (rs)
+			rs->ApplyPalette();
 	}
 
 	RenderBaseActor::render(renderer, material,wireFrame);
-}
-
-
-void CRenderModelActor::update(float deltaTime)
-{
-	RenderBaseActor::update(deltaTime);
-	if (ANI_SKIN == m_aniType)
-	{
-		if (m_bone)
-			m_bone->Animate((int)(deltaTime*1000.f));
-	}
 }

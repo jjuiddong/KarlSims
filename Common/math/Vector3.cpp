@@ -157,7 +157,7 @@ Vector3 Vector3::operator / ( float s ) const
 //-------------------------------
 // operator +
 //-------------------------------
-Vector3& Vector3::operator += ( Vector3& v )
+Vector3& Vector3::operator += ( const Vector3& v )
 {
 	x += v.x;
 	y += v.y;
@@ -168,7 +168,7 @@ Vector3& Vector3::operator += ( Vector3& v )
 //-------------------------------
 // operator -
 //-------------------------------
-Vector3& Vector3::operator -= ( Vector3& v )
+Vector3& Vector3::operator -= ( const Vector3& v )
 {
 	x -= v.x;
 	y -= v.y;
@@ -179,7 +179,7 @@ Vector3& Vector3::operator -= ( Vector3& v )
 //-------------------------------
 // operator *
 //-------------------------------
-Vector3& Vector3::operator *= ( Vector3& v )
+Vector3& Vector3::operator *= ( const Vector3& v )
 {
 	x *= v.x;
 	y *= v.y;
@@ -190,7 +190,7 @@ Vector3& Vector3::operator *= ( Vector3& v )
 //-------------------------------
 // operator /
 //-------------------------------
-Vector3& Vector3::operator /= ( Vector3& v )
+Vector3& Vector3::operator /= ( const Vector3& v )
 {
 	x /= v.x;
 	y /= v.y;
