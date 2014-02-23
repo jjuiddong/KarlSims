@@ -46,6 +46,8 @@ public:
 	D3D11RendererMesh(D3D11Renderer& renderer, const RendererMeshDesc& desc);
 	virtual ~D3D11RendererMesh(void);
 
+	virtual bool IntersectTri( const PxTransform &tm, const PxVec3 &rayOrigin, const PxVec3 &rayDirection, OUT PxVec3 &out ) { return false; }
+
 protected:
 	virtual void renderIndices(PxU32 numVertices, PxU32 firstIndex, PxU32 numIndices, RendererIndexBuffer::Format indexFormat, RendererMaterial* material) const;
 	virtual void renderVertices(PxU32 numVertices, RendererMaterial* material) const;

@@ -38,11 +38,14 @@
 #include "RenderPhysX3Debug.h"
 #include "PxRigidDynamic.h"
 #include "PxArticulationLink.h"
+#include "RendererMesh.h"
 
 #include "geometry/PxSphereGeometry.h"
 #include "geometry/PxBoxGeometry.h"
 #include "RenderSphereActor.h"
 #include "RenderCapsuleActor.h"
+
+
 
 using namespace physx;
 using namespace SampleRenderer;
@@ -275,4 +278,17 @@ void RenderBaseActor::drawDebug(RenderPhysX3Debug* debug)
 
 		debug->addLine(center, center+dir*internalRadius, colorPurple);
 	}*/
+}
+
+
+bool RenderBaseActor::IntersectTri( const PxVec3 &rayOrigin, const PxVec3 &rayDirection, OUT PxVec3 &out )
+{
+	if (!mRendererShape)
+		return false;
+
+	RendererMesh*mesh = mRendererShape->getMesh();
+	if (!mesh)
+		return false;
+
+	return mesh->IntersectTri(mTransform, rayOrigin, rayDirection, out);
 }

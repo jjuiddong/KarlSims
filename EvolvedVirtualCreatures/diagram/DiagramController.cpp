@@ -120,7 +120,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	PxVec3 offset(4,0,0);
 	while (connection)
 	{
-		const PxVec3 newNodePos = pos + offset;
+		PxVec3 newNodePos = pos + offset;
 		SConnection *node_con = connection->connect;
 		CDiagramNode *newDiagNode = CreateDiagramNode(newNodePos, node_con->expr, diagrams);
 
@@ -130,35 +130,29 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			diagramConnection.connectNode = newDiagNode;
 
 			// transition arrow direction
-			//PxVec3 arrowPos = (pos + newNodePos) / 2.f;
 			PxVec3 dir = newNodePos - pos;
-			const float len = dir.magnitude();
+			float len = dir.magnitude();
 			dir.normalize();
 
+			PxVec3 interSectPos;
+			if (newDiagNode->m_pRenderNode->IntersectTri(pos, dir, interSectPos))
+			{
+				dir = interSectPos - pos;
+				len = dir.magnitude();
+				dir.normalize();
+				newNodePos = pos + dir*len;
+			}
+
 			PxVec3 c = dir.cross(PxVec3(0,0,1));
-
-			//PxTransform arrowTm(arrowPos);
-			//PxQuat arrowDir;
-			//utility::quatRotationArc(arrowDir, dir, PxVec3(0,1,0));
-			//arrowTm = arrowTm * PxTransform(arrowDir);
-			//
-
 			vector<PxVec3> points;
 			points.push_back( pos );
 			points.push_back( pos + (dir*len*0.5f) - c*1.f );
 			points.push_back( points[1] );
 			points.push_back( newNodePos );
 
-			//const float arrowScale = 0.03f;
 			CRenderBezierActor *arrow = new CRenderBezierActor(*m_Sample.getRenderer(), points);
-			PxTransform tm=arrow->getTransform();
 			diagramConnection.transitionArrow = arrow;
-			//diagramConnection.transitionArrow = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), PxVec3(arrowScale, len/2.f, arrowScale));
-			//diagramConnection.transitionArrow->setTransform( arrowTm );
-			//diagramConnection.transitionArrow->setRenderMaterial( m_Sample.GetMaterial(PxVec3(0.f, 0.f, 0.f), false) );
 			m_Sample.addRenderObject(diagramConnection.transitionArrow);
-
-			//arrow->setTransform(PxTransform(arrowPos));
 
 			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
 
@@ -172,12 +166,14 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			const float dimensionY = node_con->expr? node_con->expr->dimension.y : 1.f;
 			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimensionY+0.2f,0);
 
-			const float arrowScale = 0.05f;
-			CRenderModelActor *arrow = new CRenderModelActor(*m_Sample.getRenderer(), "arrow.txt");
-			arrow->setTransform(PxTransform(arrowPos, PxQuat(0.9f,PxVec3(0,0,1))));
-			arrow->setMeshScale(PxMeshScale(PxVec3(1,1,1)*arrowScale,PxQuat(0,PxVec3(1,0,0))));
+			const float offset = 0.7f;
+			vector<PxVec3> points;
+			points.push_back( arrowPos );
+			points.push_back( arrowPos + PxVec3(-offset,offset,0) );
+			points.push_back( arrowPos + PxVec3(offset,offset,0) );
+			points.push_back( arrowPos );
+			CRenderBezierActor *arrow = new CRenderBezierActor(*m_Sample.getRenderer(), points);
 			m_Sample.addRenderObject(arrow);	
-
 
 			diagramConnection.transitionArrow = arrow;
 			diagNode->m_ConnectDiagrams.push_back(diagramConnection);

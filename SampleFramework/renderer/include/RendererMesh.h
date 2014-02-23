@@ -82,6 +82,8 @@ namespace SampleRenderer
 		RendererIndexBuffer* getIndexBufferEdit();
 		RendererInstanceBuffer* getInstanceBufferEdit();
 
+		virtual bool IntersectTri( const PxTransform &tm, const PxVec3 &rayOrigin, const PxVec3 &rayDirection, OUT PxVec3 &out ) = 0;
+
 		virtual bool willRender() const { return true; }
 
 	protected:

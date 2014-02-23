@@ -49,6 +49,9 @@ namespace SampleRenderer
 		virtual void renderIndicesInstanced(PxU32 numVertices, PxU32 firstIndex, PxU32 numIndices, RendererIndexBuffer::Format indexFormat,RendererMaterial *material) const;
 		virtual void renderVerticesInstanced(PxU32 numVertices,RendererMaterial *material) const;
 
+		virtual bool IntersectTri( const PxTransform &tm, const PxVec3 &rayOrigin, const PxVec3 &rayDirection, OUT PxVec3 &out ) override { return false; }
+
+
 	protected:
 		void operator=(const NullRendererMesh &){}
 		Renderer& renderer() { return mRenderer; }

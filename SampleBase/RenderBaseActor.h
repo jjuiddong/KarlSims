@@ -92,6 +92,9 @@ namespace physx
 		PX_FORCE_INLINE	void									setEnableCameraCull(bool flag)				{ mEnableCameraCull = flag;	}
 		PX_FORCE_INLINE bool                                    getEnableCameraCull()				const	{ return mEnableCameraCull;	}
 
+		bool IntersectTri( const PxVec3 &rayOrigin, const PxVec3 &rayDirection, OUT PxVec3 &out );
+
+
 		private:
 						SampleRenderer::RendererShape*			mRendererShape;
 						PxMeshScale								mScaling;
