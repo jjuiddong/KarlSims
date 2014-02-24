@@ -19,7 +19,7 @@
 #include <SampleUserInputIds.h>
 #include <SampleUserInputDefines.h>
 
-#include "Picking.h"
+//#include "Picking.h"
 #include "Creature/Creature.h"
 #include "genetic/GeneticAlgorithm.h"
 #include "diagram/DiagramController.h"
@@ -156,7 +156,9 @@ void CEvc::onInit()
 	}
 
 	m_DiagramController = new evc::CDiagramController(*this);
-
+	//registerInputEvents(m_DiagramController);
+	//getPlatform().
+	//getPlatform()->getSampleUserInput()->
 }
 
 
@@ -196,6 +198,10 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	PhysXSample::collectInputEvents(inputEvents);
 	getApplication().getPlatform()->getSampleUserInput()->unregisterInputEvent(CAMERA_SPEED_INCREASE);
 	getApplication().getPlatform()->getSampleUserInput()->unregisterInputEvent(CAMERA_SPEED_DECREASE);
+
+	//DIGITAL_INPUT_EVENT_DEF(CAMERA_MOVE_BUTTON, MOUSE_BUTTON_LEFT, XKEY_UNKNOWN, PS3KEY_UNKNOWN, AKEY_UNKNOWN, MOUSE_BUTTON_LEFT, PSP2KEY_UNKNOWN, IKEY_UNKNOWN, MOUSE_BUTTON_LEFT,	WIIUKEY_UNKNOWN);
+	//DIGITAL_INPUT_EVENT_DEF(CAMERA_MOVE_BUTTON, MOUSE_BUTTON_RIGHT, XKEY_UNKNOWN, PS3KEY_UNKNOWN, AKEY_UNKNOWN, MOUSE_BUTTON_RIGHT, PSP2KEY_UNKNOWN, IKEY_UNKNOWN, MOUSE_BUTTON_RIGHT,	WIIUKEY_UNKNOWN);
+
     
 	//touch events
 	//DIGITAL_INPUT_EVENT_DEF(PICKUP, WKEY_SPACE,			XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
@@ -262,8 +268,8 @@ void CEvc::spawnNode( const int key )
 		PxU32 width, height;
 		mApplication.getPlatform()->getWindowSize(width, height);
 
-		PxVec3 rayOrig, rayDir;
-		mPicking->computeCameraRay(rayOrig, rayDir, width/2, height/2);
+		PxVec3 rayOrig, rayDir, pickOrig;
+		mPicking->computeCameraRay(rayOrig, rayDir, pickOrig, width/2, height/2);
 
 		// raycast rigid bodies in scene
 		PxRaycastHit hit; 
@@ -476,6 +482,9 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 			m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
 		}
 	}
+
+	if (m_DiagramController)
+		m_DiagramController->onPointerInputEvent(ie,x,y,dx,dy,val);
 }
 
 

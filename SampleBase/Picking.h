@@ -77,7 +77,7 @@ namespace physx {
 						void						moveCursor(PxI32 x, PxI32 y);
 //						void						moveCursor(PxReal deltaDepth);
 
-						void						computeCameraRay(PxVec3& orig, PxVec3& dir, PxI32 x, PxI32 y)	const;
+						void						computeCameraRay(PxVec3& orig, PxVec3& dir, PxVec3 &pickOrig, PxI32 x, PxI32 y)	const;
 
 		// returns picked actor
 						PxActor*					letGo();

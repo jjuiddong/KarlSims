@@ -45,6 +45,7 @@ using std::stringstream;
 #include <RenderMaterial.h>
 #include "RenderBoxActor.h"
 #include "RenderSphereActor.h"
+#include "Picking.h"
 
 
 

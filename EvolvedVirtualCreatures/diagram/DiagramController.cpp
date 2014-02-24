@@ -6,43 +6,47 @@
 #include "../genoype/GenotypeParser.h"
 #include "../renderer/RenderModelActor.h"
 #include "../renderer/RenderBezierActor.h"
-#include "EditDiagramCamera.h"
+#include "SimpleCamera.h"
 
 
 
 using namespace evc;
 
 CDiagramController::CDiagramController(CEvc &sample) :
-	m_Sample(sample)
-,	m_pRootDiagram(NULL)
+	m_sample(sample)
+,	m_rootDiagram(NULL)
+,	m_camera(NULL)
+,	m_selectNode(NULL)
 {
-	m_Camera = SAMPLE_NEW(CEditDiagramCamera)();
-
+	
 }
 
 CDiagramController::~CDiagramController()
 {
 	set<CDiagramNode*> diags;
-	RemoveDiagram(m_pRootDiagram, diags);
-	m_pRootDiagram = NULL;
-	SAFE_DELETE(m_Camera);
+	RemoveDiagram(m_rootDiagram, diags);
+	m_rootDiagram = NULL;
+	SAFE_DELETE(m_camera);
 }
 
 
 /**
- @brief 
+ @brief Init Diagram Controller Scene
  @date 2014-02-24
 */
 void CDiagramController::ControllerSceneInit()
 {
-	m_Sample.getApplication().setMouseCursorHiding(false);
-	m_Sample.getApplication().setMouseCursorRecentering(false);
+	if (!m_camera)
+		m_camera = SAMPLE_NEW(CSimpleCamera)();
 
-	m_Camera->init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
-	m_Camera->setMouseSensitivity(0.5f);
+	m_sample.getApplication().setMouseCursorHiding(false);
+	m_sample.getApplication().setMouseCursorRecentering(false);
 
-	m_Sample.getApplication().setCameraController(m_Camera);
-	m_Sample.setCameraController(m_Camera);
+	m_camera->init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
+	m_camera->setMouseSensitivity(0.5f);
+
+	m_sample.getApplication().setCameraController(m_camera);
+	m_sample.setCameraController(m_camera);
 
 }
 
@@ -54,19 +58,19 @@ void CDiagramController::ControllerSceneInit()
 void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 {
 	set<CDiagramNode*> diags;
-	RemoveDiagram(m_pRootDiagram, diags);
-	m_pRootDiagram = NULL;
+	RemoveDiagram(m_rootDiagram, diags);
+	m_rootDiagram = NULL;
 
-	m_Diagrams.clear();
+	m_diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
-	m_pRootDiagram = CreateDiagramNode(PxVec3(0,0,0), expr, diagrams);
+	m_rootDiagram = CreateDiagramNode(PxVec3(0,0,0), expr, diagrams);
 }
 
 
 // Render
 void CDiagramController::Render()
 {
-	BOOST_FOREACH (auto node, m_Diagrams)
+	BOOST_FOREACH (auto node, m_diagrams)
 		node->Render();
 }
 
@@ -107,28 +111,29 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	}
 
 	const bool IsSensorNode = !expr;
-	CDiagramNode *diagNode = new CDiagramNode(m_Sample);
-	diagNode->m_Name = expr? expr->id : "sensor";
+	CDiagramNode *diagNode = new CDiagramNode(m_sample);
+	diagNode->m_name = expr? expr->id : "sensor";
 	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
-	m_Diagrams.push_back(diagNode);
+	m_diagrams.push_back(diagNode);
 
 	if (IsSensorNode)
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimension);
+		diagNode->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		diagNode->m_pRenderNode = SAMPLE_NEW(RenderSphereActor)(*m_Sample.getRenderer(), dimension.x);
+		diagNode->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), dimension.x);
 	}
 	else
 	{ // Sensor
-		diagNode->m_pRenderNode = SAMPLE_NEW2(RenderBoxActor)(*m_Sample.getRenderer(), dimension);
+		diagNode->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
 	}
 
 	PxVec3 material = expr? utility::Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
-	diagNode->m_pRenderNode->setTransform(PxTransform(pos));
-	diagNode->m_pRenderNode->setRenderMaterial( m_Sample.GetMaterial(material, false) );
-	m_Sample.addRenderObject(diagNode->m_pRenderNode);
+	diagNode->m_renderNode->setTransform(PxTransform(pos));
+	diagNode->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+	diagNode->m_material = material;
+	m_sample.addRenderObject(diagNode->m_renderNode);
 
 	RETV(!expr, diagNode); // if sensor node return
 
@@ -153,7 +158,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			dir.normalize();
 
 			PxVec3 interSectPos;
-			if (newDiagNode->m_pRenderNode->IntersectTri(pos, dir, interSectPos))
+			if (newDiagNode->m_renderNode->IntersectTri(pos, dir, interSectPos))
 			{
 				dir = interSectPos - pos;
 				len = dir.magnitude();
@@ -168,11 +173,11 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			points.push_back( points[1] );
 			points.push_back( newNodePos );
 
-			CRenderBezierActor *arrow = new CRenderBezierActor(*m_Sample.getRenderer(), points);
+			CRenderBezierActor *arrow = new CRenderBezierActor(*m_sample.getRenderer(), points);
 			diagramConnection.transitionArrow = arrow;
-			m_Sample.addRenderObject(diagramConnection.transitionArrow);
+			m_sample.addRenderObject(diagramConnection.transitionArrow);
 
-			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
+			diagNode->m_connectDiagrams.push_back(diagramConnection);
 
 			offset += PxVec3(0,3,0);
 		}
@@ -190,11 +195,11 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 			points.push_back( arrowPos + PxVec3(-offset,offset,0) );
 			points.push_back( arrowPos + PxVec3(offset,offset,0) );
 			points.push_back( arrowPos );
-			CRenderBezierActor *arrow = new CRenderBezierActor(*m_Sample.getRenderer(), points);
-			m_Sample.addRenderObject(arrow);	
+			CRenderBezierActor *arrow = new CRenderBezierActor(*m_sample.getRenderer(), points);
+			m_sample.addRenderObject(arrow);	
 
 			diagramConnection.transitionArrow = arrow;
-			diagNode->m_ConnectDiagrams.push_back(diagramConnection);
+			diagNode->m_connectDiagrams.push_back(diagramConnection);
 		}
 
 		connection = connection->next;
@@ -216,12 +221,76 @@ void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &d
 
 	diagrams.insert(node);
 
-	BOOST_FOREACH (auto conNode, node->m_ConnectDiagrams)
+	BOOST_FOREACH (auto conNode, node->m_connectDiagrams)
 	{
-		m_Sample.removeRenderObject(conNode.transitionArrow);
+		m_sample.removeRenderObject(conNode.transitionArrow);
 		RemoveDiagram(conNode.connectNode, diagrams);
 	}
-	node->m_ConnectDiagrams.clear();
+	node->m_connectDiagrams.clear();
 
 	SAFE_DELETE(node);
+}
+
+
+/**
+ @brief 
+ @date 2014-02-24
+*/
+void CDiagramController::SelectNode(CDiagramNode *node)
+{
+	if (m_selectNode != node)
+	{
+		m_selectNode = node;
+	}
+}
+
+
+/**
+ @brief Mouse Event
+ @date 2014-02-24
+*/
+void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&ie, 
+	physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val)
+{
+	PxVec3 orig, dir, pickOrig;
+	m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
+
+	evc::CDiagramNode *mouseOverNode = NULL;
+	BOOST_FOREACH(auto node, m_diagrams)
+	{
+		PxVec3 out;
+		const bool isHighLight = node->m_renderNode->IntersectTri(pickOrig, dir, out);
+		node->SetHighLight(isHighLight);
+		if (isHighLight)
+			mouseOverNode = node;
+	}
+
+	if ((GetKeyState(VK_LBUTTON) & 0x80) != 0)
+	{
+		SelectNode(mouseOverNode);
+	}
+	if ((GetKeyState(VK_RBUTTON) & 0x80) != 0)
+	{
+		SelectNode(mouseOverNode);
+	}
+}
+
+
+/**
+ @brief 
+ @date 2014-02-24
+*/
+void CDiagramController::onAnalogInputEvent(const SampleFramework::InputEvent&ie , float val)
+{
+
+}
+
+
+/**
+ @brief 
+ @date 2014-02-24
+*/
+void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent&ie , bool val)
+{
+
 }

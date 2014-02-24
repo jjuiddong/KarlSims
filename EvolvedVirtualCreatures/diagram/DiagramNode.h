@@ -27,13 +27,16 @@ namespace evc
 		CDiagramNode(CEvc &sample);
 		virtual ~CDiagramNode();
 		void	Render();
+		void SetHighLight(const bool highLight);
 
 
 	public:
-		CEvc &m_Sample;
-		string m_Name;
-		RenderBaseActor *m_pRenderNode;
-		vector<SDiagramConnection> m_ConnectDiagrams;
+		CEvc &m_sample;
+		string m_name;
+		PxVec3 m_material;
+		RenderBaseActor *m_renderNode;
+		vector<SDiagramConnection> m_connectDiagrams;
+		bool m_highLight;
 	};
 
 }

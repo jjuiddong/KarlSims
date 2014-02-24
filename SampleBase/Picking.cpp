@@ -89,12 +89,12 @@ void Picking::tick()
 	SAFE_RELEASE(mMouseActorToDelete);
 }
 
-void Picking::computeCameraRay(PxVec3& orig, PxVec3& dir, PxI32 x, PxI32 y) const
+void Picking::computeCameraRay(PxVec3& orig, PxVec3& dir, PxVec3 &pickOrig, PxI32 x, PxI32 y) const
 {
 	const PxVec3& camPos = mFrame.getCamera().getPos();
 
 	// compute picking ray
-//	const PxVec3 rayOrig = unProject(x, y, 0.0f);	// PT: what the frell is that?
+	pickOrig = unProject(x, y, 0.0f);	// PT: what the frell is that?
 	const PxVec3 rayOrig = camPos;
 	const PxVec3 rayDir = (unProject(x, y, 1.0f) - rayOrig).getNormalized();
 
@@ -106,8 +106,8 @@ bool Picking::pick(int x, int y)
 {
 	PxScene& scene = mFrame.getActiveScene();
 
-	PxVec3 rayOrig, rayDir;
-	computeCameraRay(rayOrig, rayDir, x, y);
+	PxVec3 rayOrig, rayDir, pickOrig;
+	computeCameraRay(rayOrig, rayDir, pickOrig, x, y);
 
 	// raycast rigid bodies in scene
 	PxRaycastHit hit; hit.shape = NULL;
@@ -233,8 +233,8 @@ void Picking::moveActor(int x, int y)
 	if(!mMouseActor) 
 		return; 
 
-	PxVec3 rayOrig, rayDir;
-	computeCameraRay(rayOrig, rayDir, x, y);
+	PxVec3 rayOrig, rayDir, pickOrig;
+	computeCameraRay(rayOrig, rayDir, pickOrig, x, y);
 
 	const PxVec3 pos = rayOrig + mDistanceToPicked * rayDir;
 

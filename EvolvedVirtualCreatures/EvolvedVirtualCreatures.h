@@ -51,6 +51,7 @@ public:
 	virtual void helpRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
 	virtual	void descriptionRender(PxU32 x, PxU32 y, PxU8 textAlpha) {}
 	virtual PxU32 getDebugObjectTypes() const;
+	Picking* GetPicking();
 
 
 protected:
@@ -83,4 +84,4 @@ inline PxU32 CEvc::getDebugObjectTypes() const {
 
 inline const list<evc::CCreature*>& CEvc::GetAllCreature() { return m_Creatures; }
 inline const list<evc::CCreature*>& CEvc::GetAllObstacle() { return m_Obstacles; }
-
+inline Picking* CEvc::GetPicking() { return mPicking; }

@@ -82,7 +82,7 @@
     <ClCompile Include="..\..\utility\Utility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\diagram\EditDiagramCamera.cpp">
+    <ClCompile Include="..\..\diagram\SimpleCamera.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
   </ItemGroup>
@@ -181,7 +181,7 @@
     <ClInclude Include="..\..\renderer\MeshCompositionUtility.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\diagram\EditDiagramCamera.h">
+    <ClInclude Include="..\..\diagram\SimpleCamera.h">
       <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>
