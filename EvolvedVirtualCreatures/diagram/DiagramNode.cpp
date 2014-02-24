@@ -8,16 +8,17 @@
 using namespace evc;
 
 CDiagramNode::CDiagramNode(CEvc &sample) :
-	m_Sample(sample)
-,	m_pRenderNode(NULL)
+	m_sample(sample)
+,	m_renderNode(NULL)
+,	m_highLight(false)
 {
 
 }
 
 CDiagramNode::~CDiagramNode()
 {
-	m_Sample.removeRenderObject(m_pRenderNode);
-	m_pRenderNode = NULL;
+	m_sample.removeRenderObject(m_renderNode);
+	m_renderNode = NULL;
 }
 
 
@@ -26,8 +27,8 @@ void	CDiagramNode::Render()
 {
 	using namespace SampleRenderer;
 
-	PxTransform viewTM = m_Sample.getApplication().getCamera().getViewMatrix();
-	PxTransform tm = m_pRenderNode->getTransform();
+	PxTransform viewTM = m_sample.getApplication().getCamera().getViewMatrix();
+	PxTransform tm = m_renderNode->getTransform();
 	tm.p.x = -tm.p.x; // change left hand axis
 
 	D3DXMATRIX m;
@@ -39,7 +40,7 @@ void	CDiagramNode::Render()
 	D3DXMATRIX mView;
 	{
 		D3DXVECTOR3 pos(-viewTM.p.x, viewTM.p.y, viewTM.p.z);
-		PxVec3 lookAt = viewTM.p + (m_Sample.getApplication().getCamera().getViewDir() * 10.f);
+		PxVec3 lookAt = viewTM.p + (m_sample.getApplication().getCamera().getViewDir() * 10.f);
 		D3DXVECTOR3 target(-lookAt.x, lookAt.y, lookAt.z);
 		D3DXMatrixLookAtLH(&mView, &pos, &target, &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 	}
@@ -58,5 +59,21 @@ void	CDiagramNode::Render()
 	if ((v.x < 0) || (v.y < 0) || (v.x > 800) || (v.y > 600))
 		return;
 
-	m_Sample.getRenderer()->print(v.x, v.y, m_Name.c_str() );
+	m_sample.getRenderer()->print(v.x, v.y, m_name.c_str() );
+}
+
+
+/**
+ @brief 
+ @date 2014-02-24
+*/
+void CDiagramNode::SetHighLight(const bool highLight)
+{
+	if (m_highLight != highLight)
+	{
+		PxVec3 material = highLight? (m_material+PxVec3(0.25f,0.25f,0.25f)) : m_material;
+		m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+
+		m_highLight = highLight;
+	}
 }
