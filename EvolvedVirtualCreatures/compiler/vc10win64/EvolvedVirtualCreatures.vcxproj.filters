@@ -70,6 +70,21 @@
     <ClCompile Include="..\..\renderer\Bone.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\diagram\SimpleCamera.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RenderBezierActor.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\RendererBezierShape.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\renderer\MeshCompositionUtility.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utility\Utility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -155,6 +170,18 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\renderer\Bone.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\SimpleCamera.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RenderBezierActor.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\RendererBezierShape.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\renderer\MeshCompositionUtility.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
