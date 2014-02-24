@@ -1,18 +1,17 @@
 /**
  @filename Utility.h
  
- 
+	utility functions 
 */
 #pragma once
 
-#include "../genoype/GenotypeParser.h"
 
+#include "../genoype/GenotypeParser.h"
 
 namespace SampleRenderer { class RendererProjection; }
 
 namespace utility
 {
-
 	/**
 	 @brief 
 	 @date 2014-02-10
@@ -22,7 +21,7 @@ namespace utility
 		PxVec3 c = v1.cross(v0);
 		if (c.isZero())
 		{
-			q = PxQuat(0,PxVec3(0,0,0));
+			q = PxQuat(0,PxVec3(1,0,0));
 			return;
 		}
 
@@ -34,16 +33,22 @@ namespace utility
 	}
 
 
+	/**
+	 @brief Vec3toPxVec3
+	 @date 2014-02-24
+	*/
 	inline const PxVec3 Vec3toPxVec3(const evc::genotype_parser::SVec3 &rhs)
 	{
 		return PxVec3(rhs.x, rhs.y, rhs.z);
 	}
 
 
+	/**
+	 @brief convertD3D9
+	 @date 2014-02-24
+	*/
 	inline void convertD3D9(D3DMATRIX &dxmat, const physx::PxMat44 &mat)
 	{
-		//PxMat44 mat44 = mat.getTranspose();
-		//memcpy(&dxmat._11, mat44.front(), 4 * 4 * sizeof (float));
 		memcpy(&dxmat._11, mat.front(), 4 * 4 * sizeof (float));
 	}
 

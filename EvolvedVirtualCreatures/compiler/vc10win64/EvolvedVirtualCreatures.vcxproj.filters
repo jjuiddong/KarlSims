@@ -70,9 +70,6 @@
     <ClCompile Include="..\..\renderer\Bone.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\diagram\SimpleCamera.cpp">
-      <Filter>Diagram</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\renderer\RenderBezierActor.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
@@ -84,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="..\..\utility\Utility.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\EditDiagramCamera.cpp">
+      <Filter>Diagram</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,9 +172,6 @@
     <ClInclude Include="..\..\renderer\Bone.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\diagram\SimpleCamera.h">
-      <Filter>Diagram</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\renderer\RenderBezierActor.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -183,6 +180,9 @@
     </ClInclude>
     <ClInclude Include="..\..\renderer\MeshCompositionUtility.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\EditDiagramCamera.h">
+      <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -147,7 +147,7 @@
     <ClCompile Include="..\..\creature\VisionSensor.cpp" />
     <ClCompile Include="..\..\diagram\DiagramController.cpp" />
     <ClCompile Include="..\..\diagram\DiagramNode.cpp" />
-    <ClCompile Include="..\..\diagram\SimpleCamera.cpp" />
+    <ClCompile Include="..\..\diagram\EditDiagramCamera.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
     <ClCompile Include="..\..\genetic\GeneticAlgorithm.cpp" />
     <ClCompile Include="..\..\genetic\Genome.cpp" />
@@ -186,7 +186,7 @@
     <ClInclude Include="..\..\creature\VisionSensor.h" />
     <ClInclude Include="..\..\diagram\DiagramController.h" />
     <ClInclude Include="..\..\diagram\DiagramNode.h" />
-    <ClInclude Include="..\..\diagram\SimpleCamera.h" />
+    <ClInclude Include="..\..\diagram\EditDiagramCamera.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
     <ClInclude Include="..\..\genetic\Genome.h" />

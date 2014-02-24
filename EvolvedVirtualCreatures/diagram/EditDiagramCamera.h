@@ -8,11 +8,11 @@
 #include "SampleCameraController.h"
 
 
-class CSimpleCamera : public DefaultCameraController
+class CEditDiagramCamera : public DefaultCameraController
 {
 public:
-	CSimpleCamera();
-	virtual ~CSimpleCamera();
+	CEditDiagramCamera();
+	virtual ~CEditDiagramCamera();
 
 	virtual void onPointerInputEvent(const SampleFramework::InputEvent& ie, physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val);
 

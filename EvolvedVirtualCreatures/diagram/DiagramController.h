@@ -8,7 +8,7 @@
 
 class CEvc;
 class RenderComposition;
-class CSimpleCamera;
+class CEditDiagramCamera;
 namespace evc
 {
 	class CDiagramNode;
@@ -39,6 +39,6 @@ namespace evc
 		CEvc &m_Sample;
 		CDiagramNode *m_pRootDiagram;
 		vector<CDiagramNode*> m_Diagrams;
-		CSimpleCamera *m_Camera;
+		CEditDiagramCamera *m_Camera;
 	};
 }

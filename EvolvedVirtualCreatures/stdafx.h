@@ -43,6 +43,9 @@ using std::stringstream;
 #include <RendererShape.h>
 #include <RaycastCCD.h>
 #include <RenderMaterial.h>
+#include "RenderBoxActor.h"
+#include "RenderSphereActor.h"
+
 
 
 

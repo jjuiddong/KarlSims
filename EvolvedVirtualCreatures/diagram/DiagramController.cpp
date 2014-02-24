@@ -3,12 +3,10 @@
 #include "DiagramController.h"
 #include "DiagramNode.h"
 #include "../EvolvedVirtualCreatures.h"
-#include "RenderBoxActor.h"
-#include "RenderSphereActor.h"
 #include "../genoype/GenotypeParser.h"
 #include "../renderer/RenderModelActor.h"
 #include "../renderer/RenderBezierActor.h"
-#include "SimpleCamera.h"
+#include "EditDiagramCamera.h"
 
 
 
@@ -18,7 +16,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 	m_Sample(sample)
 ,	m_pRootDiagram(NULL)
 {
-	m_Camera = SAMPLE_NEW(CSimpleCamera)();
+	m_Camera = SAMPLE_NEW(CEditDiagramCamera)();
 
 }
 
