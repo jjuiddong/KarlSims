@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\creature\PhotoSensor.cpp" />
     <ClCompile Include="..\..\creature\PhysNode.cpp" />
     <ClCompile Include="..\..\creature\VisionSensor.cpp" />
+    <ClCompile Include="..\..\diagram\SimpleCamera.cpp" />
     <ClCompile Include="..\..\diagram\DiagramController.cpp" />
     <ClCompile Include="..\..\diagram\DiagramNode.cpp" />
     <ClCompile Include="..\..\EvolvedVirtualCreatures.cpp" />
@@ -59,6 +60,7 @@
     <ClInclude Include="..\..\creature\PhysNode.h" />
     <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\creature\VisionSensor.h" />
+    <ClInclude Include="..\..\diagram\SimpleCamera.h" />
     <ClInclude Include="..\..\diagram\DiagramController.h" />
     <ClInclude Include="..\..\diagram\DiagramNode.h" />
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />

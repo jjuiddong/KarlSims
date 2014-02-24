@@ -129,7 +129,6 @@ void DefaultCameraController::onPointerInputEvent(const InputEvent& ie, physx::P
 		}
 		break;
 	}
-
 }
 
 void DefaultCameraController::onMouseDelta(PxI32 dx, PxI32 dy)

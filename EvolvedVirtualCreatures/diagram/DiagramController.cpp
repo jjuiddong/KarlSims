@@ -8,6 +8,7 @@
 #include "../genoype/GenotypeParser.h"
 #include "../renderer/RenderModelActor.h"
 #include "../renderer/RenderBezierActor.h"
+#include "SimpleCamera.h"
 
 
 
@@ -17,6 +18,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 	m_Sample(sample)
 ,	m_pRootDiagram(NULL)
 {
+	m_Camera = SAMPLE_NEW(CSimpleCamera)();
 
 }
 
@@ -25,6 +27,24 @@ CDiagramController::~CDiagramController()
 	set<CDiagramNode*> diags;
 	RemoveDiagram(m_pRootDiagram, diags);
 	m_pRootDiagram = NULL;
+	SAFE_DELETE(m_Camera);
+}
+
+
+/**
+ @brief 
+ @date 2014-02-24
+*/
+void CDiagramController::ControllerSceneInit()
+{
+	m_Sample.getApplication().setMouseCursorHiding(false);
+	m_Sample.getApplication().setMouseCursorRecentering(false);
+
+	m_Camera->init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
+	m_Camera->setMouseSensitivity(0.5f);
+
+	m_Sample.getApplication().setCameraController(m_Camera);
+	m_Sample.setCameraController(m_Camera);
 
 }
 
@@ -91,7 +111,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 	const bool IsSensorNode = !expr;
 	CDiagramNode *diagNode = new CDiagramNode(m_Sample);
 	diagNode->m_Name = expr? expr->id : "sensor";
-	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(1,1,1);
+	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
 	m_Diagrams.push_back(diagNode);
 
 	if (IsSensorNode)

@@ -122,7 +122,7 @@ void CEvc::onInit()
 	mApplication.setMouseCursorHiding(true);
 	mApplication.setMouseCursorRecentering(true);
 	//mCameraController.init(PxVec3(0.0f, 50.0f, 0.0f), PxVec3(1.3f, 0.0f, 0.0f));
-	mCameraController.init(PxVec3(0.0f, 3.0f, -10.0f), PxVec3(0.f, PxPi, 0.0f));
+	mCameraController.init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
 	mCameraController.setMouseSensitivity(0.5f);
 
 	//getPhysics().setParameter();
@@ -472,6 +472,7 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 		if (!m_Creatures.empty())
 		{
 			PxSceneWriteLock scopedLock(*mScene);
+			m_DiagramController->ControllerSceneInit();
 			m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
 		}
 	}

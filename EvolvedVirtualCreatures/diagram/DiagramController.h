@@ -8,6 +8,7 @@
 
 class CEvc;
 class RenderComposition;
+class CSimpleCamera;
 namespace evc
 {
 	class CDiagramNode;
@@ -21,6 +22,7 @@ namespace evc
 		CDiagramController(CEvc &sample);
 		virtual ~CDiagramController();
 
+		void ControllerSceneInit();
 		void SetGenotype(const genotype_parser::SExpr *expr);
 		void Render();
 		void Move(float dtime);
@@ -37,6 +39,6 @@ namespace evc
 		CEvc &m_Sample;
 		CDiagramNode *m_pRootDiagram;
 		vector<CDiagramNode*> m_Diagrams;
-
+		CSimpleCamera *m_Camera;
 	};
 }

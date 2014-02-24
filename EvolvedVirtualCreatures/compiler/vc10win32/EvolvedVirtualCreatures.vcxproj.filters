@@ -82,6 +82,9 @@
     <ClCompile Include="..\..\renderer\MeshCompositionUtility.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\diagram\SimpleCamera.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -176,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="..\..\renderer\MeshCompositionUtility.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\SimpleCamera.h">
+      <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
