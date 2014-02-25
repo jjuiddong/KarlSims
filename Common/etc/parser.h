@@ -88,7 +88,7 @@ class CParser
 {
 public:
 	CParser(): m_pRoot(NULL) { }
-	virtual ~CParser() { DeleteParseList(m_pRoot); }
+	virtual ~CParser() { DeleteParseList(m_pRoot); m_pRoot = NULL; }
 public:
 	// DataList
 	typedef struct _tagSParseList

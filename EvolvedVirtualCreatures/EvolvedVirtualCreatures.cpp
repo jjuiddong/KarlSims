@@ -61,7 +61,6 @@ void CEvc::onShutdown()
 	m_Materials.clear();
 
 	CFileLoader::Release();
-
 	PhysXSample::onShutdown();
 }
 
@@ -477,9 +476,12 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 	{
 		if (!m_Creatures.empty())
 		{
-			PxSceneWriteLock scopedLock(*mScene);
-			m_DiagramController->ControllerSceneInit();
-			m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
+			if (m_DiagramController)
+			{
+				PxSceneWriteLock scopedLock(*mScene);
+				m_DiagramController->ControllerSceneInit();
+				m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
+			}
 		}
 	}
 
@@ -620,7 +622,10 @@ void CEvc::onSubstep(float dtime)
 }
 
 
-// return material
+/**
+ @brief generate material
+ @date 2014-02-25
+*/
 RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb, bool applyVertexColor) // applyVertexColor=true
 {
 	int key = (int)(rgb.x*1000000 + rgb.y*10000 + rgb.z*100);
@@ -640,3 +645,4 @@ RenderMaterial* CEvc::GetMaterial(const PxVec3 &rgb, bool applyVertexColor) // a
 	m_Materials[ key] = newMaterial;
 	return newMaterial;
 }
+

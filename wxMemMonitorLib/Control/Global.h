@@ -49,4 +49,5 @@ namespace memmonitor
 
 	MapType&				GetMemoryMap();
 	void							Clear();
+	bool							IsClear();
 }

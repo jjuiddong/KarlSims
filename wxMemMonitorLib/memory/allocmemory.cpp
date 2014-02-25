@@ -50,6 +50,8 @@ bool memmonitor::DeAllocateMem(void *ptr)
 //------------------------------------------------------------------------
 void* memmonitor::AllocateLocal(const std::string &name, size_t size)
 {
+	RETV(IsClear(), NULL);
+
 	auto it = GetMemoryMap().find(name);
 	if (GetMemoryMap().end() != it)
 		return NULL; // already exist
@@ -68,6 +70,8 @@ void* memmonitor::AllocateLocal(const std::string &name, size_t size)
 //------------------------------------------------------------------------
 bool memmonitor::DeAllocateLocal(void *ptr)
 {
+	RETV(IsClear(), true);
+
 	BOOST_FOREACH(auto &it, GetMemoryMap())
 	{
 		if (it.second.ptr == ptr)

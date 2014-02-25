@@ -190,7 +190,7 @@ CFastMemLoader::~CFastMemLoader()
 void CFastMemLoader::Clear()
 {
 	TokenItor i = m_DataStructureMap.begin();
-	while( m_DataStructureMap.end() != i )
+	while (m_DataStructureMap.end() != i)
 	{
 		SDataStructure type = i++->second;
 		if( type.pMember )
@@ -259,12 +259,15 @@ BOOL CFastMemLoader::LoadDataStructureFileRec( SScriptParseTree *pParseTree, Mem
 	{
 		list<SMemberType> *pNewMemberList = new list<SMemberType>;
 		if (!LoadMemberList( pParseTree->pChild, pNewMemberList ))
+		{
+			delete pNewMemberList;
 			return FALSE;
+		}
 		SDataStructure type( pNewMemberList, GetStructSize(pNewMemberList), IsPointer(pNewMemberList) );
 		m_DataStructureMap.insert( DataStructureMap::value_type(pParseTree->t->name, type) );
 	}
 
-	if (!LoadDataStructureFileRec( pParseTree->pNext, pMemberList, opt ))
+	if (!LoadDataStructureFileRec(pParseTree->pNext, pMemberList, opt))
 		return FALSE;
 
 	return TRUE;

@@ -22,6 +22,9 @@ namespace memmonitor
 
 	// memory map
 	MapType *g_pMemMap = NULL;
+
+	// clear
+	bool g_IsClear = false;
 }
 
 using namespace memmonitor;
@@ -404,7 +407,14 @@ void	memmonitor::Clear()
 		}
 		SAFE_DELETE(g_pMemMap);
 	}
+	g_IsClear = true;
 }
+
+bool	memmonitor::IsClear()
+{
+	return g_IsClear;
+}
+
 MapType& memmonitor::GetMemoryMap()
 {
 	if (!g_pMemMap)
