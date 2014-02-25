@@ -258,6 +258,12 @@ PhysXSampleApplication::~PhysXSampleApplication()
 	DELETESINGLE(mInputEventBuffer);
 
 	PX_ASSERT(!mLights.size());
+
+	if (mSampleTreeRoot)
+	{
+		delete mSampleTreeRoot;
+		mSampleTreeRoot = NULL;
+	}
 }
 
 void PhysXSampleApplication::execute()

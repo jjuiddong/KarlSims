@@ -64,12 +64,13 @@ Test::TestGroup::TestGroup(SampleCreator test, const char* name, size_t count)
 
 Test::TestGroup::~TestGroup()
 {
-	if (!isTest())
+//	if (!isTest())
 	{
+		delete[] mName;
+		mName = NULL;
+
 		for (PxU32 i = 0; i < mChildren.size(); i++)
 			delete mChildren[i];
-
-		delete[] mName;
 	}
 }
 
