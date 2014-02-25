@@ -53,12 +53,32 @@ namespace evc { namespace genotype_parser {
 		bool terminalOnly;
 		float period;
 		SExpr *expr;
+
+		const SConnection& operator=(const SConnection &rhs) {
+			if (this != &rhs)
+			{
+				conType = rhs.conType;
+				type = rhs.type;
+				parentOrient = rhs.parentOrient;
+				orient = rhs.orient;
+				pos = rhs.pos;
+				limit = rhs.limit;
+				velocity = rhs.velocity;
+				randPos = rhs.randPos;
+				randOrient = rhs.randOrient;
+				terminalOnly = rhs.terminalOnly;
+				period = rhs.period;
+				expr = NULL;
+			}
+			return *this;
+		}
 	};
 
 	struct SConnectionList
 	{
 		SConnection *connect;
 		SConnectionList *next;
+		SConnectionList() : connect(NULL), next(NULL) {}
 	};
 
 	struct SExprList;
@@ -72,6 +92,20 @@ namespace evc { namespace genotype_parser {
 		float mass;
 		SConnectionList *connection;
 		int refCount;
+
+		const SExpr& operator=(const SExpr &rhs) {
+			if (this != &rhs)
+			{
+				id = rhs.id;
+				shape = rhs.shape;
+				dimension = rhs.dimension;
+				randShape = rhs.randShape;
+				material = rhs.material;
+				mass = rhs.mass;
+				connection = NULL;
+			}
+			return *this;
+		}
 	};
 
 	struct SExprList

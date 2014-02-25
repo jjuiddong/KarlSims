@@ -17,6 +17,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 ,	m_rootDiagram(NULL)
 ,	m_camera(NULL)
 ,	m_selectNode(NULL)
+,	m_linkNode(NULL)
 {
 	
 }
@@ -26,7 +27,12 @@ CDiagramController::~CDiagramController()
 	set<CDiagramNode*> diags;
 	RemoveDiagram(m_rootDiagram, diags);
 	m_rootDiagram = NULL;
+
 	SAFE_DELETE(m_camera);
+
+	BOOST_FOREACH (auto node, m_linkDiagrams)
+		delete node;
+	m_linkDiagrams.clear();
 }
 
 
@@ -55,7 +61,7 @@ void CDiagramController::ControllerSceneInit()
  @brief 
  @date 2014-02-12
 */
-void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
+void CDiagramController::SetControlCreature(const genotype_parser::SExpr *expr)
 {
 	set<CDiagramNode*> diags;
 	RemoveDiagram(m_rootDiagram, diags);
@@ -63,7 +69,7 @@ void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 
 	m_diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
-	m_rootDiagram = CreateDiagramNode(PxVec3(0,0,0), expr, diagrams);
+	m_rootDiagram = CreateDiagramTree(PxVec3(0,0,0), expr, diagrams);
 }
 
 
@@ -71,6 +77,8 @@ void CDiagramController::SetGenotype(const genotype_parser::SExpr *expr)
 void CDiagramController::Render()
 {
 	BOOST_FOREACH (auto node, m_diagrams)
+		node->Render();
+	BOOST_FOREACH (auto node, m_linkDiagrams)
 		node->Render();
 }
 
@@ -99,53 +107,56 @@ void CDiagramController::Layout(CDiagramNode *root)
  @brief create diagram node
  @date 2014-02-12
 */
-CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
-	map<const genotype_parser::SExpr*, CDiagramNode*> &diagrams)
+CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
+	map<const genotype_parser::SExpr*, CDiagramNode*> &symbols)
 {
 	using namespace genotype_parser;
 
-	auto it = diagrams.find(expr);
-	if (diagrams.end() != it)
+	auto it = symbols.find(expr);
+	if (symbols.end() != it)
 	{ // Already Exist
 		return it->second;
 	}
 
-	const bool IsSensorNode = !expr;
-	CDiagramNode *diagNode = new CDiagramNode(m_sample);
-	diagNode->m_name = expr? expr->id : "sensor";
-	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
-	m_diagrams.push_back(diagNode);
+	CDiagramNode *diagNode = CreateDiagramNode(expr);
+	RETV(!diagNode, NULL);
 
-	if (IsSensorNode)
-	{
-		diagNode->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
-	}
-	else if (boost::iequals(expr->shape, "sphere"))
-	{
-		diagNode->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), dimension.x);
-	}
-	else
-	{ // Sensor
-		diagNode->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
-	}
-
-	PxVec3 material = expr? utility::Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
 	diagNode->m_renderNode->setTransform(PxTransform(pos));
-	diagNode->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
-	diagNode->m_material = material;
+	m_diagrams.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
 	RETV(!expr, diagNode); // if sensor node return
 
-	diagrams[ expr] = diagNode; // insert
+	symbols[ expr] = diagNode; // insert
 
 	SConnectionList *connection = expr->connection;
+	SConnectionList *currentCopyConnection = NULL;
 	PxVec3 offset(4,0,0);
 	while (connection)
 	{
 		PxVec3 newNodePos = pos + offset;
 		SConnection *node_con = connection->connect;
-		CDiagramNode *newDiagNode = CreateDiagramNode(newNodePos, node_con->expr, diagrams);
+		CDiagramNode *newDiagNode = CreateDiagramTree(newNodePos, node_con->expr, symbols);
+
+		//--------------------------------------------------------------------------------
+		// copy SConnectionList
+		if (!currentCopyConnection)
+		{
+			currentCopyConnection = new SConnectionList;
+			diagNode->m_expr->connection = currentCopyConnection;
+		}
+		else
+		{
+			SConnectionList *newCopy = new SConnectionList;
+			currentCopyConnection->next = newCopy;
+			currentCopyConnection = newCopy;
+		}
+
+		currentCopyConnection->connect = new SConnection;
+		*currentCopyConnection->connect = *connection->connect;
+		currentCopyConnection->connect->expr = newDiagNode->m_expr;
+		//--------------------------------------------------------------------------------
+
 
 		if (newDiagNode != diagNode)
 		{
@@ -210,6 +221,52 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const PxVec3 &pos, const gen
 
 
 /**
+ @brief create CDiagramNode
+ @date 2014-02-25
+*/
+CDiagramNode* CDiagramController::CreateDiagramNode(const genotype_parser::SExpr *expr)
+{
+	const bool IsSensorNode = !expr;
+	CDiagramNode *node = new CDiagramNode(m_sample);
+	node->m_name = expr? expr->id : "sensor";
+	if (expr)
+	{
+		node->m_expr = new genotype_parser::SExpr();
+		*node->m_expr = *expr;
+	}
+	else
+	{ // sensor
+		node->m_expr = new genotype_parser::SExpr();
+		node->m_expr->id = "sensor";
+		node->m_expr->dimension = genotype_parser::SVec3(0.4f,0.4f,0.4f);
+		node->m_expr->material = genotype_parser::SVec3(0,0.75f,0);
+		node->m_expr->connection = NULL;
+	}
+
+	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
+
+	if (IsSensorNode)
+	{ // Sensor
+		node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
+	}
+	else if (boost::iequals(expr->shape, "sphere"))
+	{
+		node->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), dimension.x);
+	}
+	else
+	{
+		node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
+	}
+
+	PxVec3 material = expr? utility::Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
+	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+	node->m_material = material;
+
+	return node;
+}
+
+
+/**
  @brief 
  @date 2014-02-12
 */
@@ -229,19 +286,6 @@ void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &d
 	node->m_connectDiagrams.clear();
 
 	SAFE_DELETE(node);
-}
-
-
-/**
- @brief 
- @date 2014-02-24
-*/
-void CDiagramController::SelectNode(CDiagramNode *node)
-{
-	if (m_selectNode != node)
-	{
-		m_selectNode = node;
-	}
 }
 
 
@@ -293,4 +337,96 @@ void CDiagramController::onAnalogInputEvent(const SampleFramework::InputEvent&ie
 void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent&ie , bool val)
 {
 
+}
+
+
+/**
+ @brief select node
+ @date 2014-02-24
+*/
+void CDiagramController::SelectNode(CDiagramNode *node)
+{
+	if (m_selectNode != node)
+	{
+		CreateLinkNode(node, node? true : false);
+		m_selectNode = node;
+	}
+}
+
+
+/**
+ @brief create link node of argument node
+ @date 2014-02-25
+*/
+void CDiagramController::CreateLinkNode(CDiagramNode *srcNode, const bool isShow) //isShow=true
+{
+	if (!srcNode)
+	{
+		BOOST_FOREACH (auto node, m_linkDiagrams)
+			node->m_renderNode->setRendering(false);
+		return;
+	}
+
+
+	if (m_linkDiagrams.empty())
+	{
+		PxVec3 material(0,0.75f,0);
+		const float shapeSize = 0.3f;
+
+		CDiagramNode *node1 = new CDiagramNode(m_sample);
+		node1->m_name = "new Box";
+		node1->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
+		node1->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+		node1->m_material = material;
+
+		CDiagramNode *node2 = new CDiagramNode(m_sample);
+		node2->m_name = "new Sphere";
+		node2->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), shapeSize);
+		node2->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+		node2->m_material = material;
+
+		CDiagramNode *node3 = new CDiagramNode(m_sample);
+		node3->m_name = "new Sensor";
+		node3->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
+		node3->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
+		node3->m_material = material;
+
+		m_sample.addRenderObject(node1->m_renderNode);
+		m_sample.addRenderObject(node2->m_renderNode);
+		m_sample.addRenderObject(node3->m_renderNode);
+
+		m_linkDiagrams.push_back(node1);
+		m_linkDiagrams.push_back(node2);
+		m_linkDiagrams.push_back(node3);
+	}
+
+
+	// create current node
+	if (!boost::iequals(m_linkDiagrams.back()->m_name, srcNode->m_name))
+	{
+		if (m_linkDiagrams.size() > 3)
+		{
+			SAFE_DELETE(m_linkDiagrams.back());
+			m_linkDiagrams.pop_back();
+		}
+
+		CDiagramNode *newCurrentNode = CreateDiagramNode(srcNode->m_expr);
+		m_sample.addRenderObject(newCurrentNode->m_renderNode);
+		m_linkDiagrams.push_back(newCurrentNode);
+	}
+
+
+	const PxVec3 dimension = utility::Vec3toPxVec3(srcNode->m_expr->dimension);
+	const float radius = max(dimension.x*2.f +0.5f, 1.4f);
+	const PxVec3 pos = srcNode->m_renderNode->getTransform().p;
+	float radian = 0;
+	BOOST_FOREACH (auto node, m_linkDiagrams)
+	{
+		PxQuat q(radian, PxVec3(0,0,-1));
+		PxVec3 offset = q.rotate(PxVec3(0,radius,0));
+
+		node->m_renderNode->setTransform(PxTransform(pos+offset));
+		node->m_renderNode->setRendering(isShow);
+		radian += 0.9f;
+	}
 }

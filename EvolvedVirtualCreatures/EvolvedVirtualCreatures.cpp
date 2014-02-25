@@ -345,6 +345,9 @@ void CEvc::spawnNode( const int key )
 			{
 				pnode->GenerateProgressive(fileNames[ idx], pos, ((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL), g_pDbgConfig->displaySkinning); 
 			}
+
+			m_DiagramController->ControllerSceneInit();
+			m_DiagramController->SetControlCreature( pnode->GetGenotype() );
 		}
 		break;
 
@@ -474,15 +477,15 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 	// Mouse LButton Down
 	if ((GetKeyState(VK_LBUTTON) & 0x80) != 0)
 	{
-		if (!m_Creatures.empty())
-		{
-			if (m_DiagramController)
-			{
-				PxSceneWriteLock scopedLock(*mScene);
-				m_DiagramController->ControllerSceneInit();
-				m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
-			}
-		}
+		//if (!m_Creatures.empty())
+		//{
+		//	if (m_DiagramController)
+		//	{
+		//		PxSceneWriteLock scopedLock(*mScene);
+		//		m_DiagramController->ControllerSceneInit();
+		//		m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
+		//	}
+		//}
 	}
 
 	if (m_DiagramController)

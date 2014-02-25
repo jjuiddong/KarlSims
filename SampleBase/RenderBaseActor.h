@@ -85,6 +85,7 @@ namespace physx
 		PX_FORCE_INLINE	void									setCCDWitnessOffset(const PxVec3& offset)	{ mCCDWitnessOffset = offset;	}
 
 		PX_FORCE_INLINE	void									setRendering(bool flag)						{ mEnableRender = flag;			}
+		PX_FORCE_INLINE	bool									isRendering()										{ return mEnableRender;			}
 		
 		PX_FORCE_INLINE	void									setEnableDebugRender(bool flag)				{ mEnableDebugRender = flag;	}
 		PX_FORCE_INLINE bool                                    getEnableDebugRender()				const	{ return mEnableDebugRender;	}

@@ -45,6 +45,7 @@ Tokentype evc::reservedLookup( const string &s )
 	return ID;
 }
 
+
 CGenotypeScanner::CGenotypeScanner() 
 {
 }

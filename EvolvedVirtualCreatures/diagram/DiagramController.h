@@ -24,32 +24,38 @@ namespace evc
 		virtual ~CDiagramController();
 
 		void ControllerSceneInit();
-		void SetGenotype(const genotype_parser::SExpr *expr);
+		void SetControlCreature(const genotype_parser::SExpr *expr);
 		void Render();
 		void Move(float dtime);
 		CDiagramNode *GetRootDiagram();
 		vector<CDiagramNode*>& GetDiagrams();
-		void SelectNode(CDiagramNode *node);
 
-		// InputEvnt from CEvc
+		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override;
 		virtual void onAnalogInputEvent(const SampleFramework::InputEvent& , float val) override;
 		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override;
 
 
 	protected:
-		CDiagramNode* CreateDiagramNode(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
-			map<const genotype_parser::SExpr*, CDiagramNode*> &diagrams);
+		CDiagramNode* CreateDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
+			map<const genotype_parser::SExpr*, CDiagramNode*> &symbols);
+		CDiagramNode* CreateDiagramNode(const genotype_parser::SExpr *expr);
+
 		void RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams);
 		void Layout(CDiagramNode *root);
+		void SelectNode(CDiagramNode *node);
+		void CreateLinkNode(CDiagramNode *srcNode, const bool isShow=true);
 
 
 	private:
 		CEvc &m_sample;
+		CSimpleCamera *m_camera;
+
 		CDiagramNode *m_rootDiagram;
 		vector<CDiagramNode*> m_diagrams;
-		CSimpleCamera *m_camera;
-		CDiagramNode *m_selectNode;
+		CDiagramNode *m_linkNode;
+		vector<CDiagramNode*> m_linkDiagrams;
+		CDiagramNode *m_selectNode; // reference
 	};
 
 

@@ -11,6 +11,7 @@ CDiagramNode::CDiagramNode(CEvc &sample) :
 	m_sample(sample)
 ,	m_renderNode(NULL)
 ,	m_highLight(false)
+,	m_expr(NULL)
 {
 
 }
@@ -19,12 +20,17 @@ CDiagramNode::~CDiagramNode()
 {
 	m_sample.removeRenderObject(m_renderNode);
 	m_renderNode = NULL;
+	genotype_parser::RemoveExpressoin_OnlyExpr(m_expr);
+	m_expr = NULL;
 }
 
 
 // Render
 void	CDiagramNode::Render()
 {
+	RET(!m_renderNode);
+	RET(!m_renderNode->isRendering());
+
 	using namespace SampleRenderer;
 
 	PxTransform viewTM = m_sample.getApplication().getCamera().getViewMatrix();

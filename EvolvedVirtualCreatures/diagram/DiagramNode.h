@@ -36,6 +36,7 @@ namespace evc
 		PxVec3 m_material;
 		RenderBaseActor *m_renderNode;
 		vector<SDiagramConnection> m_connectDiagrams;
+		genotype_parser::SExpr *m_expr;
 		bool m_highLight;
 	};
 
