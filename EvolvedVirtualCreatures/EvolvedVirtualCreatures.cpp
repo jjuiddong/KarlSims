@@ -180,11 +180,14 @@ void	CEvc::onTickPostRender(float dtime)
 {
 	PhysXSample::onTickPostRender(dtime);
 
-	PxReal vertices[] = {0, 0, 1, 1};
-	RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
-	getRenderer()->drawLines2D(2, vertices, colors );
-	PxReal vertices2[] = {1, 0, 0, 1};
-	getRenderer()->drawLines2D(2, vertices2, colors );
+	if (m_DiagramController)
+		m_DiagramController->Move(dtime);
+
+	//PxReal vertices[] = {0, 0, 1, 1};
+	//RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+	//getRenderer()->drawLines2D(2, vertices, colors );
+	//PxReal vertices2[] = {1, 0, 0, 1};
+	//getRenderer()->drawLines2D(2, vertices2, colors );
 
 	//renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
 	//getRenderer()->print(100, 100,  "test" );
@@ -502,9 +505,6 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 	PxSceneWriteLock scopedLock(*mScene);
 
 	PhysXSample::onSubstepSetup(dtime, cont);
-
-	if (m_DiagramController)
-		m_DiagramController->Move(dtime);
 
 	BOOST_FOREACH (auto &creature, m_Creatures)
 		creature->Move(dtime);

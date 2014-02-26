@@ -481,8 +481,8 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
  @brief 
  @date 2013-12-19
 */
-CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, const bool IsTerminal)
-	// IsTerminal = false
+CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConnection *connect, const PxVec3 &initialPos, 
+	const bool IsTerminal) // IsTerminal = false
 {
 	RETV(!parentNode, NULL);
 
@@ -496,6 +496,9 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 	pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.GetMaterial(PxVec3(0.75f,0,0)), 1.f);
 	m_Nodes.push_back(pNode);
 	childNode = pNode;
+
+	if (connect->expr)
+		connect->expr->isSensor = true;
 
 	PxRigidDynamic* body = parentNode->m_pBody;
 	PxRigidDynamic *child = childNode->m_pBody;

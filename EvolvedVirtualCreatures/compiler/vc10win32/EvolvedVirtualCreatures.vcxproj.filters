@@ -85,6 +85,9 @@
     <ClCompile Include="..\..\diagram\SimpleCamera.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\diagram\PopupDiagrams.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -181,6 +184,9 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\diagram\SimpleCamera.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\PopupDiagrams.h">
       <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>

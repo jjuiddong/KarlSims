@@ -6,11 +6,13 @@
 
 using namespace SampleRenderer;
 
+const int NODE_COUNT = 30;
+const int CONER_COUNT = 5;
+
+
 RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points) :
 	RendererShape(renderer)
 {
-	const int NODE_COUNT = 30;
-	const int CONER_COUNT = 5;
 	const PxU32 numVerts = (NODE_COUNT-1)*CONER_COUNT + 1; // +1 is head vertex point
 
 	RendererVertexBufferDesc vbdesc;
@@ -19,53 +21,8 @@ RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3
 	vbdesc.maxVertices = numVerts;
 	m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
 	RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
-	if (m_vertexBuffer)
-	{
-		PxU32 stride = 0;
-		void* vertPositions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
-
-		PxVec3 oldPos;
-		int vtxOffset = 0;
-		for (int i=0; i < NODE_COUNT-1; ++i)
-		{
-			PxVec3 pos;
-			utility::bezier(pos, points, (float)i/(float)(NODE_COUNT-1));
-
-			PxQuat q;
-			if (i > 0)
-			{
-				PxVec3 curve = pos - oldPos;
-				curve.normalize();
-				utility::quatRotationArc(q, curve, PxVec3(1,0,0));
-			}
-			oldPos = pos;
-
-			float DEPTH = .03f;
-			if (i == NODE_COUNT-2)
-				DEPTH += DEPTH*3; // arrow head
-
-			for (int k=0; k < CONER_COUNT; ++k)
-			{
-				const float rad = -PxPi * 2.f * ((float)k/(float)CONER_COUNT);
-				PxVec3 dir = PxQuat(rad, PxVec3(1,0,0)).rotate(PxVec3(0,1,0));
-				if (i > 0)
-					dir = q.rotate(dir);
-				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos + dir*DEPTH;
-				vtxOffset += stride;
-			}
-
-			// arrow head
-			DEPTH += DEPTH; // head length
-			if (i == NODE_COUNT-2)
-			{
-				utility::bezier(pos, points, 1);
-				PxVec3 dir = q.rotate(PxVec3(1,0,0));
-				//*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = (pos + dir*DEPTH);
-				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos;
-			}
-		}
-		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
-	}
+	
+	SetBezierCurve(points);
 
 
 	// make index buffer
@@ -148,4 +105,62 @@ RendererBezierShape::~RendererBezierShape()
 	SAFE_RELEASE(m_vertexBuffer);
 	SAFE_RELEASE(m_indexBuffer);
 	SAFE_RELEASE(m_mesh);
+}
+
+
+/**
+ @brief update vertex position
+ @date 2014-02-26
+*/
+void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points)
+{
+	const PxU32 numVerts = (NODE_COUNT-1)*CONER_COUNT + 1; // +1 is head vertex point
+
+	RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
+	if (m_vertexBuffer)
+	{
+		PxU32 stride = 0;
+		void* vertPositions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+
+		PxVec3 oldPos;
+		int vtxOffset = 0;
+		for (int i=0; i < NODE_COUNT-1; ++i)
+		{
+			PxVec3 pos;
+			utility::bezier(pos, points, (float)i/(float)(NODE_COUNT-1));
+
+			PxQuat q;
+			if (i > 0)
+			{
+				PxVec3 curve = pos - oldPos;
+				curve.normalize();
+				utility::quatRotationArc(q, curve, PxVec3(1,0,0));
+			}
+			oldPos = pos;
+
+			float DEPTH = .03f;
+			if (i == NODE_COUNT-2)
+				DEPTH += DEPTH*3; // arrow head
+
+			for (int k=0; k < CONER_COUNT; ++k)
+			{
+				const float rad = -PxPi * 2.f * ((float)k/(float)CONER_COUNT);
+				PxVec3 dir = PxQuat(rad, PxVec3(1,0,0)).rotate(PxVec3(0,1,0));
+				if (i > 0)
+					dir = q.rotate(dir);
+				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos + dir*DEPTH;
+				vtxOffset += stride;
+			}
+
+			// arrow head
+			DEPTH += DEPTH; // head length
+			if (i == NODE_COUNT-2)
+			{
+				utility::bezier(pos, points, 1);
+				PxVec3 dir = q.rotate(PxVec3(1,0,0));
+				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos;
+			}
+		}
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+	}
 }

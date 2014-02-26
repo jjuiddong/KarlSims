@@ -43,7 +43,6 @@ namespace evc
 		CEvc &m_Sample;
 		string m_Name;
 		string m_ShapeName;
-		//string m_MaterialName;
 		PxVec3 m_MaterialDiffuse;
 		bool m_IsTerminalNode;
 		bool m_IsKinematic;

@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "DiagramController.h"
 #include "DiagramNode.h"
@@ -7,6 +6,7 @@
 #include "../renderer/RenderModelActor.h"
 #include "../renderer/RenderBezierActor.h"
 #include "SimpleCamera.h"
+#include "PopupDiagrams.h"
 
 
 
@@ -17,7 +17,11 @@ CDiagramController::CDiagramController(CEvc &sample) :
 ,	m_rootDiagram(NULL)
 ,	m_camera(NULL)
 ,	m_selectNode(NULL)
-,	m_linkNode(NULL)
+,	m_leftButtonDown(false)
+,	m_rightButtonDown(false)
+,	m_isLinkDrag(false)
+,	m_popupDiagrams(NULL)
+,	m_isLayoutAnimation(false)
 {
 	
 }
@@ -28,11 +32,8 @@ CDiagramController::~CDiagramController()
 	RemoveDiagram(m_rootDiagram, diags);
 	m_rootDiagram = NULL;
 
+	SAFE_DELETE(m_popupDiagrams);
 	SAFE_DELETE(m_camera);
-
-	BOOST_FOREACH (auto node, m_linkDiagrams)
-		delete node;
-	m_linkDiagrams.clear();
 }
 
 
@@ -73,13 +74,24 @@ void CDiagramController::SetControlCreature(const genotype_parser::SExpr *expr)
 }
 
 
-// Render
+/**
+ @brief Render
+ @date 2014-02-26
+*/
 void CDiagramController::Render()
 {
 	BOOST_FOREACH (auto node, m_diagrams)
 		node->Render();
-	BOOST_FOREACH (auto node, m_linkDiagrams)
-		node->Render();
+	if (m_popupDiagrams)
+		m_popupDiagrams->Render();
+
+	if (m_isLinkDrag)
+	{
+		using namespace SampleRenderer;
+		PxReal vertices[] = {m_dragPos[0].x, m_dragPos[0].y, m_dragPos[1].x, m_dragPos[1].y};
+		RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
+		m_sample.getRenderer()->drawLines2D(2, vertices, colors );
+	}
 }
 
 
@@ -89,17 +101,75 @@ void CDiagramController::Render()
 */
 void CDiagramController::Move(float dtime)
 {
+	BOOST_FOREACH (auto node, m_diagrams)
+		node->Move(dtime);
 
+	TransitionAnimation(dtime);
 }
 
 
 /**
- @brief caculate layout diagram poisition
+ @brief Transition Arrow Animation
+ @date 2014-02-26
+*/
+void CDiagramController::TransitionAnimation(const float dtime)
+{
+	RET(!m_isLayoutAnimation);
+
+	m_elapsTime += dtime;
+	if (m_elapsTime > 1.3f)
+		m_isLayoutAnimation = false;
+
+	BOOST_FOREACH (auto node, m_diagrams)
+	{
+		BOOST_FOREACH  (auto conNode, node->m_connectDiagrams)
+		{
+			MoveTransition(conNode.transitionArrow, node, conNode.connectNode);
+		}
+	}
+}
+
+
+/**
+ @brief caculate diagram poisitioning
  @date 2014-02-12
 */
-void CDiagramController::Layout(CDiagramNode *root)
+PxVec3 CDiagramController::Layout(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos)
 {
+	RETV(!node, PxVec3(0,0,0));
 
+	if (symbols.find(node) != symbols.end())
+		return PxVec3(0,0,0);
+
+	symbols.insert(node);
+	//node->m_renderNode->setTransform(PxTransform(pos));
+	node->AnimateLayout(pos);
+
+	const PxVec3 dimension = utility::Vec3toPxVec3(node->m_expr->dimension);
+	const float radius = max(dimension.x*2.f +1, 2);
+
+	map<CDiagramNode*,u_int> orders;
+	BOOST_FOREACH (auto child, node->m_connectDiagrams)
+		orders[ child.connectNode] = 0;
+
+	PxVec3 offset(radius,0,0);
+	BOOST_FOREACH (auto child, node->m_connectDiagrams)
+	{
+		CDiagramNode *childNode = child.connectNode;
+		const PxVec3 childOffset = Layout(childNode, symbols, pos+offset);
+		offset.y += childOffset.y;
+
+		if (childOffset.isZero())
+			++orders[childNode];
+
+		u_int order = orders[childNode];
+		MoveTransition(child.transitionArrow, node, childNode, order);
+	}
+
+	if (node->m_connectDiagrams.empty())
+		offset.y = radius;
+
+	return offset;
 }
 
 
@@ -131,13 +201,15 @@ CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const gen
 
 	SConnectionList *connection = expr->connection;
 	SConnectionList *currentCopyConnection = NULL;
-	PxVec3 offset(4,0,0);
+	int childIndex = 0;
 	while (connection)
 	{
-		PxVec3 newNodePos = pos + offset;
+		u_int order=0;
+		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
 		CDiagramNode *newDiagNode = CreateDiagramTree(newNodePos, node_con->expr, symbols);
 
+		childIndex++;
 		//--------------------------------------------------------------------------------
 		// copy SConnectionList
 		if (!currentCopyConnection)
@@ -163,53 +235,21 @@ CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const gen
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			// transition arrow direction
-			PxVec3 dir = newNodePos - pos;
-			float len = dir.magnitude();
-			dir.normalize();
-
-			PxVec3 interSectPos;
-			if (newDiagNode->m_renderNode->IntersectTri(pos, dir, interSectPos))
-			{
-				dir = interSectPos - pos;
-				len = dir.magnitude();
-				dir.normalize();
-				newNodePos = pos + dir*len;
-			}
-
-			PxVec3 c = dir.cross(PxVec3(0,0,1));
-			vector<PxVec3> points;
-			points.push_back( pos );
-			points.push_back( pos + (dir*len*0.5f) - c*1.f );
-			points.push_back( points[1] );
-			points.push_back( newNodePos );
-
-			CRenderBezierActor *arrow = new CRenderBezierActor(*m_sample.getRenderer(), points);
+			RenderBezierActor *arrow = CreateTransition(diagNode, newDiagNode, order);
 			diagramConnection.transitionArrow = arrow;
-			m_sample.addRenderObject(diagramConnection.transitionArrow);
+			m_sample.addRenderObject(arrow);
 
 			diagNode->m_connectDiagrams.push_back(diagramConnection);
-
-			offset += PxVec3(0,3,0);
 		}
 		else
 		{
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			const float dimensionY = node_con->expr? node_con->expr->dimension.y : 1.f;
-			PxVec3 arrowPos = pos + PxVec3(-0.1f,dimensionY+0.2f,0);
-
-			const float offset = 0.7f;
-			vector<PxVec3> points;
-			points.push_back( arrowPos );
-			points.push_back( arrowPos + PxVec3(-offset,offset,0) );
-			points.push_back( arrowPos + PxVec3(offset,offset,0) );
-			points.push_back( arrowPos );
-			CRenderBezierActor *arrow = new CRenderBezierActor(*m_sample.getRenderer(), points);
+			RenderBezierActor *arrow = CreateTransition(diagNode, newDiagNode, order);
+			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);	
 
-			diagramConnection.transitionArrow = arrow;
 			diagNode->m_connectDiagrams.push_back(diagramConnection);
 		}
 
@@ -217,6 +257,79 @@ CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const gen
 	}
 
 	return diagNode;
+}
+
+
+/**
+ @brief calcuate transition bezier curve position
+ @date 2014-02-26
+*/
+void CDiagramController::CalcuateTransitionPositions(CDiagramNode *from, CDiagramNode *to, const u_int order, OUT vector<PxVec3> &out)
+{
+	PxVec3 pos = from->m_renderNode->getTransform().p;
+
+	if (from == to)
+	{
+		const float dimensionY = to->m_expr? to->m_expr->dimension.y : 1.f;
+		PxVec3 arrowPos = pos + PxVec3(-0.f,dimensionY+0.1f,0);
+
+		const float offset = 0.7f;
+		out.push_back( arrowPos );
+		out.push_back( arrowPos + PxVec3(-offset,offset,0) );
+		out.push_back( arrowPos + PxVec3(offset,offset,0) );
+		out.push_back( arrowPos );
+	}
+	else
+	{
+		PxVec3 newNodePos = to->m_renderNode->getTransform().p;
+
+		PxVec3 dir = newNodePos - pos;
+		float len = dir.magnitude();
+		dir.normalize();
+
+		PxVec3 interSectPos;
+		if (to->m_renderNode->IntersectTri(pos, dir, interSectPos))
+		{
+			dir = interSectPos - pos;
+			len = dir.magnitude();
+			dir.normalize();
+			newNodePos = pos + dir*len;
+		}
+
+		PxVec3 c = dir.cross(PxVec3(0,0,((order % 2)? -1 : 1)));
+		const float curveH = 0.4f + ((float)order/2.f) * 0.5f;
+
+		out.push_back( pos );
+		out.push_back( pos + (dir*len*0.5f) - c*curveH );
+		out.push_back( out[1] );
+		out.push_back( newNodePos );
+	}
+}
+
+
+/**
+ @brief Create Transition
+ @date 2014-02-25
+*/
+RenderBezierActor* CDiagramController::CreateTransition(CDiagramNode *from, CDiagramNode *to, const u_int order)//order=0
+{
+	vector<PxVec3> points;
+	CalcuateTransitionPositions(from, to, order, points);
+	RenderBezierActor *arrow = new RenderBezierActor(*m_sample.getRenderer(), points);
+	return arrow;
+}
+
+
+/**
+ @brief Move Transition Arrow
+ @date 2014-02-26
+*/
+void CDiagramController::MoveTransition(RenderBezierActor *transition, CDiagramNode *from, CDiagramNode *to, const u_int order)
+{
+	RET(!transition);
+	vector<PxVec3> points;
+	CalcuateTransitionPositions(from, to, order, points);
+	transition->SetBezierCurve(points);
 }
 
 
@@ -240,7 +353,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const genotype_parser::SExpr
 		node->m_expr->id = "sensor";
 		node->m_expr->dimension = genotype_parser::SVec3(0.4f,0.4f,0.4f);
 		node->m_expr->material = genotype_parser::SVec3(0,0.75f,0);
-		node->m_expr->connection = NULL;
+		node->m_expr->isSensor = true;
 	}
 
 	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
@@ -267,7 +380,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const genotype_parser::SExpr
 
 
 /**
- @brief 
+ @brief remove diagram
  @date 2014-02-12
 */
 void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams)
@@ -296,35 +409,356 @@ void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &d
 void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&ie, 
 	physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val)
 {
+	const bool isLeftBtnDown = ((GetKeyState(VK_LBUTTON) & 0x80) != 0);
+	const bool isRightBtnDown = ((GetKeyState(VK_RBUTTON) & 0x80) != 0);
+
+	// Mouse Left Button Event Check
+	if (m_leftButtonDown)
+	{
+		if (!isLeftBtnDown)
+		{
+			MouseLButtonUp(x,y);
+			m_leftButtonDown = false;
+			return;
+		}
+	}
+	else
+	{
+		if (isLeftBtnDown)
+		{
+			MouseLButtonDown(x,y);
+			m_leftButtonDown = true;
+			return;
+		}
+	}
+
+
+	// Mouse Right Button Event Check
+	if (m_rightButtonDown)
+	{
+		if (!isRightBtnDown)
+		{
+			MouseRButtonUp(x,y);
+			m_rightButtonDown = false;
+			return;
+		}
+	}
+	else
+	{
+		if (isRightBtnDown)
+		{
+			MouseRButtonDown(x,y);
+			m_rightButtonDown = true;
+			return;
+		}
+	}
+
+	// else mouse move event
+	MouseMove(x,y);
+}
+
+
+/**
+ @brief mouse position x,y to check diagram 3d object
+ @date 2014-02-25
+*/
+CDiagramNode* CDiagramController::PickupDiagram(physx::PxU32 x, physx::PxU32 y, 
+	const bool isCheckLinkDiagram, const bool isShowHighLight)
+{
 	PxVec3 orig, dir, pickOrig;
 	m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
 
 	evc::CDiagramNode *mouseOverNode = NULL;
+
+	// Check Diagrams
 	BOOST_FOREACH(auto node, m_diagrams)
 	{
 		PxVec3 out;
 		const bool isHighLight = node->m_renderNode->IntersectTri(pickOrig, dir, out);
-		node->SetHighLight(isHighLight);
+		if (isShowHighLight)
+			node->SetHighLight(isHighLight);
 		if (isHighLight)
 			mouseOverNode = node;
 	}
 
-	if ((GetKeyState(VK_LBUTTON) & 0x80) != 0)
+	if (mouseOverNode)
+		return mouseOverNode;
+
+
+	// Check Link Diagrams
+	if (isCheckLinkDiagram && m_popupDiagrams)
 	{
-		SelectNode(mouseOverNode);
+		mouseOverNode = m_popupDiagrams->PickupDiagram(x,y,isShowHighLight);
 	}
-	if ((GetKeyState(VK_RBUTTON) & 0x80) != 0)
+
+	return mouseOverNode;
+}
+
+
+/**
+ @brief Insert Diagram
+ @date 2014-02-25
+*/
+bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertNode)
+{
+	RETV(!node, false);
+	RETV(!insertNode, false);
+
+	using namespace genotype_parser;
+	SConnectionList *conList = new SConnectionList;
+	conList->next = NULL;
+	conList->connect = new SConnection;
+	conList->connect->expr = insertNode->m_expr;
+
+	// insert joint connection
+	if (node->m_expr->connection)
 	{
-		SelectNode(mouseOverNode);
+		SConnectionList *nextCon = node->m_expr->connection;
+		while (nextCon->next) {
+			nextCon = nextCon->next;
+		}
+		nextCon->next = conList;
+	}
+	else
+	{
+		node->m_expr->connection = conList;
+	}
+
+	const bool isNewDiagramNode = (m_diagrams.end() == find(m_diagrams.begin(), m_diagrams.end(), insertNode));
+
+	// update inserNode position
+	u_int order = 0;
+	PxVec3 pos = GetDiagramPosition(node, insertNode, order);
+	if (isNewDiagramNode)
+		insertNode->m_renderNode->setTransform(PxTransform(pos));
+
+	SDiagramConnection diagConnection;
+	diagConnection.transitionArrow = CreateTransition(node, insertNode, order);
+	diagConnection.connectNode = insertNode;
+	m_sample.addRenderObject(diagConnection.transitionArrow);
+	node->m_connectDiagrams.push_back(diagConnection);
+
+	if (isNewDiagramNode)
+		m_diagrams.push_back(insertNode);
+
+	// remove from candidateLinkDiagrams
+	if (m_popupDiagrams)
+		m_popupDiagrams->RemoveDiagram(insertNode);
+
+	return true;
+}
+
+
+/**
+ @brief calcuate diagram poisition
+ @date 2014-02-25
+*/
+PxVec3 CDiagramController::GetDiagramPosition(CDiagramNode *parent, CDiagramNode *dispNode, OUT u_int &order)
+{
+	RETV(!parent, PxVec3(0,0,0));
+	RETV(!dispNode, PxVec3(0,0,0));
+
+	const PxVec3 dimension = utility::Vec3toPxVec3(parent->m_expr->dimension);
+	const float radius = max(dimension.x*2.f +1, 2);
+
+	set<string> symbols;
+	PxVec3 val(radius,0,0);
+	BOOST_FOREACH (auto child, parent->m_connectDiagrams)
+	{
+		CDiagramNode *childNode = child.connectNode;
+		if (boost::iequals(parent->m_name, child.connectNode->m_name))
+			continue;
+		if (symbols.end() != symbols.find(childNode->m_name))
+			continue; // already exist
+		if (child.connectNode == dispNode)
+			break;
+
+		symbols.insert(childNode->m_name);
+		const PxVec3 childDimension = utility::Vec3toPxVec3(childNode->m_expr->dimension);
+		const float height = max(childDimension.y*2.f +1, 2);
+		val += PxVec3(0,height,0);
+	}
+
+	// find order
+	order = 0;
+	BOOST_FOREACH (auto child, parent->m_connectDiagrams)
+	{
+		if (child.connectNode == dispNode)
+			++order;
+	}
+
+	return val + parent->m_renderNode->getTransform().p;
+}
+
+
+/**
+@brief calcuate diagram poisition
+ @date 2014-02-25
+*/
+PxVec3 CDiagramController::GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr, const PxVec3 &parentPos, 
+	const u_int index, OUT u_int &order)
+{
+	RETV(!parent_expr, PxVec3(0,0,0));
+
+	using namespace genotype_parser;
+	const PxVec3 dimension = utility::Vec3toPxVec3(parent_expr->dimension);
+	const float radius = max(dimension.x*2.f +1, 2);
+
+	order = 0;
+	set<string> symbols;
+	PxVec3 val(radius,0,0);
+
+	int i=-1;
+	SConnectionList *conList = parent_expr->connection;
+	while (conList)
+	{
+		++i;
+		
+		SConnection *con = conList->connect;
+		if (!con->expr) {
+			conList = conList->next; // next node
+			continue;
+		}
+		if (boost::iequals(parent_expr->id, con->expr->id)) {
+			conList = conList->next; // next node
+			continue;
+		}
+		if (symbols.end() != symbols.find(con->expr->id))
+		{
+			++order;
+			if (i >= (int)index)
+			{
+				break;
+			}
+			else
+			{
+				conList = conList->next; // next node
+				continue; // already exist
+			}
+		}
+		else
+		{
+			order = 0;
+		}
+
+		if (i >= (int)index)
+			break;
+		symbols.insert(con->expr->id);
+
+		const PxVec3 childDimension = utility::Vec3toPxVec3(con->expr->dimension);
+		const float height = max(childDimension.y*2.f +1, 2);
+		val += PxVec3(0,height,0);
+
+		conList = conList->next; // next node
+	}
+
+
+	//for (u_int i=0; i < parent->m_connectDiagrams.size(); ++i)
+	//{
+	//	CDiagramNode *childNode = parent->m_connectDiagrams[ i].connectNode;
+	//	if (boost::iequals(parent->m_name, childNode->m_name))
+	//		continue;
+	//	if (symbols.end() != symbols.find(childNode->m_name))
+	//	{
+	//		++order;
+	//		if (i >= index)
+	//		{
+	//			break;
+	//		}
+	//		else
+	//		{
+	//			continue; // already exist
+	//		}
+	//	}
+	//	else
+	//	{
+	//		order = 0;
+	//	}
+
+	//	if (i >= index)
+	//		break;
+	//	symbols.insert(childNode->m_name);
+
+	//	const PxVec3 childDimension = utility::Vec3toPxVec3(childNode->m_expr->dimension);
+	//	const float height = max(childDimension.y*2.f +1, 2);
+	//	val += PxVec3(0,height,0);
+	//}
+
+	return val + parentPos;
+}
+
+
+/**
+ @brief MouseLButtonDown
+ @date 2014-02-25
+*/
+void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
+{
+	CDiagramNode *mouseOverNode = PickupDiagram(x, y, false, true);
+
+	SelectNode(mouseOverNode);
+
+	if (mouseOverNode)
+	{
+		m_dragPos[ 0].x = (float)x/800.f;
+		m_dragPos[ 0].y = (600.f - (float)y)/600.f;
+	}
+
+	if (mouseOverNode && mouseOverNode->m_expr->isSensor)
+	{
+		m_isLinkDrag = false; // sensor can not link to another node
+	}
+	else
+	{
+		m_isLinkDrag = mouseOverNode? true : false;
 	}
 }
 
 
 /**
- @brief 
- @date 2014-02-24
+ @brief Mouse Left Button Up Event
+ @date 2014-02-25
 */
-void CDiagramController::onAnalogInputEvent(const SampleFramework::InputEvent&ie , float val)
+void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
+{
+	if (m_isLinkDrag)
+	{
+		CDiagramNode *mouseOverNode = PickupDiagram(x, y, true, true);
+		if (mouseOverNode)
+		{
+			if (m_selectNode == mouseOverNode)
+			{
+				m_isLinkDrag = false;
+				if (m_popupDiagrams)
+					m_popupDiagrams->Close();
+				return;
+			}
+
+			{
+				PxSceneWriteLock scopedLock(m_sample.getActiveScene());
+				InsertDiagram(m_selectNode, mouseOverNode);
+				set<CDiagramNode*> symbols;
+				Layout(m_rootDiagram, symbols);
+				m_isLayoutAnimation = true;
+				m_elapsTime = 0;
+			}
+
+			printf( "link node = %s\n", mouseOverNode->m_name.c_str() );
+		}
+
+		if (m_popupDiagrams)
+			m_popupDiagrams->Close();
+	}
+
+	m_isLinkDrag = false;
+}
+
+
+/**
+ @brief 
+ @date 2014-02-25
+*/
+void CDiagramController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
 
 }
@@ -332,11 +766,29 @@ void CDiagramController::onAnalogInputEvent(const SampleFramework::InputEvent&ie
 
 /**
  @brief 
- @date 2014-02-24
+ @date 2014-02-25
 */
-void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent&ie , bool val)
+void CDiagramController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
 
+}
+
+
+/**
+ @brief 
+ @date 2014-02-25
+*/
+void CDiagramController::MouseMove(physx::PxU32 x, physx::PxU32 y)
+{
+	PickupDiagram(x, y, m_isLinkDrag, true);
+
+	if (m_isLinkDrag)
+	{
+		m_dragPos[ 1].x = (float)x / 800.f;
+		m_dragPos[ 1].y = (600.f-(float)y) / 600.f;
+		if (m_selectNode)
+			m_selectNode->SetHighLight(true);
+	}
 }
 
 
@@ -346,87 +798,9 @@ void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent&i
 */
 void CDiagramController::SelectNode(CDiagramNode *node)
 {
-	if (m_selectNode != node)
-	{
-		CreateLinkNode(node, node? true : false);
-		m_selectNode = node;
-	}
-}
+	m_selectNode = node;
 
-
-/**
- @brief create link node of argument node
- @date 2014-02-25
-*/
-void CDiagramController::CreateLinkNode(CDiagramNode *srcNode, const bool isShow) //isShow=true
-{
-	if (!srcNode)
-	{
-		BOOST_FOREACH (auto node, m_linkDiagrams)
-			node->m_renderNode->setRendering(false);
-		return;
-	}
-
-
-	if (m_linkDiagrams.empty())
-	{
-		PxVec3 material(0,0.75f,0);
-		const float shapeSize = 0.3f;
-
-		CDiagramNode *node1 = new CDiagramNode(m_sample);
-		node1->m_name = "new Box";
-		node1->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
-		node1->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
-		node1->m_material = material;
-
-		CDiagramNode *node2 = new CDiagramNode(m_sample);
-		node2->m_name = "new Sphere";
-		node2->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), shapeSize);
-		node2->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
-		node2->m_material = material;
-
-		CDiagramNode *node3 = new CDiagramNode(m_sample);
-		node3->m_name = "new Sensor";
-		node3->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
-		node3->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
-		node3->m_material = material;
-
-		m_sample.addRenderObject(node1->m_renderNode);
-		m_sample.addRenderObject(node2->m_renderNode);
-		m_sample.addRenderObject(node3->m_renderNode);
-
-		m_linkDiagrams.push_back(node1);
-		m_linkDiagrams.push_back(node2);
-		m_linkDiagrams.push_back(node3);
-	}
-
-
-	// create current node
-	if (!boost::iequals(m_linkDiagrams.back()->m_name, srcNode->m_name))
-	{
-		if (m_linkDiagrams.size() > 3)
-		{
-			SAFE_DELETE(m_linkDiagrams.back());
-			m_linkDiagrams.pop_back();
-		}
-
-		CDiagramNode *newCurrentNode = CreateDiagramNode(srcNode->m_expr);
-		m_sample.addRenderObject(newCurrentNode->m_renderNode);
-		m_linkDiagrams.push_back(newCurrentNode);
-	}
-
-
-	const PxVec3 dimension = utility::Vec3toPxVec3(srcNode->m_expr->dimension);
-	const float radius = max(dimension.x*2.f +0.5f, 1.4f);
-	const PxVec3 pos = srcNode->m_renderNode->getTransform().p;
-	float radian = 0;
-	BOOST_FOREACH (auto node, m_linkDiagrams)
-	{
-		PxQuat q(radian, PxVec3(0,0,-1));
-		PxVec3 offset = q.rotate(PxVec3(0,radius,0));
-
-		node->m_renderNode->setTransform(PxTransform(pos+offset));
-		node->m_renderNode->setRendering(isShow);
-		radian += 0.9f;
-	}
+	if (!m_popupDiagrams)
+		m_popupDiagrams = new CPopupDiagrams(m_sample, *this);
+	m_popupDiagrams->Popup(node);
 }

@@ -7,13 +7,18 @@
 using namespace SampleRenderer;
 
 
-CRenderBezierActor::CRenderBezierActor(SampleRenderer::Renderer& renderer, const vector<PxVec3> &points)
+RenderBezierActor::RenderBezierActor(SampleRenderer::Renderer& renderer, const vector<PxVec3> &points)
 {
 	RendererShape *rs = new RendererBezierShape(renderer, points);
 	setRenderShape(rs);
 }
 
-CRenderBezierActor::~CRenderBezierActor()
+RenderBezierActor::~RenderBezierActor()
 {
 
+}
+
+void RenderBezierActor::SetBezierCurve(const vector<PxVec3> &points)
+{
+	((RendererBezierShape*)getRenderShape())->SetBezierCurve(points);
 }

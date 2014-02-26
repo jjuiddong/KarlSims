@@ -34,12 +34,21 @@ namespace utility
 
 
 	/**
-	 @brief Vec3toPxVec3
+	 @brief SVec3 -> PxVec3
 	 @date 2014-02-24
 	*/
 	inline const PxVec3 Vec3toPxVec3(const evc::genotype_parser::SVec3 &rhs)
 	{
 		return PxVec3(rhs.x, rhs.y, rhs.z);
+	}
+
+		/**
+	 @brief PxVec3 -> SVec3
+	 @date 2014-02-24
+	*/
+	inline const evc::genotype_parser::SVec3 PxVec3toVec3(const  PxVec3 &rhs)
+	{
+		return evc::genotype_parser::SVec3(rhs.x, rhs.y, rhs.z);
 	}
 
 

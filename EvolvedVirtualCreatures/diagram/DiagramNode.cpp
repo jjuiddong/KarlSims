@@ -12,6 +12,7 @@ CDiagramNode::CDiagramNode(CEvc &sample) :
 ,	m_renderNode(NULL)
 ,	m_highLight(false)
 ,	m_expr(NULL)
+,	m_isAnimationMove(false)
 {
 
 }
@@ -71,6 +72,28 @@ void	CDiagramNode::Render()
 
 /**
  @brief 
+ @date 2014-02-26
+*/
+void CDiagramNode::Move(float dtime)
+{
+	if (m_isAnimationMove)
+	{
+		m_elapseTime += dtime;
+		if (m_elapseTime > 1)
+		{
+			m_isAnimationMove = false;
+			m_elapseTime = 1;
+		}
+
+		PxVec3 mov = (m_moveVelocity*m_elapseTime) + m_initialPos;
+		m_renderNode->setTransform(PxTransform(mov));
+	}
+
+}
+
+
+/**
+ @brief 
  @date 2014-02-24
 */
 void CDiagramNode::SetHighLight(const bool highLight)
@@ -82,4 +105,18 @@ void CDiagramNode::SetHighLight(const bool highLight)
 
 		m_highLight = highLight;
 	}
+}
+
+
+/**
+ @brief move diagram smoothly to target position
+ @date 2014-02-26
+*/
+void CDiagramNode::AnimateLayout(const PxVec3 &target)
+{
+	m_isAnimationMove = true;
+	m_targetPos = target;
+	m_initialPos = m_renderNode->getTransform().p;
+	m_moveVelocity = m_targetPos - m_initialPos;
+	m_elapseTime = 0;
 }

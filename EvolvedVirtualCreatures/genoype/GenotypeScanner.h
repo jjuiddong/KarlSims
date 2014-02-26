@@ -54,6 +54,14 @@ namespace evc { namespace genotype_parser {
 		float period;
 		SExpr *expr;
 
+		SConnection() {
+			type = "fixed";
+			conType = "joint";
+			terminalOnly = false;
+			period = 0;
+			expr = NULL;
+		}
+
 		const SConnection& operator=(const SConnection &rhs) {
 			if (this != &rhs)
 			{
@@ -92,6 +100,12 @@ namespace evc { namespace genotype_parser {
 		float mass;
 		SConnectionList *connection;
 		int refCount;
+		bool isSensor; // set by inner process
+
+		SExpr() {
+			connection = NULL;
+			isSensor = false;
+		}
 
 		const SExpr& operator=(const SExpr &rhs) {
 			if (this != &rhs)
@@ -103,6 +117,7 @@ namespace evc { namespace genotype_parser {
 				material = rhs.material;
 				mass = rhs.mass;
 				connection = NULL;
+				isSensor = rhs.isSensor;
 			}
 			return *this;
 		}

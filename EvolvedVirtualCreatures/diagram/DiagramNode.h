@@ -6,7 +6,7 @@
 
 
 class CEvc;
-class RenderBaseActor;
+class RenderBezierActor;
 namespace evc
 {
 	class CDiagramNode;
@@ -14,7 +14,7 @@ namespace evc
 	// SDiagramConnection struct
 	struct SDiagramConnection
 	{
-		RenderBaseActor *transitionArrow;
+		RenderBezierActor *transitionArrow;
 		CDiagramNode *connectNode;
 		SDiagramConnection() : transitionArrow(NULL), connectNode(NULL) {}
 	};
@@ -26,8 +26,10 @@ namespace evc
 	public:
 		CDiagramNode(CEvc &sample);
 		virtual ~CDiagramNode();
+		void Move(float dtime);
 		void	Render();
 		void SetHighLight(const bool highLight);
+		void AnimateLayout(const PxVec3 &target);
 
 
 	public:
@@ -38,6 +40,13 @@ namespace evc
 		vector<SDiagramConnection> m_connectDiagrams;
 		genotype_parser::SExpr *m_expr;
 		bool m_highLight;
+
+		bool m_isAnimationMove;
+		PxVec3 m_targetPos;
+		PxVec3 m_initialPos;
+		PxVec3 m_moveVelocity;
+		float m_elapseTime;
+		
 	};
 
 }

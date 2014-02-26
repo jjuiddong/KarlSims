@@ -7,9 +7,10 @@ namespace SampleRenderer { class Renderer; }
 
 class CEvc;
 class CBone_;
-class CRenderBezierActor : public RenderBaseActor
+class RenderBezierActor : public RenderBaseActor
 {
 public:
-	CRenderBezierActor(SampleRenderer::Renderer& renderer, const vector<PxVec3> &points);
-	virtual ~CRenderBezierActor();
+	RenderBezierActor(SampleRenderer::Renderer& renderer, const vector<PxVec3> &points);
+	virtual ~RenderBezierActor();
+	void SetBezierCurve(const vector<PxVec3> &points);
 };

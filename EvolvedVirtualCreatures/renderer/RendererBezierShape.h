@@ -1,7 +1,5 @@
 /**
  @filename RendererBezierShape.h
- 
- 
 */
 #pragma once
 
@@ -18,6 +16,7 @@ namespace SampleRenderer
 	public:
 		RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points);
 		virtual ~RendererBezierShape();
+		void SetBezierCurve(const vector<PxVec3> &points);
 
 
 	private:
