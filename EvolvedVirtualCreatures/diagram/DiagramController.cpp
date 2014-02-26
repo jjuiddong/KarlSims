@@ -122,9 +122,14 @@ void CDiagramController::TransitionAnimation(const float dtime)
 
 	BOOST_FOREACH (auto node, m_diagrams)
 	{
+		map<CDiagramNode*,u_int> orders;
+		BOOST_FOREACH  (auto conNode, node->m_connectDiagrams)
+			orders[ conNode.connectNode] = 0; // init
+
 		BOOST_FOREACH  (auto conNode, node->m_connectDiagrams)
 		{
-			MoveTransition(conNode.transitionArrow, node, conNode.connectNode);
+			++orders[ conNode.connectNode];
+			MoveTransition(conNode.transitionArrow, node, conNode.connectNode, orders[ conNode.connectNode]-1);
 		}
 	}
 }
@@ -166,7 +171,8 @@ PxVec3 CDiagramController::Layout(CDiagramNode *node, set<CDiagramNode*> &symbol
 		MoveTransition(child.transitionArrow, node, childNode, order);
 	}
 
-	if (node->m_connectDiagrams.empty())
+	//if (node->m_connectDiagrams.empty())
+	if (offset.y == 0)
 		offset.y = radius;
 
 	return offset;
@@ -524,7 +530,12 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 		node->m_expr->connection = conList;
 	}
 
-	const bool isNewDiagramNode = (m_diagrams.end() == find(m_diagrams.begin(), m_diagrams.end(), insertNode));
+	const bool isSameNodeDirected = boost::iequals(node->m_name, insertNode->m_name);
+	const bool isNewDiagramNode = (m_diagrams.end() == find(m_diagrams.begin(), m_diagrams.end(), insertNode)) &&
+														!isSameNodeDirected;
+
+	if (isSameNodeDirected)
+		insertNode = node;
 
 	// update inserNode position
 	u_int order = 0;
@@ -721,7 +732,7 @@ void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 */
 void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
-	if (m_isLinkDrag)
+	if (m_isLinkDrag && m_selectNode)
 	{
 		CDiagramNode *mouseOverNode = PickupDiagram(x, y, true, true);
 		if (mouseOverNode)
