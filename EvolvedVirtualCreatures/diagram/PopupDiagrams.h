@@ -33,6 +33,7 @@ namespace evc
 		CDiagramNode* CreateBoxDiagram();
 		CDiagramNode* CreateSphereDiagram();
 		CDiagramNode* CreateSensorDiagram();
+		string GenerateId( const string &seed );
 
 
 	private:

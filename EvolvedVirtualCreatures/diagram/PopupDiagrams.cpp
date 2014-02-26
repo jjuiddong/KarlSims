@@ -141,7 +141,7 @@ CDiagramNode* CPopupDiagrams::CreateBoxDiagram()
 	const float shapeSize = 0.3f;
 
 	CDiagramNode *node = new CDiagramNode(m_sample);
-	node->m_name = "new Box";
+	node->m_name = GenerateId("new Box");
 	node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
 	node->m_material = material;
@@ -169,7 +169,7 @@ CDiagramNode* CPopupDiagrams::CreateSphereDiagram()
 	const float shapeSize = 0.3f;
 
 	CDiagramNode *node = new CDiagramNode(m_sample);
-	node->m_name = "new Sphere";
+	node->m_name = GenerateId("new Sphere");
 	node->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), shapeSize);
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
 	node->m_material = material;
@@ -197,7 +197,7 @@ CDiagramNode* CPopupDiagrams::CreateSensorDiagram()
 	const float shapeSize = 0.3f;
 
 	CDiagramNode *node = new CDiagramNode(m_sample);
-	node->m_name = "new Sensor";
+	node->m_name = GenerateId("new Sensor");
 	node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
 	node->m_material = material;
@@ -276,4 +276,25 @@ void CPopupDiagrams::RemoveDiagram(CDiagramNode *rmNode)
 			break;
 		}
 	}
+}
+
+
+/**
+ @brief generate unique Id
+ @date 2014-02-26
+*/
+string CPopupDiagrams::GenerateId( const string &seed )
+{
+	set<string> symbols;
+	BOOST_FOREACH (auto node, m_diagramController.GetDiagrams())
+		symbols.insert(node->m_name);
+
+	int count = 1;
+	string genId = seed;
+	while (symbols.end() != symbols.find(genId))
+	{
+		genId = common::format("%s%d", seed.c_str(), count++);
+	}
+
+	return genId;
 }
