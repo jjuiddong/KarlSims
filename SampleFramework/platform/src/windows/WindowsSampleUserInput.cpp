@@ -150,6 +150,11 @@ WindowsSampleUserInput::WindowsSampleUserInput()
 	registerUserInput(WKEY_BACKSPACE,"KEY_BACKSPACE","Backspace");
 	registerUserInput(WKEY_PRIOR ,"KEY_PRIOR","PgUp");
 	registerUserInput(WKEY_NEXT ,"KEY_NEXT","PgDn");
+	registerUserInput(WKEY_INSERT,"KEY_INSERT","Insert");
+	registerUserInput(WKEY_DELETE,"KEY_DELETE","Delete");
+	registerUserInput(WKEY_HOME,"KEY_HOME","Home");
+	registerUserInput(WKEY_END,"KEY_END","End");
+
 	registerUserInput(WKEY_UP ,"KEY_UP","Up Arrow");
 	registerUserInput(WKEY_DOWN ,"KEY_DOWN","Down Arrow");
 	registerUserInput(WKEY_LEFT ,"KEY_LEFT","Left Arrow");
@@ -349,6 +354,11 @@ WindowsSampleUserInputIds WindowsSampleUserInput::getKeyCode(WPARAM wParam) cons
 	//
 	else if(keyparam == VK_PRIOR)								keyCode = WKEY_PRIOR;
 	else if(keyparam == VK_NEXT)								keyCode = WKEY_NEXT;
+	//
+	else if(keyparam == VK_INSERT)							keyCode = WKEY_INSERT;
+	else if(keyparam == VK_DELETE)							keyCode = WKEY_DELETE;
+	else if(keyparam == VK_HOME)								keyCode = WKEY_HOME;
+	else if(keyparam == VK_END)								keyCode = WKEY_END;
 	//
 	else if(keyparam == VK_UP)									keyCode = WKEY_UP;
 	else if(keyparam == VK_DOWN)								keyCode = WKEY_DOWN;

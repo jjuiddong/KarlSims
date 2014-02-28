@@ -2,8 +2,8 @@
 #include "stdafx.h"
 #include "DiagramNode.h"
 #include "../EvolvedVirtualCreatures.h"
-//#include "Renderer.h"
-//#include <d3d9.h>
+#include "../renderer/RenderBezierActor.h"
+
 
 using namespace evc;
 
@@ -13,6 +13,7 @@ CDiagramNode::CDiagramNode(CEvc &sample) :
 ,	m_highLight(false)
 ,	m_expr(NULL)
 ,	m_isAnimationMove(false)
+,	m_isRenderText(true)
 {
 
 }
@@ -23,6 +24,10 @@ CDiagramNode::~CDiagramNode()
 	m_renderNode = NULL;
 	genotype_parser::RemoveExpressoin_OnlyExpr(m_expr);
 	m_expr = NULL;
+
+	BOOST_FOREACH (auto con, m_connectDiagrams)
+		m_sample.removeRenderObject(con.transitionArrow);
+	m_connectDiagrams.clear();
 }
 
 
@@ -31,6 +36,7 @@ void	CDiagramNode::Render()
 {
 	RET(!m_renderNode);
 	RET(!m_renderNode->isRendering());
+	RET(!m_isRenderText);
 
 	using namespace SampleRenderer;
 
@@ -119,4 +125,91 @@ void CDiagramNode::AnimateLayout(const PxVec3 &target)
 	m_initialPos = m_renderNode->getTransform().p;
 	m_moveVelocity = m_targetPos - m_initialPos;
 	m_elapseTime = 0;
+}
+
+
+/**
+ @brief remove connect node in m_connectDiagrams
+			remove connect node in genotype_parser::SExpr
+ @date 2014-02-28
+*/
+void CDiagramNode::RemoveConnectNode(const CDiagramNode *rmNode)
+{
+	// remove m_connectDiagrams
+	BOOST_FOREACH (auto con, m_connectDiagrams)
+	{
+		if (con.connectNode == rmNode)
+			m_sample.removeRenderObject(con.transitionArrow);
+	}
+
+	auto newEnd = std::remove(m_connectDiagrams.begin(), m_connectDiagrams.end(), SDiagramConnection((CDiagramNode*)rmNode));
+	m_connectDiagrams.erase(newEnd, m_connectDiagrams.end());
+
+
+	// remove genotype_parser::SExpr
+	RET(!m_expr);
+
+	using namespace genotype_parser;
+	// find rmNode->m_expr
+	
+	bool isFindExpr = false;
+	SConnectionList *conList = m_expr->connection;
+	while (conList && !isFindExpr)
+	{
+		SConnection *connect = conList->connect;
+		if (connect->expr == rmNode->m_expr)
+			isFindExpr = true;
+		conList = conList->next;
+	}
+
+	if (isFindExpr)
+	{
+		list<SConnectionList*> nodes;
+		SConnectionList *conList = m_expr->connection;
+		while (conList)
+		{
+			nodes.push_back(conList);
+			conList = conList->next;
+		}
+
+		// remove connection
+		auto it = nodes.begin();
+		while (it != nodes.end())
+		{
+			SConnection *connect = (*it)->connect;
+			if (connect->expr == rmNode->m_expr)
+			{
+				SAFE_DELETE(connect);
+				SAFE_DELETE(*it);
+				it = nodes.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		if (nodes.empty())
+		{
+			m_expr->connection = NULL;
+			return;
+		}
+
+		// re link connection
+		SConnectionList *headConList = *nodes.begin();
+		headConList->next = NULL;
+		SConnectionList *curConList = headConList;
+
+		auto it2 = ++nodes.begin();
+		while (it2 != nodes.end())
+		{
+			curConList->next = *it2;
+
+			curConList = curConList->next;
+			curConList->next = NULL;
+			++it2;
+		}
+
+		m_expr->connection = headConList;
+	}
 }

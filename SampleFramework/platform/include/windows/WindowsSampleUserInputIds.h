@@ -115,6 +115,12 @@ namespace SampleFramework
 		WKEY_BACKSPACE,
 		WKEY_PRIOR,
 		WKEY_NEXT,
+
+		WKEY_INSERT,
+		WKEY_DELETE,
+		WKEY_HOME,
+		WKEY_END,
+
 		WKEY_UP,
 		WKEY_DOWN,
 		WKEY_LEFT,

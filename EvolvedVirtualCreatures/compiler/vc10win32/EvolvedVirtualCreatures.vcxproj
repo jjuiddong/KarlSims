@@ -221,6 +221,7 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>Winmm.lib /LIBPATH:$(PHYSX_DIR)Lib/win32 PhysX3CommonCHECKED_x86.lib PhysX3CHECKED_x86.lib PhysX3CookingCHECKED_x86.lib PhysX3CharacterKinematicCHECKED_x86.lib PhysX3ExtensionsCHECKED.lib PhysX3VehicleCHECKED.lib PhysXProfileSDKCHECKED.lib PhysXVisualDebuggerSDKCHECKED.lib PxTaskCHECKED.lib %(AdditionalOptions)</AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>../../vld/lib/Win32/vld.lib;d3dx9d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

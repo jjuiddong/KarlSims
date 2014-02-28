@@ -145,6 +145,7 @@ CDiagramNode* CPopupDiagrams::CreateBoxDiagram()
 	node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
 	node->m_material = material;
+	node->m_isRenderText = false;
 
 	node->m_expr = new SExpr;
 	node->m_expr->shape = "box";
@@ -173,6 +174,7 @@ CDiagramNode* CPopupDiagrams::CreateSphereDiagram()
 	node->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), shapeSize);
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
 	node->m_material = material;
+	node->m_isRenderText = false;
 
 	node->m_expr = new SExpr;
 	node->m_expr->shape = "sphere";

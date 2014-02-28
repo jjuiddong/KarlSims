@@ -686,3 +686,60 @@ void genotype_parser::RemoveExpression(SExpr *expr)
 		RemoveExpressoin_OnlyExpr(kv.second);
 	}
 }
+
+
+/**
+ @brief return Copy Genotype
+ @date 2014-02-27
+*/
+genotype_parser::SExpr* CopyGenotypeRec(const SExpr *expr, map<string,SExpr*> &symbols)
+{
+	RETV(!expr, NULL);
+
+	auto it = symbols.find(expr->id);
+	if (symbols.end() != it)
+	{ // already exist
+		return it->second;
+	}
+
+	SExpr *newExpr = new SExpr;
+	*newExpr = *expr;
+	symbols[ newExpr->id] = newExpr;
+
+	SConnectionList *srcConnection = expr->connection;
+	SConnectionList *currentDestConnection = NULL;
+	while (srcConnection)
+	{
+		if (!currentDestConnection)
+		{
+			currentDestConnection = new SConnectionList;
+			newExpr->connection = currentDestConnection;
+		}
+		else
+		{
+			SConnectionList *newCopy = new SConnectionList;
+			currentDestConnection->next = newCopy;
+			currentDestConnection = newCopy;
+		}
+
+		currentDestConnection->connect = new SConnection;
+		*currentDestConnection->connect = *srcConnection->connect;
+		currentDestConnection->connect->expr = CopyGenotypeRec(srcConnection->connect->expr, symbols);
+
+		srcConnection = srcConnection->next;
+	}
+
+	return newExpr;
+}
+
+
+/**
+ @brief return Copy Genotype
+ @date 2014-02-27
+*/
+SExpr* genotype_parser::CopyGenotype(const SExpr *expr)
+{
+	map<string,SExpr*> symbols;
+	return CopyGenotypeRec(expr, symbols);
+}
+

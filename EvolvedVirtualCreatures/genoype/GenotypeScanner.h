@@ -55,9 +55,18 @@ namespace evc { namespace genotype_parser {
 		SExpr *expr;
 
 		SConnection() {
-			type = "fixed";
 			conType = "joint";
+			type = "fixed";
+			pos = SVec3(0,0,0);
 			terminalOnly = false;
+			randPos = SVec3(0,0,0);
+			randOrient = SVec3(0,0,0);
+			velocity = SVec3(0,0,0);
+			limit = SVec3(0,0,0);
+			orient.angle = 0;
+			orient.dir = SVec3(1,0,0);
+			parentOrient.angle = 0;
+			parentOrient.dir = SVec3(1,0,0);			
 			period = 0;
 			expr = NULL;
 		}
@@ -103,6 +112,9 @@ namespace evc { namespace genotype_parser {
 		bool isSensor; // set by inner process
 
 		SExpr() {
+			mass = 1.f;
+			randShape = SVec3(0,0,0);
+			material = SVec3(0,0.75f,0);
 			connection = NULL;
 			isSensor = false;
 		}
@@ -132,6 +144,7 @@ namespace evc { namespace genotype_parser {
 
 	void RemoveExpression(SExpr *expr);
 	void RemoveExpressoin_OnlyExpr(SExpr *expr);
+	SExpr* CopyGenotype(const SExpr *expr);
 
 
 	class CGenotypeScanner

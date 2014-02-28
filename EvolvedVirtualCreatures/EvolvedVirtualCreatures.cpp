@@ -183,15 +183,6 @@ void	CEvc::onTickPostRender(float dtime)
 	if (m_DiagramController)
 		m_DiagramController->Move(dtime);
 
-	//PxReal vertices[] = {0, 0, 1, 1};
-	//RendererColor colors[] = {RendererColor(0,255,0), RendererColor(0,255,0) };
-	//getRenderer()->drawLines2D(2, vertices, colors );
-	//PxReal vertices2[] = {1, 0, 0, 1};
-	//getRenderer()->drawLines2D(2, vertices2, colors );
-
-	//renderer->print(x, y += yInc, msg, scale, shadowOffset, textColor);
-	//getRenderer()->print(100, 100,  "test" );
-
 }
 
 
@@ -219,6 +210,8 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	DIGITAL_INPUT_EVENT_DEF(STEP_ONE_FRAME, WKEY_SPACE,				XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	//DIGITAL_INPUT_EVENT_DEF(RELEASE_CURSOR, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
 	DIGITAL_INPUT_EVENT_DEF(GOTO_NEXT_GENERATION, WKEY_BACKSPACE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	DIGITAL_INPUT_EVENT_DEF(REMOVE_OBJECT, WKEY_DELETE,		XKEY_1,			PS3KEY_1,		AKEY_UNKNOWN,	OSXKEY_1,		PSP2KEY_UNKNOWN,	IKEY_UNKNOWN,	LINUXKEY_1,			WIIUKEY_UNKNOWN		);
+	
 
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT2,	"Throw Object", ABUTTON_5,	IBUTTON_5);
@@ -232,6 +225,7 @@ void CEvc::collectInputEvents(std::vector<const SampleFramework::InputEvent*>& i
 	TOUCH_INPUT_EVENT_DEF(SPAWN_DEBUG_OBJECT0,	"Throw Object", ABUTTON_5,	IBUTTON_5);
 	TOUCH_INPUT_EVENT_DEF(PICKUP,	"PickUp", ABUTTON_0, ABUTTON_0);
 	TOUCH_INPUT_EVENT_DEF(GOTO_NEXT_GENERATION,	"Goto next generation", ABUTTON_0, ABUTTON_0);
+	TOUCH_INPUT_EVENT_DEF(REMOVE_OBJECT, "Remove Object", ABUTTON_0, ABUTTON_0);
 	
 }
 
@@ -350,7 +344,7 @@ void CEvc::spawnNode( const int key )
 			}
 
 			m_DiagramController->ControllerSceneInit();
-			m_DiagramController->SetControlCreature( pnode->GetGenotype() );
+			m_DiagramController->SetControlCreature(pnode);
 		}
 		break;
 
@@ -465,6 +459,9 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 			break;
 		}
 	}
+
+	if (m_DiagramController)
+		m_DiagramController->onDigitalInputEvent(ie,val);
 }
 
 
@@ -502,10 +499,9 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 */
 void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 {
-	PxSceneWriteLock scopedLock(*mScene);
-
 	PhysXSample::onSubstepSetup(dtime, cont);
 
+	PxSceneWriteLock scopedLock(*mScene);
 	BOOST_FOREACH (auto &creature, m_Creatures)
 		creature->Move(dtime);
 	BOOST_FOREACH (auto &obstacle, m_Obstacles)

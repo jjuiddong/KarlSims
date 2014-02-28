@@ -15,8 +15,13 @@ namespace evc
 	struct SDiagramConnection
 	{
 		RenderBezierActor *transitionArrow;
-		CDiagramNode *connectNode;
+		CDiagramNode *connectNode; // reference
 		SDiagramConnection() : transitionArrow(NULL), connectNode(NULL) {}
+		SDiagramConnection(CDiagramNode *node) : connectNode(node), transitionArrow(NULL) {}
+
+		bool operator==(const SDiagramConnection &rhs) {
+			return connectNode == rhs.connectNode;
+		}
 	};
 
 
@@ -30,6 +35,7 @@ namespace evc
 		void	Render();
 		void SetHighLight(const bool highLight);
 		void AnimateLayout(const PxVec3 &target);
+		void RemoveConnectNode(const CDiagramNode *rmNode);
 
 
 	public:
@@ -40,13 +46,12 @@ namespace evc
 		vector<SDiagramConnection> m_connectDiagrams;
 		genotype_parser::SExpr *m_expr;
 		bool m_highLight;
+		bool m_isRenderText;
 
 		bool m_isAnimationMove;
 		PxVec3 m_targetPos;
 		PxVec3 m_initialPos;
 		PxVec3 m_moveVelocity;
-		float m_elapseTime;
-		
+		float m_elapseTime;		
 	};
-
 }

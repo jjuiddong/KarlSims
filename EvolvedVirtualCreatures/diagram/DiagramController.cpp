@@ -7,7 +7,8 @@
 #include "../renderer/RenderBezierActor.h"
 #include "SimpleCamera.h"
 #include "PopupDiagrams.h"
-
+#include "../creature/Creature.h"
+#include "SampleBaseInputEventIds.h"
 
 
 using namespace evc;
@@ -22,6 +23,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 ,	m_isLinkDrag(false)
 ,	m_popupDiagrams(NULL)
 ,	m_isLayoutAnimation(false)
+,	m_creature(NULL)
 {
 	
 }
@@ -29,7 +31,7 @@ CDiagramController::CDiagramController(CEvc &sample) :
 CDiagramController::~CDiagramController()
 {
 	set<CDiagramNode*> diags;
-	RemoveDiagram(m_rootDiagram, diags);
+	RemoveDiagramTree(m_rootDiagram, diags);
 	m_rootDiagram = NULL;
 
 	SAFE_DELETE(m_popupDiagrams);
@@ -62,15 +64,17 @@ void CDiagramController::ControllerSceneInit()
  @brief 
  @date 2014-02-12
 */
-void CDiagramController::SetControlCreature(const genotype_parser::SExpr *expr)
+void CDiagramController::SetControlCreature(CCreature *creature)//const genotype_parser::SExpr *expr)
 {
+	m_creature = creature;
+
 	set<CDiagramNode*> diags;
-	RemoveDiagram(m_rootDiagram, diags);
+	RemoveDiagramTree(m_rootDiagram, diags);
 	m_rootDiagram = NULL;
 
 	m_diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
-	m_rootDiagram = CreateDiagramTree(PxVec3(0,0,0), expr, diagrams);
+	m_rootDiagram = CreateDiagramTree(PxVec3(0,0,0), creature->GetGenotype(), diagrams);
 }
 
 
@@ -136,10 +140,24 @@ void CDiagramController::TransitionAnimation(const float dtime)
 
 
 /**
+ @brief calcuate Layout
+ @date 2014-02-27
+*/
+void CDiagramController::Layout(const PxVec3 &pos) // pos=PxVec3(0,0,0)
+{
+	set<CDiagramNode*> symbols;
+	LayoutRec(m_rootDiagram, symbols, pos);
+
+	m_isLayoutAnimation = true;
+	m_elapsTime = 0;
+}
+
+
+/**
  @brief caculate diagram poisitioning
  @date 2014-02-12
 */
-PxVec3 CDiagramController::Layout(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos)
+PxVec3 CDiagramController::LayoutRec(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos)
 {
 	RETV(!node, PxVec3(0,0,0));
 
@@ -151,7 +169,7 @@ PxVec3 CDiagramController::Layout(CDiagramNode *node, set<CDiagramNode*> &symbol
 	node->AnimateLayout(pos);
 
 	const PxVec3 dimension = utility::Vec3toPxVec3(node->m_expr->dimension);
-	const float radius = max(dimension.x*2.f +1, 2);
+	const float radius = max(dimension.x*2.f+1, 2);
 
 	map<CDiagramNode*,u_int> orders;
 	BOOST_FOREACH (auto child, node->m_connectDiagrams)
@@ -161,18 +179,18 @@ PxVec3 CDiagramController::Layout(CDiagramNode *node, set<CDiagramNode*> &symbol
 	BOOST_FOREACH (auto child, node->m_connectDiagrams)
 	{
 		CDiagramNode *childNode = child.connectNode;
-		const PxVec3 childOffset = Layout(childNode, symbols, pos+offset);
+		const PxVec3 childOffset = LayoutRec(childNode, symbols, pos+offset);
 		offset.y += childOffset.y;
 
 		if (childOffset.isZero())
 			++orders[childNode];
 
-		u_int order = orders[childNode];
-		MoveTransition(child.transitionArrow, node, childNode, order);
+		//u_int order = orders[childNode];
+		//MoveTransition(child.transitionArrow, node, childNode, order);
 	}
 
 	//if (node->m_connectDiagrams.empty())
-	if (offset.y == 0)
+	if (offset.y < radius)
 		offset.y = radius;
 
 	return offset;
@@ -389,7 +407,7 @@ CDiagramNode* CDiagramController::CreateDiagramNode(const genotype_parser::SExpr
  @brief remove diagram
  @date 2014-02-12
 */
-void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams)
+void CDiagramController::RemoveDiagramTree(CDiagramNode *node, set<CDiagramNode*> &diagrams)
 {
 	RET(!node);
 	if (diagrams.end() != diagrams.find(node))
@@ -400,7 +418,7 @@ void CDiagramController::RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &d
 	BOOST_FOREACH (auto conNode, node->m_connectDiagrams)
 	{
 		m_sample.removeRenderObject(conNode.transitionArrow);
-		RemoveDiagram(conNode.connectNode, diagrams);
+		RemoveDiagramTree(conNode.connectNode, diagrams);
 	}
 	node->m_connectDiagrams.clear();
 
@@ -465,6 +483,27 @@ void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&i
 
 
 /**
+ @brief Digital Input Event Handler
+ @date 2014-02-27
+*/
+void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
+{
+	switch (ie.m_Id)
+	{
+	case REMOVE_OBJECT: 
+		if (m_selectNode)
+		{
+			RemoveDiagram(m_selectNode); 
+			RemoveUnlinkDiagram();
+			m_selectNode = NULL;
+			Layout();
+		}
+		break;
+	}
+}
+
+
+/**
  @brief mouse position x,y to check diagram 3d object
  @date 2014-02-25
 */
@@ -514,6 +553,11 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 	SConnectionList *conList = new SConnectionList;
 	conList->next = NULL;
 	conList->connect = new SConnection;
+	if (insertNode->m_expr->isSensor)
+	{
+		conList->connect->conType = "sensor";
+		conList->connect->type = "vision";
+	}
 	conList->connect->expr = insertNode->m_expr;
 
 	// insert joint connection
@@ -542,6 +586,7 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 	PxVec3 pos = GetDiagramPosition(node, insertNode, order);
 	if (isNewDiagramNode)
 		insertNode->m_renderNode->setTransform(PxTransform(pos));
+	insertNode->m_isRenderText = true;
 
 	SDiagramConnection diagConnection;
 	diagConnection.transitionArrow = CreateTransition(node, insertNode, order);
@@ -557,6 +602,69 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 		m_popupDiagrams->RemoveDiagram(insertNode);
 
 	return true;
+}
+
+
+/**
+ @brief Remove DiagramNode
+			remove SExpr Node
+ @date 2014-02-27
+*/
+bool CDiagramController::RemoveDiagram(CDiagramNode *rmNode)
+{
+	RETV(!rmNode, false);
+
+	printf( "delete node : %s\n", rmNode->m_name.c_str());
+	
+	// remove pointing to rmNode
+	BOOST_FOREACH (auto node, m_diagrams)
+	{
+		node->RemoveConnectNode(rmNode);
+	}
+
+	auto newEnd = remove(m_diagrams.begin(), m_diagrams.end(), rmNode);
+	m_diagrams.erase(newEnd, m_diagrams.end());
+
+	SAFE_DELETE(rmNode);
+	return true;
+}
+
+
+/**
+ @brief remove non pointing node
+ @date 2014-02-28
+*/
+void CDiagramController::RemoveUnlinkDiagram()
+{
+	map<CDiagramNode*, int> nodesPointing;
+	BOOST_FOREACH (auto node, m_diagrams)
+		nodesPointing[ node] = 0;
+
+	BOOST_FOREACH (auto node, m_diagrams)
+	{
+		BOOST_FOREACH (auto con, node->m_connectDiagrams)
+		{
+			if (node == con.connectNode)
+				continue; // recursive connection
+			++nodesPointing[ con.connectNode];
+		}
+	}
+
+	bool isFindNonPointingNode = false;
+	BOOST_FOREACH (auto kv, nodesPointing)
+	{
+		if (kv.second > 0)
+			continue;
+		CDiagramNode *nonPointingNode = kv.first;
+		if (boost::iequals(nonPointingNode->m_name, "main"))
+			continue; // except main diagram
+
+		isFindNonPointingNode = true;
+		RemoveDiagram(nonPointingNode);
+	}
+
+	if (isFindNonPointingNode)
+		RemoveUnlinkDiagram();
 }
 
 
@@ -748,13 +856,11 @@ void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 			{
 				PxSceneWriteLock scopedLock(m_sample.getActiveScene());
 				InsertDiagram(m_selectNode, mouseOverNode);
-				set<CDiagramNode*> symbols;
-				Layout(m_rootDiagram, symbols);
-				m_isLayoutAnimation = true;
-				m_elapsTime = 0;
+				Layout();
+				UpdateCreature();
 			}
 
-			printf( "link node = %s\n", mouseOverNode->m_name.c_str() );
+			//printf( "link node = %s\n", mouseOverNode->m_name.c_str() );
 		}
 
 		if (m_popupDiagrams)
@@ -814,4 +920,15 @@ void CDiagramController::SelectNode(CDiagramNode *node)
 	if (!m_popupDiagrams)
 		m_popupDiagrams = new CPopupDiagrams(m_sample, *this);
 	m_popupDiagrams->Popup(node);
+}
+
+
+/**
+ @brief creature genotype update
+ @date 2014-02-27
+*/
+void CDiagramController::UpdateCreature()
+{
+	RET(!m_creature);
+	m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
 }

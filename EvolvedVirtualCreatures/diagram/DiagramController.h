@@ -12,6 +12,7 @@ class CSimpleCamera;
 class RenderBezierActor;
 namespace evc
 {
+	class CCreature;
 	class CDiagramNode;
 	class CPopupDiagrams;
 	namespace genotype_parser { struct SExpr; struct SConnection; }
@@ -26,7 +27,7 @@ namespace evc
 		virtual ~CDiagramController();
 
 		void ControllerSceneInit();
-		void SetControlCreature(const genotype_parser::SExpr *expr);
+		void SetControlCreature(CCreature *creature);//const genotype_parser::SExpr *expr);
 		void Render();
 		void Move(float dtime);
 		CDiagramNode *GetRootDiagram();
@@ -36,7 +37,7 @@ namespace evc
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override;
 		virtual void onAnalogInputEvent(const SampleFramework::InputEvent& , float val) override {}
-		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override {}
+		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override;
 
 
 	protected:
@@ -49,13 +50,20 @@ namespace evc
 		void MoveTransition(RenderBezierActor *transition, CDiagramNode *from, CDiagramNode *to, const u_int order=0);
 		void CalcuateTransitionPositions(CDiagramNode *from, CDiagramNode *to, const u_int order, OUT vector<PxVec3> &out);
 
-		void RemoveDiagram(CDiagramNode *node, set<CDiagramNode*> &diagrams);
-		PxVec3 Layout(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos=PxVec3(0,0,0));
+		void RemoveDiagramTree(CDiagramNode *node, set<CDiagramNode*> &diagrams);
+		void Layout(const PxVec3 &pos=PxVec3(0,0,0));
+		PxVec3 LayoutRec(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos=PxVec3(0,0,0));
 		void SelectNode(CDiagramNode *node);
 		CDiagramNode* PickupDiagram(physx::PxU32 x, physx::PxU32 y, const bool isCheckLinkDiagram, const bool isShowHighLight);
-		bool InsertDiagram(CDiagramNode *node, CDiagramNode *insertNode);
 		void TransitionAnimation(const float dtime);
 
+		bool InsertDiagram(CDiagramNode *node, CDiagramNode *insertNode);
+		bool RemoveDiagram(CDiagramNode *rmNode);
+		void RemoveUnlinkDiagram();
+
+		void UpdateCreature();
+
+		// Event Handler
 		void MouseLButtonDown(physx::PxU32 x, physx::PxU32 y);
 		void MouseLButtonUp(physx::PxU32 x, physx::PxU32 y);
 		void MouseRButtonDown(physx::PxU32 x, physx::PxU32 y);
@@ -67,6 +75,7 @@ namespace evc
 		CEvc &m_sample;
 		CSimpleCamera *m_camera;
 
+		CCreature *m_creature; // reference
 		CDiagramNode *m_rootDiagram;
 		vector<CDiagramNode*> m_diagrams; // reference
 		CDiagramNode *m_selectNode; // reference

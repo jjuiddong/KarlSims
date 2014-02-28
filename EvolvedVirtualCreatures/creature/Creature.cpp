@@ -36,7 +36,7 @@ CCreature::~CCreature()
 
 
 /**
- @brief 
+ @brief Generate Immediate Creature
  @date 2013-12-09
 */
 void CCreature::GenerateImmediate(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
@@ -44,34 +44,57 @@ void CCreature::GenerateImmediate(const string &genotypeScriptFileName, const Px
 	//recursivCount=2, isDispSkinning=true
 {
 	genotype_parser::CGenotypeParser parser;
-	m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
-	MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
-	GenerateByGenotypeFileName(genotypeScriptFileName, initialPos, linVel, recursiveCount, isDispSkinning);
+	genotype_parser::SExpr *expr = parser.Parse(genotypeScriptFileName);
+
+	m_GenotypeSymbols.clear();
+	MakeExprSymbol(expr, m_GenotypeSymbols);
+	FirstStepToGenerateByGenotype(expr, initialPos, linVel, recursiveCount, isDispSkinning);
 
 	m_GrowCount = recursiveCount;
 }
 
 
 /**
- @brief 
+ @brief Generate Immediate Creature
+ @date 2014-02-27
+*/
+void CCreature::GenerateImmediate(genotype_parser::SExpr *expr, const PxVec3 &initialPos, 
+	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning)
+	//recursivCount=2, isDispSkinning=true
+{
+	m_GenotypeSymbols.clear();
+	MakeExprSymbol(expr, m_GenotypeSymbols);
+	FirstStepToGenerateByGenotype(expr, initialPos, linVel, recursiveCount, isDispSkinning);
+
+	m_GrowCount = recursiveCount;
+}
+
+
+/**
+ @brief FirstStep to generate by genotype
  @date 2013-12-09
 */
-void CCreature::GenerateByGenotypeFileName(const string &genotypeScriptFileName, const PxVec3 &initialPos, 
+void CCreature::FirstStepToGenerateByGenotype(genotype_parser::SExpr *expr, const PxVec3 &initialPos, 
 	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning) 
 	//recursivCount=2, isDispSkinning=true
 {
 	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
 
+	m_Nodes.clear();
+	SAFE_DELETE(m_pRoot);
+
+	genotype_parser::RemoveExpression(m_pGenotypeExpr);
+	m_pGenotypeExpr = expr;
 	m_IsDispSkinning = isDispSkinning;
 
-	m_pRoot = GenerateByGenotype(NULL, m_pGenotypeExpr, recursiveCount, initialPos, linVel);
+	m_pRoot = GenerateByGenotype(NULL, expr, recursiveCount, initialPos, linVel);
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
 	m_Genome.fitness = 0;
 	m_Genome.chromo.clear();
 	m_Genome.chromo.reserve(64);
-	GetChromo(this, m_pGenotypeExpr, m_Genome.chromo);
+	GetChromo(this, expr, m_Genome.chromo);
 
 	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
 	m_InitialPos.y = 0;
@@ -109,16 +132,41 @@ void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const 
 	const bool isDispSkinning) 
 	//isDispSkinning=true
 {
-	if (m_pRoot)
-	{
-		GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-	}
-	else
+	//if (m_pRoot)
+	//{
+	//	GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+	//}
+	//else
 	{
 		genotype_parser::CGenotypeParser parser;
-		m_pGenotypeExpr = parser.Parse(genotypeScriptFileName);
-		MakeExprSymbol(m_pGenotypeExpr, m_GenotypeSymbols);
-		GenerateByGenotypeFileName(genotypeScriptFileName, initialPos, linVel, 1, isDispSkinning);
+		genotype_parser::SExpr *expr = parser.Parse(genotypeScriptFileName);
+
+		m_GenotypeSymbols.clear();
+		MakeExprSymbol(expr, m_GenotypeSymbols);
+		FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
+	}
+}
+
+
+/**
+ @brief progressive generate creature
+ @date 2014-01-17
+*/
+void CCreature::GenerateProgressive(genotype_parser::SExpr *expr, const PxVec3 &initialPos,  const PxVec3 *linVel, 
+	const bool isDispSkinning) 
+	//isDispSkinning=true
+{
+	//if (m_pRoot)
+	//{
+	//	GenerateProgressive(m_pRoot, m_pGenotypeExpr);
+	//}
+	//else
+	{
+		m_GenotypeSymbols.clear();
+		MakeExprSymbol(expr, m_GenotypeSymbols);
+		FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
+
+		m_GrowCount = 0;
 	}
 }
 
@@ -200,15 +248,15 @@ CPhysNode* CCreature::GenerateByGenotype( CPhysNode* parentNode, const genotype_
 
 		if (boost::iequals(connection->conType, "joint"))
 		{
-			PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
-			PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
-			PxVec3 nodePos = pos - conPos;
+			const PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
+			const PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
+			const PxVec3 nodePos = pos - conPos;
 
 			CPhysNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, linVel, true, randPos, 
 				dimensionRate*0.7f, dimension, IsTerminal);
 			if (pChildNode && !pChildNode->m_IsTerminalNode)
 			{
-				PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
+				const PxVec3 newConPos = pos - pChildNode->m_pBody->getGlobalPose().p;
 				CreateJoint(pNode, pChildNode, connection, newConPos);
 			}
 		}
