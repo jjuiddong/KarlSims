@@ -184,6 +184,7 @@ void CCreature::GenerateProgressive( CPhysNode *currentNode, const genotype_pars
 		GenerateProgressive((CPhysNode*)joint->GetActor1(), expr);
 	}
 
+	// only generate terminal node
 	if (currentNode->m_Joints.empty())
 	{
 		// Generate parts
@@ -458,6 +459,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 	{
 		PxVec3 gravDir = parentNode->m_pBody->getGlobalPose().p;
 		gravDir.normalize();
+		gravDir = PxVec3(0,1,0);
 		PxQuat gravQ;
 		utility::quatRotationArc(gravQ, PxVec3(0,1,0), gravDir);
 		tm1 = tm1 * PxTransform(gravQ);
@@ -465,12 +467,16 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 
 
 	PxJoint* pxJoint = NULL;
+	const PxReal tolerance = 0.2f;
 	if (boost::iequals(joint->type, "fixed"))
 	{
-		PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1 );
+		PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1);
+
+		j->setProjectionLinearTolerance(tolerance);
+		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 		pxJoint = j;
 	}
-	else if(boost::iequals(joint->type, "spherical"))
+	else if (boost::iequals(joint->type, "spherical"))
 	{
 		if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1) )
 		{
@@ -480,7 +486,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 				j->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
 			}
 
-			j->setProjectionLinearTolerance(0.0f);
+			j->setProjectionLinearTolerance(tolerance);
 			j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 			pxJoint = j;
 		}
@@ -501,7 +507,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 				j->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
 			}
 
-			j->setProjectionLinearTolerance(0.0f);
+			j->setProjectionLinearTolerance(tolerance);
 			j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 			pxJoint = j;
 		}
@@ -625,6 +631,11 @@ void CCreature::Move(float dtime)
 		{
 			++m_GrowCount;
 			m_IncreaseTime = 0;
+			
+			//PxVec3 pos = GetPos();
+			//pos += PxVec3(0,5,0);
+			//SetPos(pos);
+
 			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
 			m_TmPalette.resize(m_Nodes.size());
 			GenerateSkinningMesh();
@@ -681,6 +692,24 @@ PxVec3 CCreature::GetPos() const
 {
 	RETV(!m_pRoot, PxVec3());
 	return m_pRoot->GetBody()->getGlobalPose().p;
+}
+
+/**
+ @brief set position
+ @date 2014-03-01
+*/
+void CCreature::SetPos(const PxVec3 &pos)
+{
+	RET(!m_pRoot);
+	const PxVec3 rootPos = m_pRoot->GetBody()->getGlobalPose().p;
+	const PxVec3 offset = pos - rootPos;
+
+	BOOST_FOREACH (auto node, m_Nodes)
+	{
+		PxTransform tm = node->GetBody()->getGlobalPose();
+		tm.p += offset;
+		 node->GetBody()->setGlobalPose(tm);
+	}
 }
 
 

@@ -61,7 +61,7 @@ void CDiagramController::ControllerSceneInit()
 
 
 /**
- @brief 
+ @brief SetControlCreature
  @date 2014-02-12
 */
 void CDiagramController::SetControlCreature(CCreature *creature)//const genotype_parser::SExpr *expr)
@@ -75,6 +75,8 @@ void CDiagramController::SetControlCreature(CCreature *creature)//const genotype
 	m_diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
 	m_rootDiagram = CreateDiagramTree(PxVec3(0,0,0), creature->GetGenotype(), diagrams);
+
+	Layout();
 }
 
 
@@ -931,4 +933,9 @@ void CDiagramController::UpdateCreature()
 {
 	RET(!m_creature);
 	m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
+
+	//m_creature = new evc::CCreature(m_sample); 
+	////m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
+	//m_creature->GenerateProgressive(m_rootDiagram->m_expr, m_creature->GetPos()+PxVec3(0,5,0), NULL);
+	////m_creature->GenerateImmediate(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
 }

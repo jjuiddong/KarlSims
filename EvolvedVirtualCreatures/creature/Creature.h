@@ -32,6 +32,7 @@ namespace evc
 		void Move(float dtime);
 		const SGenome& GetGenome() const;
 		PxVec3 GetPos() const;
+		void SetPos(const PxVec3 &pos);
 		const CNeuralNet* GetBrain() const;
 		void SetGravity(const PxVec3 &centerOfGravity);
 		genotype_parser::SExpr* GetGenotype();

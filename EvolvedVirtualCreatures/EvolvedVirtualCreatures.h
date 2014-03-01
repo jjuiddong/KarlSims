@@ -39,6 +39,7 @@ public:
 
 	//virtual	void onTickPreRender(float dtime) override;
 	virtual	void customizeRender() override;
+	virtual void	onTickPreRender(float dtime) override;
 	virtual	void	onTickPostRender(float dtime) override;
 	virtual	void customizeSceneDesc(PxSceneDesc&);
 	virtual	void onSubstepSetup(float dtime, pxtask::BaseTask* cont);

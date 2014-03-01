@@ -93,6 +93,7 @@ int CJoint::GetNeuronCount() const
 */
 void CJoint::ApplySensor(CAngularSensor &sensor)
 {
+	RET(!m_pJoint);
 	sensor.SetJoint(m_pJoint);
 }
 
@@ -103,6 +104,7 @@ void CJoint::ApplySensor(CAngularSensor &sensor)
 */
 void CJoint::ApplyEffector(CMuscleEffector &effector)
 {
+	RET(!m_pJoint);
 	effector.SetJoint(m_pJoint);
 }
 

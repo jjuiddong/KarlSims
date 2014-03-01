@@ -57,17 +57,17 @@ namespace evc { namespace genotype_parser {
 		SConnection() {
 			conType = "joint";
 			type = "fixed";
+			parentOrient.angle = 0;
+			parentOrient.dir = SVec3(0,0,0);
+			orient.angle = 0;
+			orient.dir = SVec3(0,0,0);
 			pos = SVec3(0,0,0);
-			terminalOnly = false;
+			limit = SVec3(0,0,0);
+			velocity = SVec3(1,0,0);
 			randPos = SVec3(0,0,0);
 			randOrient = SVec3(0,0,0);
-			velocity = SVec3(0,0,0);
-			limit = SVec3(0,0,0);
-			orient.angle = 0;
-			orient.dir = SVec3(1,0,0);
-			parentOrient.angle = 0;
-			parentOrient.dir = SVec3(1,0,0);			
-			period = 0;
+			terminalOnly = false;
+			period = 1;
 			expr = NULL;
 		}
 

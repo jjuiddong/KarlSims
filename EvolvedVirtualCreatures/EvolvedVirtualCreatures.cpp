@@ -176,12 +176,25 @@ void CEvc::customizeRender()
 }
 
 
-void	CEvc::onTickPostRender(float dtime)
+void	CEvc::onTickPreRender(float dtime)
 {
-	PhysXSample::onTickPostRender(dtime);
+	PhysXSample::onTickPreRender(dtime);
+
+	PxSceneWriteLock scopedLock(*mScene);
 
 	if (m_DiagramController)
 		m_DiagramController->Move(dtime);
+
+	BOOST_FOREACH (auto &creature, m_Creatures)
+		creature->Move(dtime);
+	BOOST_FOREACH (auto &obstacle, m_Obstacles)
+		obstacle->Move(dtime);
+
+}
+
+void	CEvc::onTickPostRender(float dtime)
+{
+	PhysXSample::onTickPostRender(dtime);
 
 }
 
@@ -336,7 +349,8 @@ void CEvc::spawnNode( const int key )
 
 			if (SPAWN_DEBUG_OBJECT6 == key)
 			{
-				pnode->GenerateImmediate(fileNames[ idx], pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+				//pnode->GenerateImmediate(fileNames[ idx], pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+				pnode->GenerateProgressive(fileNames[ idx], pos, NULL, g_pDbgConfig->displaySkinning); 
 			}
 			else
 			{
@@ -501,11 +515,11 @@ void CEvc::onSubstepSetup(float dtime, pxtask::BaseTask* cont)
 {
 	PhysXSample::onSubstepSetup(dtime, cont);
 
-	PxSceneWriteLock scopedLock(*mScene);
-	BOOST_FOREACH (auto &creature, m_Creatures)
-		creature->Move(dtime);
-	BOOST_FOREACH (auto &obstacle, m_Obstacles)
-		obstacle->Move(dtime);
+	//PxSceneWriteLock scopedLock(*mScene);
+	//BOOST_FOREACH (auto &creature, m_Creatures)
+	//	creature->Move(dtime);
+	//BOOST_FOREACH (auto &obstacle, m_Obstacles)
+	//	obstacle->Move(dtime);
 
 	m_ElapsTime += dtime;
 	if (m_ElapsTime > 100) // 1 minutes
