@@ -1026,7 +1026,9 @@ bool CDiagramController::GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagram
 		}
 	}
 
-	std::unique(out.begin(), out.end());
+	// unique
+	std::sort(out.begin(), out.end());
+	out.erase(std::unique(out.begin(), out.end()), out.end());
 	return true;
 }
 
@@ -1044,6 +1046,8 @@ bool CDiagramController::GetDiagramsLinkfrom(CDiagramNode *from, OUT vector<CDia
 		out.push_back(con.connectNode);
 	}
 
-	std::unique(out.begin(), out.end());
+	// unique
+	std::sort(out.begin(), out.end());
+	out.erase(std::unique(out.begin(), out.end()), out.end());
 	return true;
 }
