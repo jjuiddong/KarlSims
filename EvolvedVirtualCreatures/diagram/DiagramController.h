@@ -5,6 +5,8 @@
 */
 #pragma once
 
+#include "DiagramGlobal.h"
+
 
 class CEvc;
 class RenderComposition;
@@ -15,6 +17,7 @@ namespace evc
 	class CCreature;
 	class CDiagramNode;
 	class CPopupDiagrams;
+	class COrientationEditController;
 	namespace genotype_parser { struct SExpr; struct SConnection; }
 
 
@@ -22,6 +25,8 @@ namespace evc
 	class CDiagramController : public SampleFramework::InputEventListener,
 												public memmonitor::Monitor<CDiagramController, TYPE_NAME(CDiagramController)>
 	{
+		enum MODE { MODE_NONE, MODE_LINK, MODE_ORIENT };
+
 	public:
 		CDiagramController(CEvc &sample);
 		virtual ~CDiagramController();
@@ -32,6 +37,8 @@ namespace evc
 		void Move(float dtime);
 		CDiagramNode *GetRootDiagram();
 		vector<CDiagramNode*>& GetDiagrams();
+		bool GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagramNode*> &out);
+		bool GetDiagramsLinkfrom(CDiagramNode *from, OUT vector<CDiagramNode*> &out);
 		CDiagramNode* CreateDiagramNode(const genotype_parser::SExpr *expr);
 
 		// InputEvent from CEvc
@@ -53,7 +60,7 @@ namespace evc
 		void RemoveDiagramTree(CDiagramNode *node, set<CDiagramNode*> &diagrams);
 		void Layout(const PxVec3 &pos=PxVec3(0,0,0));
 		PxVec3 LayoutRec(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos=PxVec3(0,0,0));
-		void SelectNode(CDiagramNode *node);
+		void SelectNode(CDiagramNode *node, const bool isShowPopupDiagrams=true);
 		CDiagramNode* PickupDiagram(physx::PxU32 x, physx::PxU32 y, const bool isCheckLinkDiagram, const bool isShowHighLight);
 		void TransitionAnimation(const float dtime);
 
@@ -62,6 +69,7 @@ namespace evc
 		void RemoveUnlinkDiagram();
 
 		void UpdateCreature();
+		void ChangeControllerMode(const MODE scene);
 
 		// Event Handler
 		void MouseLButtonDown(physx::PxU32 x, physx::PxU32 y);
@@ -74,6 +82,7 @@ namespace evc
 	private:
 		CEvc &m_sample;
 		CSimpleCamera *m_camera;
+		COrientationEditController *m_OrientationEditController;
 
 		CCreature *m_creature; // reference
 		CDiagramNode *m_rootDiagram;
@@ -83,13 +92,12 @@ namespace evc
 
 		bool m_leftButtonDown;
 		bool m_rightButtonDown;
-		bool m_isLinkDrag;
+		MODE m_controlMode;
 		PxVec2 m_dragPos[ 2];
 
 		// layout animation to move transition
 		bool m_isLayoutAnimation;
 		float m_elapsTime;
-
 	};
 
 

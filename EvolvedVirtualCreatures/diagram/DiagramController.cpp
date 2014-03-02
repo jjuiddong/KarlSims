@@ -8,7 +8,7 @@
 #include "SimpleCamera.h"
 #include "PopupDiagrams.h"
 #include "../creature/Creature.h"
-#include "SampleBaseInputEventIds.h"
+#include "OrientationEditController.h"
 
 
 using namespace evc;
@@ -20,12 +20,14 @@ CDiagramController::CDiagramController(CEvc &sample) :
 ,	m_selectNode(NULL)
 ,	m_leftButtonDown(false)
 ,	m_rightButtonDown(false)
-,	m_isLinkDrag(false)
+//,	m_isLinkDrag(false)
 ,	m_popupDiagrams(NULL)
 ,	m_isLayoutAnimation(false)
 ,	m_creature(NULL)
+,	m_controlMode(MODE_NONE)
+,	m_OrientationEditController(NULL)
 {
-	
+
 }
 
 CDiagramController::~CDiagramController()
@@ -34,6 +36,7 @@ CDiagramController::~CDiagramController()
 	RemoveDiagramTree(m_rootDiagram, diags);
 	m_rootDiagram = NULL;
 
+	SAFE_DELETE(m_OrientationEditController);
 	SAFE_DELETE(m_popupDiagrams);
 	SAFE_DELETE(m_camera);
 }
@@ -47,6 +50,8 @@ void CDiagramController::ControllerSceneInit()
 {
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(CSimpleCamera)();
+
+	m_OrientationEditController = new evc::COrientationEditController(m_sample, *this);
 
 	m_sample.getApplication().setMouseCursorHiding(false);
 	m_sample.getApplication().setMouseCursorRecentering(false);
@@ -91,7 +96,7 @@ void CDiagramController::Render()
 	if (m_popupDiagrams)
 		m_popupDiagrams->Render();
 
-	if (m_isLinkDrag)
+	if (MODE_LINK==m_controlMode)
 	{
 		using namespace SampleRenderer;
 		PxReal vertices[] = {m_dragPos[0].x, m_dragPos[0].y, m_dragPos[1].x, m_dragPos[1].y};
@@ -481,6 +486,15 @@ void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&i
 
 	// else mouse move event
 	MouseMove(x,y);
+
+
+	switch (m_controlMode)
+	{
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->onPointerInputEvent(ie,x,y,dx,dy,val);
+		break;
+	}
 }
 
 
@@ -495,10 +509,13 @@ void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent &
 	case REMOVE_OBJECT: 
 		if (m_selectNode)
 		{
-			RemoveDiagram(m_selectNode); 
-			RemoveUnlinkDiagram();
-			m_selectNode = NULL;
-			Layout();
+			if (RemoveDiagram(m_selectNode))
+			{
+				RemoveUnlinkDiagram();
+				m_selectNode = NULL;
+				Layout();
+				UpdateCreature();
+			}
 		}
 		break;
 	}
@@ -625,10 +642,11 @@ bool CDiagramController::RemoveDiagram(CDiagramNode *rmNode)
 	}
 
 	auto newEnd = remove(m_diagrams.begin(), m_diagrams.end(), rmNode);
+	const bool isRemoveNode = m_diagrams.end() != newEnd;
 	m_diagrams.erase(newEnd, m_diagrams.end());
 
 	SAFE_DELETE(rmNode);
-	return true;
+	return isRemoveNode;
 }
 
 
@@ -827,11 +845,11 @@ void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 
 	if (mouseOverNode && mouseOverNode->m_expr->isSensor)
 	{
-		m_isLinkDrag = false; // sensor can not link to another node
+		ChangeControllerMode(MODE_NONE);
 	}
 	else
 	{
-		m_isLinkDrag = mouseOverNode? true : false;
+		ChangeControllerMode(mouseOverNode? MODE_LINK : MODE_NONE);
 	}
 }
 
@@ -842,14 +860,14 @@ void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 */
 void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
-	if (m_isLinkDrag && m_selectNode)
+	if ((MODE_LINK==m_controlMode) && m_selectNode)
 	{
 		CDiagramNode *mouseOverNode = PickupDiagram(x, y, true, true);
 		if (mouseOverNode)
 		{
 			if (m_selectNode == mouseOverNode)
 			{
-				m_isLinkDrag = false;
+				ChangeControllerMode(MODE_NONE);
 				if (m_popupDiagrams)
 					m_popupDiagrams->Close();
 				return;
@@ -869,17 +887,35 @@ void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 			m_popupDiagrams->Close();
 	}
 
-	m_isLinkDrag = false;
+	ChangeControllerMode(MODE_NONE);
 }
 
 
 /**
- @brief 
+ @brief Mouse Right Button Down
  @date 2014-02-25
 */
 void CDiagramController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
+	CDiagramNode *mouseOverNode = PickupDiagram(x, y, false, true);
 
+	SelectNode(mouseOverNode, false);
+
+	if (mouseOverNode)
+	{
+		m_dragPos[ 0].x = (float)x/800.f;
+		m_dragPos[ 0].y = (600.f - (float)y)/600.f;
+	}
+
+	if (mouseOverNode)
+	{
+		ChangeControllerMode(MODE_ORIENT);
+		m_OrientationEditController->SetControlDiagram(mouseOverNode);
+	}
+	else
+	{
+		ChangeControllerMode(MODE_NONE);
+	}
 }
 
 
@@ -899,9 +935,9 @@ void CDiagramController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 */
 void CDiagramController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 {
-	PickupDiagram(x, y, m_isLinkDrag, true);
+	PickupDiagram(x, y, (MODE_LINK==m_controlMode), true);
 
-	if (m_isLinkDrag)
+	if (MODE_LINK==m_controlMode)
 	{
 		m_dragPos[ 1].x = (float)x / 800.f;
 		m_dragPos[ 1].y = (600.f-(float)y) / 600.f;
@@ -915,13 +951,16 @@ void CDiagramController::MouseMove(physx::PxU32 x, physx::PxU32 y)
  @brief select node
  @date 2014-02-24
 */
-void CDiagramController::SelectNode(CDiagramNode *node)
+void CDiagramController::SelectNode(CDiagramNode *node, const bool isShowPopupDiagrams) //isShowPopupDiagrams=true
 {
 	m_selectNode = node;
 
-	if (!m_popupDiagrams)
-		m_popupDiagrams = new CPopupDiagrams(m_sample, *this);
-	m_popupDiagrams->Popup(node);
+	if (isShowPopupDiagrams)
+	{
+		if (!m_popupDiagrams)
+			m_popupDiagrams = new CPopupDiagrams(m_sample, *this);
+		m_popupDiagrams->Popup(node);
+	}
 }
 
 
@@ -938,4 +977,73 @@ void CDiagramController::UpdateCreature()
 	////m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
 	//m_creature->GenerateProgressive(m_rootDiagram->m_expr, m_creature->GetPos()+PxVec3(0,5,0), NULL);
 	////m_creature->GenerateImmediate(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
+}
+
+
+/**
+ @brief Change ControllerScene
+ @date 2014-03-02
+*/
+void CDiagramController::ChangeControllerMode(const MODE mode)
+{
+	switch (mode)
+	{
+	case MODE_NONE: break;
+
+	case MODE_LINK: 
+		{
+			//ControllerSceneInit();
+		}
+		break;
+
+	case MODE_ORIENT: 
+		{
+			m_OrientationEditController->ControllerSceneInit();
+		}
+		break;
+	}
+
+	m_controlMode = mode;
+}
+
+
+/**
+ @brief get diagrams pointing to DiagramNode*
+ @date 2014-03-02
+*/
+bool CDiagramController::GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagramNode*> &out)
+{
+	RETV(!m_rootDiagram, false);
+
+	BOOST_FOREACH (auto node, m_diagrams)
+	{
+		BOOST_FOREACH (auto con, node->m_connectDiagrams)
+		{
+			if (node == con.connectNode)
+				continue; // recursive connection
+			if (to == con.connectNode)
+				out.push_back(node);
+		}
+	}
+
+	std::unique(out.begin(), out.end());
+	return true;
+}
+
+
+/**
+ @brief get from diagram child node
+ @date 2014-03-02
+*/
+bool CDiagramController::GetDiagramsLinkfrom(CDiagramNode *from, OUT vector<CDiagramNode*> &out)
+{
+	RETV(!from, false);
+
+	BOOST_FOREACH (auto &con, from->m_connectDiagrams)
+	{
+		out.push_back(con.connectNode);
+	}
+
+	std::unique(out.begin(), out.end());
+	return true;
 }

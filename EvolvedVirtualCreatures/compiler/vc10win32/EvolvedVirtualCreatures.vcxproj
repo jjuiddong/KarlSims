@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\creature\PhotoSensor.cpp" />
     <ClCompile Include="..\..\creature\PhysNode.cpp" />
     <ClCompile Include="..\..\creature\VisionSensor.cpp" />
+    <ClCompile Include="..\..\diagram\OrientationEditController.cpp" />
     <ClCompile Include="..\..\diagram\PopupDiagrams.cpp" />
     <ClCompile Include="..\..\diagram\SimpleCamera.cpp" />
     <ClCompile Include="..\..\diagram\DiagramController.cpp" />
@@ -61,6 +62,8 @@
     <ClInclude Include="..\..\creature\PhysNode.h" />
     <ClInclude Include="..\..\creature\Sensor.h" />
     <ClInclude Include="..\..\creature\VisionSensor.h" />
+    <ClInclude Include="..\..\diagram\DiagramGlobal.h" />
+    <ClInclude Include="..\..\diagram\OrientationEditController.h" />
     <ClInclude Include="..\..\diagram\PopupDiagrams.h" />
     <ClInclude Include="..\..\diagram\SimpleCamera.h" />
     <ClInclude Include="..\..\diagram\DiagramController.h" />
@@ -70,6 +73,7 @@
     <ClInclude Include="..\..\genetic\GeneticAlgorithm.h" />
     <ClInclude Include="..\..\genoype\GenotypeParser.h" />
     <ClInclude Include="..\..\genoype\GenotypeScanner.h" />
+    <ClInclude Include="..\..\global.h" />
     <ClInclude Include="..\..\renderer\3dNode.h" />
     <ClInclude Include="..\..\renderer\Bone.h" />
     <ClInclude Include="..\..\renderer\MeshCompositionUtility.h" />

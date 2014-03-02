@@ -17,7 +17,7 @@
 using namespace evc;
 
 CCreature::CCreature(CEvc &sample) :
-	m_Sample(sample)
+	m_sample(sample)
 ,	m_pRoot(NULL)
 ,	m_pGenotypeExpr(NULL)
 ,	m_IncreaseTime(0)
@@ -29,7 +29,7 @@ CCreature::CCreature(CEvc &sample) :
 
 CCreature::~CCreature()
 {
-	m_Nodes.clear();
+	m_nodes.clear();
 	SAFE_DELETE(m_pRoot);
 	genotype_parser::RemoveExpression(m_pGenotypeExpr);
 }
@@ -78,9 +78,9 @@ void CCreature::FirstStepToGenerateByGenotype(genotype_parser::SExpr *expr, cons
 	const PxVec3 *linVel, const int recursiveCount, const bool isDispSkinning) 
 	//recursivCount=2, isDispSkinning=true
 {
-	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+	PxSceneWriteLock scopedLock(m_sample.getActiveScene());
 
-	m_Nodes.clear();
+	m_nodes.clear();
 	SAFE_DELETE(m_pRoot);
 
 	genotype_parser::RemoveExpression(m_pGenotypeExpr);
@@ -91,15 +91,15 @@ void CCreature::FirstStepToGenerateByGenotype(genotype_parser::SExpr *expr, cons
 	RET(!m_pRoot);
 	m_pRoot->InitBrain();
 
-	m_Genome.fitness = 0;
-	m_Genome.chromo.clear();
-	m_Genome.chromo.reserve(64);
-	GetChromo(this, expr, m_Genome.chromo);
+	m_genome.fitness = 0;
+	m_genome.chromo.clear();
+	m_genome.chromo.reserve(64);
+	GetChromo(this, expr, m_genome.chromo);
 
-	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
-	m_InitialPos.y = 0;
+	m_initialPos = m_pRoot->GetBody()->getGlobalPose().p;
+	m_initialPos.y = 0;
 
-	m_TmPalette.resize(m_Nodes.size());
+	m_tmPalette.resize(m_nodes.size());
 	GenerateSkinningMesh();
 }
 
@@ -110,15 +110,15 @@ void CCreature::FirstStepToGenerateByGenotype(genotype_parser::SExpr *expr, cons
 */
 void CCreature::GenerateByGenome(const SGenome &genome, const PxVec3 &initialPos)
 {
-	m_Genome = genome;
+	m_genome = genome;
 
 	vector<double> weights;
 	genotype_parser::SExpr *p = BuildExpr(genome.chromo, weights);
 	m_pRoot = GenerateByGenotype(NULL, p, g_pDbgConfig->generationRecursiveCount, initialPos, NULL);
 	m_pRoot->InitBrain(weights);
 
-	m_InitialPos = m_pRoot->GetBody()->getGlobalPose().p;
-	m_InitialPos.y = 0;
+	m_initialPos = m_pRoot->GetBody()->getGlobalPose().p;
+	m_initialPos.y = 0;
 
 	genotype_parser::RemoveExpression(p);
 }
@@ -221,9 +221,9 @@ CPhysNode* CCreature::GenerateByGenotype( CPhysNode* parentNode, const genotype_
 			return GenerateTerminalNode(parentNode, pexpr, initialPos, linVel, dimensionRate, parentDim);
 		}
 
-		pNode->m_PaletteIndex = m_Nodes.size();
+		pNode->m_PaletteIndex = m_nodes.size();
 		//pNode->m_IsTerminalNode = IsTerminal;
-		m_Nodes.push_back(pNode);
+		m_nodes.push_back(pNode);
 	}
 	else
 	{
@@ -329,28 +329,28 @@ CPhysNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const PxVec
 		//}
 	}
 
-	CPhysNode *pNode = new CPhysNode(m_Sample);
+	CPhysNode *pNode = new CPhysNode(m_sample);
 	pNode->m_Name = expr->id;
 	pNode->m_ShapeName = expr->shape;
 
 	//MaterialIndex material = GetMaterialType(expr->material);
-	RenderMaterial *material = m_Sample.GetMaterial(PxVec3(expr->material.x, expr->material.y, expr->material.z));
+	RenderMaterial *material = m_sample.GetMaterial(PxVec3(expr->material.x, expr->material.y, expr->material.z));
 	pNode->m_MaterialDiffuse = PxVec3(expr->material.x, expr->material.y, expr->material.z);
 	const float mass = expr->mass;
 
 	if (boost::iequals(expr->shape, "box"))
 	{
-		pNode->m_pBody = m_Sample.createBox(pos, dimension, linVel, material, mass);
+		pNode->m_pBody = m_sample.createBox(pos, dimension, linVel, material, mass);
 	}
 	else if (boost::iequals(expr->shape, "sphere"))
 	{
-		pNode->m_pBody = m_Sample.createSphere(pos, dimension.x, linVel, material, mass);
+		pNode->m_pBody = m_sample.createSphere(pos, dimension.x, linVel, material, mass);
 	}
 	else if (boost::iequals(expr->shape, "root"))
 	{ // root node size 0.1, 0.1, 0.1
 		//pos = PxVec3(pos.x,pos.y,pos.z);
 		//dimension = PxVec3(0.1f,0.1f,0.1f);
-		pNode->m_pBody = m_Sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, material, mass);
+		pNode->m_pBody = m_sample.createBox(pos,  PxVec3(0.1f,0.1f,0.1f), NULL, material, mass);
 		pNode->m_pBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 		pNode->m_IsKinematic = true;
 	}
@@ -470,7 +470,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 	const PxReal tolerance = 0.2f;
 	if (boost::iequals(joint->type, "fixed"))
 	{
-		PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1);
+		PxFixedJoint *j = PxFixedJointCreate(m_sample.getPhysics(), body, tm0, child, tm1);
 
 		j->setProjectionLinearTolerance(tolerance);
 		j->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
@@ -478,7 +478,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 	}
 	else if (boost::iequals(joint->type, "spherical"))
 	{
-		if (PxSphericalJoint *j = PxSphericalJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1) )
+		if (PxSphericalJoint *j = PxSphericalJointCreate(m_sample.getPhysics(), body, tm0, child, tm1) )
 		{
 			if (!limit.isZero())
 			{
@@ -493,7 +493,7 @@ void CCreature::CreateJoint( CPhysNode *parentNode, CPhysNode *childNode, genoty
 	}
 	else if (boost::iequals(joint->type, "revolute"))
 	{
-		if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1) )
+		if (PxRevoluteJoint*j = PxRevoluteJointCreate(m_sample.getPhysics(), body, tm0, child, tm1) )
 		{
 			if (!limit.isZero())
 			{
@@ -541,14 +541,14 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 	RETV(!parentNode, NULL);
 
 	CPhysNode *childNode = NULL;
-	CPhysNode *pNode = new CPhysNode(m_Sample);
-	pNode->m_PaletteIndex = m_Nodes.size();
+	CPhysNode *pNode = new CPhysNode(m_sample);
+	pNode->m_PaletteIndex = m_nodes.size();
 	//pNode->m_IsTerminalNode = IsTerminal;
 
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
 	//MaterialIndex material = GetMaterialType("red");
-	pNode->m_pBody = m_Sample.createBox(initialPos, dimension, NULL, m_Sample.GetMaterial(PxVec3(0.75f,0,0)), 1.f);
-	m_Nodes.push_back(pNode);
+	pNode->m_pBody = m_sample.createBox(initialPos, dimension, NULL, m_sample.GetMaterial(PxVec3(0.75f,0,0)), 1.f);
+	m_nodes.push_back(pNode);
 	childNode = pNode;
 
 	if (connect->expr)
@@ -568,7 +568,7 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
 	PxJoint* pxJoint = NULL;
-	if (PxFixedJoint *j = PxFixedJointCreate(m_Sample.getPhysics(), body, tm0, child, tm1 ))
+	if (PxFixedJoint *j = PxFixedJointCreate(m_sample.getPhysics(), body, tm0, child, tm1 ))
 	{
 		pxJoint = j;
 	}
@@ -579,13 +579,13 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 	if (boost::iequals(joint->type, "photo"))
 	{
 		childNode->m_Name = "photo sensor";
-		sensor = new CPhotoSensor(m_Sample);
+		sensor = new CPhotoSensor(m_sample);
 		((CPhotoSensor*)sensor)->SetSensorInfo(childNode, PxVec3(0,1,0), 10);
 	}
 	else if (boost::iequals(joint->type, "vision"))
 	{
 		childNode->m_Name = "vision sensor";
-		sensor = new CVisionSensor(m_Sample);
+		sensor = new CVisionSensor(m_sample);
 		((CVisionSensor*)sensor)->SetSensorInfo(childNode, 10);
 	}
 	
@@ -637,26 +637,26 @@ void CCreature::Move(float dtime)
 			//SetPos(pos);
 
 			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-			m_TmPalette.resize(m_Nodes.size());
+			m_tmPalette.resize(m_nodes.size());
 			GenerateSkinningMesh();
 		}
 	}
 
-	BOOST_FOREACH (auto &node, m_Nodes)
+	BOOST_FOREACH (auto &node, m_nodes)
 		node->Move(dtime);
 
 	// update palette
-	BOOST_FOREACH (auto &node, m_Nodes)
+	BOOST_FOREACH (auto &node, m_nodes)
 	{
 		if (node->GetBody())
-			m_TmPalette[ node->m_PaletteIndex] = node->GetBody()->getGlobalPose();
+			m_tmPalette[ node->m_PaletteIndex] = node->GetBody()->getGlobalPose();
 	}
 
 	// update worldbound
 	if (m_pRoot && m_pRoot->m_pShapeRenderer)
 	{
 		PxBounds3 worldBound = m_pRoot->m_worldBounds;
-		BOOST_FOREACH (auto &node, m_Nodes)
+		BOOST_FOREACH (auto &node, m_nodes)
 		{
 			if (node == m_pRoot)
 				continue;
@@ -677,8 +677,8 @@ void CCreature::Move(float dtime)
 	{
 		PxVec3 pos = m_pRoot->GetBody()->getGlobalPose().p;
 		pos.y = 0;
-		PxVec3 len =  pos - m_InitialPos;
-		m_Genome.fitness = len.magnitude();
+		PxVec3 len =  pos - m_initialPos;
+		m_genome.fitness = len.magnitude();
 	}
 
 }
@@ -704,7 +704,7 @@ void CCreature::SetPos(const PxVec3 &pos)
 	const PxVec3 rootPos = m_pRoot->GetBody()->getGlobalPose().p;
 	const PxVec3 offset = pos - rootPos;
 
-	BOOST_FOREACH (auto node, m_Nodes)
+	BOOST_FOREACH (auto node, m_nodes)
 	{
 		PxTransform tm = node->GetBody()->getGlobalPose();
 		tm.p += offset;
@@ -730,7 +730,7 @@ const CNeuralNet* CCreature::GetBrain() const
 */
 void CCreature::GenerateSkinningMesh()
 {
-	PxSceneWriteLock scopedLock(m_Sample.getActiveScene());
+	PxSceneWriteLock scopedLock(m_sample.getActiveScene());
 
 	GenerateRenderComposition(m_pRoot);
 	//PxRigidDynamic *rigidActor0 = m_pRoot->GetBody();
@@ -742,14 +742,14 @@ void CCreature::GenerateSkinningMesh()
 	{
 		if (m_pRoot->m_pShapeRenderer)
 		{
-			m_Sample.addRenderObject( m_pRoot->m_pShapeRenderer );
+			m_sample.addRenderObject( m_pRoot->m_pShapeRenderer );
 		}
 		else
 		{
 			m_pRoot->m_pShapeRenderer = m_pRoot->m_pOriginalShapeRenderer;
-			m_Sample.addRenderObject( m_pRoot->m_pShapeRenderer );
+			m_sample.addRenderObject( m_pRoot->m_pShapeRenderer );
 		}
-		m_TmPalette[ m_pRoot->m_PaletteIndex] = m_pRoot->GetBody()->getGlobalPose();
+		m_tmPalette[ m_pRoot->m_PaletteIndex] = m_pRoot->GetBody()->getGlobalPose();
 	}
 
 }
@@ -770,7 +770,7 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 
 	//const MaterialIndex materialIndex = GetMaterialType(node->m_MaterialName);
 	//RenderMaterial *material = m_Sample.getManageMaterial(materialIndex);
-	RenderMaterial *material = m_Sample.GetMaterial(PxVec3(node->m_MaterialDiffuse.x, node->m_MaterialDiffuse.y, node->m_MaterialDiffuse.z));
+	RenderMaterial *material = m_sample.GetMaterial(PxVec3(node->m_MaterialDiffuse.x, node->m_MaterialDiffuse.y, node->m_MaterialDiffuse.z));
 
 	// generate renderer
 	if (!node->m_pOriginalShapeRenderer)
@@ -779,19 +779,19 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 		PxShape *shape0;
 		if (1 == rigidActor0->getShapes(&shape0,1))
 		{
-			RenderBaseActor *renderActor0 = m_Sample.getRenderActor(rigidActor0, shape0);
+			RenderBaseActor *renderActor0 = m_sample.getRenderActor(rigidActor0, shape0);
 			if (renderActor0)
 			{
-				RenderComposition *newRenderer = new RenderComposition(*m_Sample.getRenderer(), node->m_PaletteIndex, 
-					m_TmPalette, renderActor0->getRenderShape(), material);
+				RenderComposition *newRenderer = new RenderComposition(*m_sample.getRenderer(), node->m_PaletteIndex, 
+					m_tmPalette, renderActor0->getRenderShape(), material);
 
 				renderActor0->setRendering(false);
 				newRenderer->setEnableCameraCull(true);
 
 				node->m_pOriginalShapeRenderer = newRenderer;
 				//m_Sample.addRenderObject( node->m_pOriginalShapeRenderer );
-				m_Sample.removeRenderObject(renderActor0);
-				m_Sample.unlink(renderActor0, shape0, rigidActor0);
+				m_sample.removeRenderObject(renderActor0);
+				m_sample.unlink(renderActor0, shape0, rigidActor0);
 			}
 		}
 	}
@@ -799,7 +799,7 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 	// remove shape renderer
 	if (node->m_pShapeRenderer && (node->m_pShapeRenderer != node->m_pOriginalShapeRenderer))
 	{
-		m_Sample.removeRenderObject(node->m_pShapeRenderer);
+		m_sample.removeRenderObject(node->m_pShapeRenderer);
 		node->m_pShapeRenderer = NULL;
 	}
 
@@ -811,9 +811,9 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 		RenderComposition *parentRenderer = (node->m_pShapeRenderer)? node->m_pShapeRenderer : node->m_pOriginalShapeRenderer;
 		RenderComposition *childRenderer = (child->m_pShapeRenderer)? child->m_pShapeRenderer : child->m_pOriginalShapeRenderer;
 
-		RenderComposition *newRenderer = new RenderComposition(*m_Sample.getRenderer(), 
+		RenderComposition *newRenderer = new RenderComposition(*m_sample.getRenderer(), 
 			node->m_PaletteIndex, child->m_PaletteIndex,
-			node->m_PaletteIndex, m_TmPalette, 
+			node->m_PaletteIndex, m_tmPalette, 
 			(SampleRenderer::RendererCompositionShape*)parentRenderer->getRenderShape(), joint->GetTm0(), 
 			(SampleRenderer::RendererCompositionShape*)childRenderer->getRenderShape(), joint->GetTm1());
 
@@ -821,7 +821,7 @@ void CCreature::GenerateRenderComposition( CPhysNode *node )
 
 		// remove shape renderer
 		if (node->m_pShapeRenderer && (node->m_pShapeRenderer != node->m_pOriginalShapeRenderer))
-			m_Sample.removeRenderObject(node->m_pShapeRenderer);
+			m_sample.removeRenderObject(node->m_pShapeRenderer);
 
 		node->m_pShapeRenderer = newRenderer;
 
@@ -931,7 +931,7 @@ bool CCreature::HasTerminalNode(const genotype_parser::SExpr *expr) const
 */
 void CCreature::SetGravity(const PxVec3 &centerOfGravity)
 {
-	BOOST_FOREACH (auto node, m_Nodes)
+	BOOST_FOREACH (auto node, m_nodes)
 	{
 		if (node->m_IsKinematic)
 			continue;

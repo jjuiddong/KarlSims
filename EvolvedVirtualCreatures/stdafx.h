@@ -46,7 +46,7 @@ using std::stringstream;
 #include "RenderBoxActor.h"
 #include "RenderSphereActor.h"
 #include "Picking.h"
-
+#include "SampleBaseInputEventIds.h"
 
 
 
@@ -73,4 +73,6 @@ extern SDbgConfig *g_pDbgConfig;
 #include "utility/Utility.h"
 #include "utility/FileLoader.h"
 
+
+#include "global.h"
 

@@ -3,7 +3,6 @@
  
  Evolving Virtual Creature Main class (E.V.C)
 */
-
 #pragma once
 
 #include "PhysXSample.h"
@@ -12,6 +11,7 @@ namespace evc
 { 
 	class CCreature;
 	class CDiagramController;
+
 }
 
 // Evc, Evolved Virtual Creatures
@@ -24,6 +24,7 @@ public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
 
+	evc::CDiagramController* GetDiagramController();
 	RenderMaterial* GetMaterial(const PxVec3 &rgb, bool applyVertexColor=true);
 	const list<evc::CCreature*>& GetAllCreature();
 	const list<evc::CCreature*>& GetAllObstacle();
@@ -86,3 +87,4 @@ inline PxU32 CEvc::getDebugObjectTypes() const {
 inline const list<evc::CCreature*>& CEvc::GetAllCreature() { return m_Creatures; }
 inline const list<evc::CCreature*>& CEvc::GetAllObstacle() { return m_Obstacles; }
 inline Picking* CEvc::GetPicking() { return mPicking; }
+inline evc::CDiagramController* CEvc::GetDiagramController() { return m_DiagramController; }

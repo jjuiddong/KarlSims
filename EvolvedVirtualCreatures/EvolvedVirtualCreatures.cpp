@@ -25,6 +25,7 @@
 #include "diagram/DiagramController.h"
 
 
+
 using namespace SampleRenderer;
 using namespace SampleFramework;
 
@@ -155,6 +156,7 @@ void CEvc::onInit()
 	}
 
 	m_DiagramController = new evc::CDiagramController(*this);
+
 	//registerInputEvents(m_DiagramController);
 	//getPlatform().
 	//getPlatform()->getSampleUserInput()->
@@ -487,20 +489,6 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 	physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val)
 {
 	PhysXSample::onPointerInputEvent(ie, x, y, dx, dy, val);
-
-	// Mouse LButton Down
-	if ((GetKeyState(VK_LBUTTON) & 0x80) != 0)
-	{
-		//if (!m_Creatures.empty())
-		//{
-		//	if (m_DiagramController)
-		//	{
-		//		PxSceneWriteLock scopedLock(*mScene);
-		//		m_DiagramController->ControllerSceneInit();
-		//		m_DiagramController->SetGenotype( (*m_Creatures.begin())->GetGenotype() );
-		//	}
-		//}
-	}
 
 	if (m_DiagramController)
 		m_DiagramController->onPointerInputEvent(ie,x,y,dx,dy,val);

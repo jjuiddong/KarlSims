@@ -88,6 +88,9 @@
     <ClCompile Include="..\..\diagram\PopupDiagrams.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\diagram\OrientationEditController.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\EvolvedVirtualCreatures.h" />
@@ -187,6 +190,13 @@
       <Filter>Diagram</Filter>
     </ClInclude>
     <ClInclude Include="..\..\diagram\PopupDiagrams.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\OrientationEditController.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\global.h" />
+    <ClInclude Include="..\..\diagram\DiagramGlobal.h">
       <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>

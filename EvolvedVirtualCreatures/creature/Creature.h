@@ -64,12 +64,12 @@ namespace evc
 
 
 	private:
-		CEvc &m_Sample;
+		CEvc &m_sample;
 		CPhysNode *m_pRoot;
-		vector<CPhysNode*> m_Nodes;
-		SGenome m_Genome;
-		PxVec3 m_InitialPos;
-		vector<PxTransform> m_TmPalette;
+		vector<CPhysNode*> m_nodes;
+		SGenome m_genome;
+		PxVec3 m_initialPos;
+		vector<PxTransform> m_tmPalette;
 
 		int m_GrowCount;
 		float m_IncreaseTime;
@@ -79,6 +79,6 @@ namespace evc
 	};
 
 
-	inline const SGenome& CCreature::GetGenome() const { return m_Genome; }
+	inline const SGenome& CCreature::GetGenome() const { return m_genome; }
 	inline genotype_parser::SExpr* CCreature::GetGenotype() { return m_pGenotypeExpr; }
 }
