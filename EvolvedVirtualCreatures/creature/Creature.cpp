@@ -546,6 +546,8 @@ CPhysNode* CCreature::CreateSensor(CPhysNode *parentNode, genotype_parser::SConn
 	//pNode->m_IsTerminalNode = IsTerminal;
 
 	PxVec3 dimension(0.05f, 0.2f, 0.05f);
+	if (connect->expr)
+		dimension = utility::Vec3toPxVec3(connect->expr->dimension);
 	//MaterialIndex material = GetMaterialType("red");
 	pNode->m_pBody = m_sample.createBox(initialPos, dimension, NULL, m_sample.GetMaterial(PxVec3(0.75f,0,0)), 1.f);
 	m_nodes.push_back(pNode);

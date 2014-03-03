@@ -3,6 +3,7 @@
 #include "OrientationEditController.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "DiagramController.h"
+#include "DiagramNode.h"
 
 
 using namespace evc;
@@ -52,9 +53,18 @@ void COrientationEditController::SetControlDiagram(CDiagramNode *node)
 	m_selectDiagram = node;
 
 	// setting camera
-	//m_diagramController.GetDiagrams()
+	vector<CDiagramNode*> nodes;
+	m_diagramController.GetDiagramsLinkto(node, nodes);
+	if (nodes.empty())
+		return;
 
+	PxVec3 dir = nodes[ 0]->m_renderNode->getTransform().p - node->m_renderNode->getTransform().p;
+	dir.normalize();
+	const PxVec3 camPos = node->m_renderNode->getTransform().p - (dir * 5);
 
+	m_sample.getCamera().lookAt(camPos, dir);
+	const PxTransform viewTm = m_sample.getCamera().getViewMatrix();
+	m_camera->init(viewTm);
 }
 
 
