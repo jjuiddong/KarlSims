@@ -40,6 +40,7 @@ namespace evc
 		bool GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagramNode*> &out);
 		bool GetDiagramsLinkfrom(CDiagramNode *from, OUT vector<CDiagramNode*> &out);
 		CDiagramNode* CreateDiagramNode(const genotype_parser::SExpr *expr);
+		RenderBezierActor* CreateTransition(CDiagramNode *from, CDiagramNode *to, const u_int order=0);
 
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override;
@@ -48,12 +49,11 @@ namespace evc
 
 
 	protected:
-		CDiagramNode* CreateDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
+		CDiagramNode* CreateGenotypeDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
 			map<const genotype_parser::SExpr*, CDiagramNode*> &symbols);
 
 		PxVec3 GetDiagramPosition(CDiagramNode *parent, CDiagramNode *dispNode, OUT u_int &order);
 		PxVec3 GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr, const PxVec3 &parentPos, const u_int index, OUT u_int &order);
-		RenderBezierActor* CreateTransition(CDiagramNode *from, CDiagramNode *to, const u_int order=0);
 		void MoveTransition(RenderBezierActor *transition, CDiagramNode *from, CDiagramNode *to, const u_int order=0);
 		void CalcuateTransitionPositions(CDiagramNode *from, CDiagramNode *to, const u_int order, OUT vector<PxVec3> &out);
 

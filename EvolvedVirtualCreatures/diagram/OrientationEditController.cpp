@@ -12,7 +12,7 @@ COrientationEditController::COrientationEditController(CEvc &sample, CDiagramCon
 	m_sample(sample)
 ,	m_diagramController(diagramController)
 ,	m_camera(NULL)
-,	m_selectDiagram(NULL)
+,	m_selectNode(NULL)
 {
 
 }
@@ -33,8 +33,8 @@ void COrientationEditController::ControllerSceneInit()
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(DefaultCameraController)();
 
-	m_sample.getApplication().setMouseCursorHiding(false);
-	m_sample.getApplication().setMouseCursorRecentering(false);
+	m_sample.getApplication().setMouseCursorHiding(true);
+	m_sample.getApplication().setMouseCursorRecentering(true);
 
 	m_camera->init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
 	m_camera->setMouseSensitivity(0.5f);
@@ -50,7 +50,7 @@ void COrientationEditController::ControllerSceneInit()
 */
 void COrientationEditController::SetControlDiagram(CDiagramNode *node)
 {
-	m_selectDiagram = node;
+	m_selectNode = node;
 
 	// setting camera
 	vector<CDiagramNode*> nodes;
@@ -58,13 +58,25 @@ void COrientationEditController::SetControlDiagram(CDiagramNode *node)
 	if (nodes.empty())
 		return;
 
-	PxVec3 dir = nodes[ 0]->m_renderNode->getTransform().p - node->m_renderNode->getTransform().p;
+	CDiagramNode *parentNode = nodes[ 0];
+	const PxVec3 parentPos = parentNode->m_renderNode->getTransform().p;
+	PxVec3 dir = parentPos - node->m_renderNode->getTransform().p;
 	dir.normalize();
-	const PxVec3 camPos = node->m_renderNode->getTransform().p - (dir * 5);
 
-	m_sample.getCamera().lookAt(camPos, dir);
+	PxVec3 left = PxVec3(0,1,0).cross(dir);
+	left.normalize();
+	PxVec3 camPos = node->m_renderNode->getTransform().p + (left*3.f) + PxVec3(0,2.5f,0);
+	PxVec3 camDir = parentPos - camPos;
+	camDir.normalize();
+	camPos -= (camDir * .5f);
+
+	m_sample.getCamera().lookAt(camPos, parentPos);
 	const PxTransform viewTm = m_sample.getCamera().getViewMatrix();
 	m_camera->init(viewTm);
+
+
+	map<const genotype_parser::SExpr*, CDiagramNode*> symbols;
+	m_rootDiagram = CreatePhenotypeDiagram( PxVec3(0,0,0), parentNode->m_expr, symbols);
 }
 
 
@@ -101,3 +113,87 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 
 }
 
+
+/**
+ @brief create phenotype diagram
+ @date 2014-03-03
+*/
+CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
+	map<const genotype_parser::SExpr*, CDiagramNode*> &symbols)
+{
+	using namespace genotype_parser;
+
+	auto it = symbols.find(expr);
+	if (symbols.end() != it)
+	{ // Already Exist
+		return it->second;
+	}
+
+	CDiagramNode *diagNode = m_diagramController.CreateDiagramNode(expr);
+	RETV(!diagNode, NULL);
+
+	diagNode->m_renderNode->setTransform(PxTransform(pos));
+	m_diagrams.push_back(diagNode);
+	m_sample.addRenderObject(diagNode->m_renderNode);
+
+	symbols[ expr] = diagNode; // insert
+
+	SConnectionList *connection = expr->connection;
+	SConnectionList *currentCopyConnection = NULL;
+	int childIndex = 0;
+	while (connection)
+	{
+		u_int order=0;
+		PxVec3 newNodePos ;//= GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
+		SConnection *node_con = connection->connect;
+		CDiagramNode *newDiagNode = CreatePhenotypeDiagram(newNodePos, node_con->expr, symbols);
+
+		childIndex++;
+		//--------------------------------------------------------------------------------
+		// copy SConnectionList
+		if (!currentCopyConnection)
+		{
+			currentCopyConnection = new SConnectionList;
+			diagNode->m_expr->connection = currentCopyConnection;
+		}
+		else
+		{
+			SConnectionList *newCopy = new SConnectionList;
+			currentCopyConnection->next = newCopy;
+			currentCopyConnection = newCopy;
+		}
+
+		currentCopyConnection->connect = new SConnection;
+		*currentCopyConnection->connect = *connection->connect;
+		currentCopyConnection->connect->expr = newDiagNode->m_expr;
+		//--------------------------------------------------------------------------------
+
+
+		if (newDiagNode != diagNode)
+		{
+			SDiagramConnection diagramConnection;
+			diagramConnection.connectNode = newDiagNode;
+
+			RenderBezierActor *arrow = m_diagramController.CreateTransition(diagNode, newDiagNode, order);
+			diagramConnection.transitionArrow = arrow;
+			m_sample.addRenderObject(arrow);
+
+			diagNode->m_connectDiagrams.push_back(diagramConnection);
+		}
+		else
+		{
+			SDiagramConnection diagramConnection;
+			diagramConnection.connectNode = newDiagNode;
+
+			RenderBezierActor *arrow = m_diagramController.CreateTransition(diagNode, newDiagNode, order);
+			diagramConnection.transitionArrow = arrow;
+			m_sample.addRenderObject(arrow);	
+
+			diagNode->m_connectDiagrams.push_back(diagramConnection);
+		}
+
+		connection = connection->next;
+	}
+
+	return diagNode;
+}

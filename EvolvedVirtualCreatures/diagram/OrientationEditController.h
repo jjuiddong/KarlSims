@@ -36,12 +36,17 @@ namespace evc
 
 
 	protected:
+		CDiagramNode* CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
+			map<const genotype_parser::SExpr*, CDiagramNode*> &symbols);
 
 
 	private:
 		CEvc &m_sample;
 		CDiagramController &m_diagramController;
 		DefaultCameraController *m_camera;
-		CDiagramNode *m_selectDiagram; // reference
+
+		CDiagramNode *m_rootDiagram;
+		vector<CDiagramNode*> m_diagrams; // reference
+		CDiagramNode *m_selectNode; // reference
 	};
 }

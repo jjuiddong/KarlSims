@@ -72,6 +72,8 @@ extern SDbgConfig *g_pDbgConfig;
 // Global Function
 #include "utility/Utility.h"
 #include "utility/FileLoader.h"
+#include "renderer/RenderModelActor.h"
+#include "renderer/RenderBezierActor.h"
 
 
 #include "global.h"

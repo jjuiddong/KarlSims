@@ -3,8 +3,6 @@
 #include "DiagramNode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "../genoype/GenotypeParser.h"
-#include "../renderer/RenderModelActor.h"
-#include "../renderer/RenderBezierActor.h"
 #include "SimpleCamera.h"
 #include "PopupDiagrams.h"
 #include "../creature/Creature.h"
@@ -20,7 +18,6 @@ CDiagramController::CDiagramController(CEvc &sample) :
 ,	m_selectNode(NULL)
 ,	m_leftButtonDown(false)
 ,	m_rightButtonDown(false)
-//,	m_isLinkDrag(false)
 ,	m_popupDiagrams(NULL)
 ,	m_isLayoutAnimation(false)
 ,	m_creature(NULL)
@@ -79,7 +76,7 @@ void CDiagramController::SetControlCreature(CCreature *creature)//const genotype
 
 	m_diagrams.clear();
 	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
-	m_rootDiagram = CreateDiagramTree(PxVec3(0,0,0), creature->GetGenotype(), diagrams);
+	m_rootDiagram = CreateGenotypeDiagramTree(PxVec3(0,0,0), creature->GetGenotype(), diagrams);
 
 	Layout();
 }
@@ -208,7 +205,7 @@ PxVec3 CDiagramController::LayoutRec(CDiagramNode *node, set<CDiagramNode*> &sym
  @brief create diagram node
  @date 2014-02-12
 */
-CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
+CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
 	map<const genotype_parser::SExpr*, CDiagramNode*> &symbols)
 {
 	using namespace genotype_parser;
@@ -238,7 +235,7 @@ CDiagramNode* CDiagramController::CreateDiagramTree(const PxVec3 &pos, const gen
 		u_int order=0;
 		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
-		CDiagramNode *newDiagNode = CreateDiagramTree(newNodePos, node_con->expr, symbols);
+		CDiagramNode *newDiagNode = CreateGenotypeDiagramTree(newNodePos, node_con->expr, symbols);
 
 		childIndex++;
 		//--------------------------------------------------------------------------------
