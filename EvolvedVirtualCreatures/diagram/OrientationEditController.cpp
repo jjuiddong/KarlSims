@@ -2,15 +2,16 @@
 #include "stdafx.h"
 #include "OrientationEditController.h"
 #include "../EvolvedVirtualCreatures.h"
-#include "DiagramController.h"
-#include "DiagramNode.h"
+#include "GenotypeController.h"
+#include "GenotypeNode.h"
+#include "DiagramUtility.h"
 
 
 using namespace evc;
 
-COrientationEditController::COrientationEditController(CEvc &sample, CDiagramController &diagramController) :
+COrientationEditController::COrientationEditController(CEvc &sample, CGenotypeController &diagramController) :
 	m_sample(sample)
-,	m_diagramController(diagramController)
+,	m_genotypeController(diagramController)
 ,	m_camera(NULL)
 ,	m_selectNode(NULL)
 {
@@ -48,17 +49,17 @@ void COrientationEditController::ControllerSceneInit()
  @brief setting control diagramnode
  @date 2014-03-02
 */
-void COrientationEditController::SetControlDiagram(CDiagramNode *node)
+void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 {
 	m_selectNode = node;
 
 	// setting camera
-	vector<CDiagramNode*> nodes;
-	m_diagramController.GetDiagramsLinkto(node, nodes);
+	vector<CGenotypeNode*> nodes;
+	m_genotypeController.GetDiagramsLinkto(node, nodes);
 	if (nodes.empty())
 		return;
 
-	CDiagramNode *parentNode = nodes[ 0];
+	CGenotypeNode *parentNode = nodes[ 0];
 	const PxVec3 parentPos = parentNode->m_renderNode->getTransform().p;
 	PxVec3 dir = parentPos - node->m_renderNode->getTransform().p;
 	dir.normalize();
@@ -74,8 +75,7 @@ void COrientationEditController::SetControlDiagram(CDiagramNode *node)
 	const PxTransform viewTm = m_sample.getCamera().getViewMatrix();
 	m_camera->init(viewTm);
 
-
-	map<const genotype_parser::SExpr*, CDiagramNode*> symbols;
+	map<const genotype_parser::SExpr*, CGenotypeNode*> symbols;
 	m_rootDiagram = CreatePhenotypeDiagram( PxVec3(0,0,0), parentNode->m_expr, symbols);
 }
 
@@ -118,8 +118,8 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
  @brief create phenotype diagram
  @date 2014-03-03
 */
-CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
-	map<const genotype_parser::SExpr*, CDiagramNode*> &symbols)
+CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
+	map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols)
 {
 	using namespace genotype_parser;
 
@@ -129,7 +129,7 @@ CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &p
 		return it->second;
 	}
 
-	CDiagramNode *diagNode = m_diagramController.CreateDiagramNode(expr);
+	CGenotypeNode *diagNode = CreateGenotypeNode(m_sample, expr);
 	RETV(!diagNode, NULL);
 
 	diagNode->m_renderNode->setTransform(PxTransform(pos));
@@ -146,7 +146,7 @@ CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &p
 		u_int order=0;
 		PxVec3 newNodePos ;//= GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
-		CDiagramNode *newDiagNode = CreatePhenotypeDiagram(newNodePos, node_con->expr, symbols);
+		CGenotypeNode *newDiagNode = CreatePhenotypeDiagram(newNodePos, node_con->expr, symbols);
 
 		childIndex++;
 		//--------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &p
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = m_diagramController.CreateTransition(diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);
 
@@ -185,7 +185,7 @@ CDiagramNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &p
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = m_diagramController.CreateTransition(diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);	
 

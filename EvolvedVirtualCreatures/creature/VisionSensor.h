@@ -12,19 +12,19 @@ class CEvc;
 class RenderBaseActor;
 namespace evc
 {
-	class CPhysNode;
+	class CPhenotypeNode;
 	class CVisionSensor : public CSensor
 	{
 	public:
 		CVisionSensor(CEvc &sample);
 		virtual ~CVisionSensor();
 		virtual const vector<double>& GetOutput() override;
-		void SetSensorInfo(CPhysNode *sensorBody, const float length); 
+		void SetSensorInfo(CPhenotypeNode *sensorBody, const float length); 
 
 
 	private:
 		CEvc &m_Sample;
-		CPhysNode *m_pSensorBody;
+		CPhenotypeNode *m_pSensorBody;
 		RenderBaseActor *m_pSensorRenderActor;
 		float m_DetectLength;
 	};

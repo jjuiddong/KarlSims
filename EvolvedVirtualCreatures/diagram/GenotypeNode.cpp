@@ -1,13 +1,13 @@
 
 #include "stdafx.h"
-#include "DiagramNode.h"
+#include "GenotypeNode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "../renderer/RenderBezierActor.h"
 
 
 using namespace evc;
 
-CDiagramNode::CDiagramNode(CEvc &sample) :
+CGenotypeNode::CGenotypeNode(CEvc &sample) :
 	m_sample(sample)
 ,	m_renderNode(NULL)
 ,	m_highLight(false)
@@ -18,7 +18,7 @@ CDiagramNode::CDiagramNode(CEvc &sample) :
 
 }
 
-CDiagramNode::~CDiagramNode()
+CGenotypeNode::~CGenotypeNode()
 {
 	m_sample.removeRenderObject(m_renderNode);
 	m_renderNode = NULL;
@@ -32,7 +32,7 @@ CDiagramNode::~CDiagramNode()
 
 
 // Render
-void	CDiagramNode::Render()
+void	CGenotypeNode::Render()
 {
 	RET(!m_renderNode);
 	RET(!m_renderNode->isRendering());
@@ -80,7 +80,7 @@ void	CDiagramNode::Render()
  @brief 
  @date 2014-02-26
 */
-void CDiagramNode::Move(float dtime)
+void CGenotypeNode::Move(float dtime)
 {
 	if (m_isAnimationMove)
 	{
@@ -102,7 +102,7 @@ void CDiagramNode::Move(float dtime)
  @brief 
  @date 2014-02-24
 */
-void CDiagramNode::SetHighLight(const bool highLight)
+void CGenotypeNode::SetHighLight(const bool highLight)
 {
 	if (m_highLight != highLight)
 	{
@@ -118,7 +118,7 @@ void CDiagramNode::SetHighLight(const bool highLight)
  @brief move diagram smoothly to target position
  @date 2014-02-26
 */
-void CDiagramNode::AnimateLayout(const PxVec3 &target)
+void CGenotypeNode::AnimateLayout(const PxVec3 &target)
 {
 	m_isAnimationMove = true;
 	m_targetPos = target;
@@ -133,7 +133,7 @@ void CDiagramNode::AnimateLayout(const PxVec3 &target)
 			remove connect node in genotype_parser::SExpr
  @date 2014-02-28
 */
-void CDiagramNode::RemoveConnectNode(const CDiagramNode *rmNode)
+void CGenotypeNode::RemoveConnectNode(const CGenotypeNode *rmNode)
 {
 	// remove m_connectDiagrams
 	BOOST_FOREACH (auto con, m_connectDiagrams)
@@ -142,7 +142,7 @@ void CDiagramNode::RemoveConnectNode(const CDiagramNode *rmNode)
 			m_sample.removeRenderObject(con.transitionArrow);
 	}
 
-	auto newEnd = std::remove(m_connectDiagrams.begin(), m_connectDiagrams.end(), SDiagramConnection((CDiagramNode*)rmNode));
+	auto newEnd = std::remove(m_connectDiagrams.begin(), m_connectDiagrams.end(), SDiagramConnection((CGenotypeNode*)rmNode));
 	m_connectDiagrams.erase(newEnd, m_connectDiagrams.end());
 
 

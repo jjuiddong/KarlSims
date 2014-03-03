@@ -2,15 +2,15 @@
 #include "stdafx.h"
 #include "popupDiagrams.h"
 #include "../EvolvedVirtualCreatures.h"
-#include "DiagramNode.h"
-#include "DiagramController.h"
-
+#include "GenotypeNode.h"
+#include "GenotypeController.h"
+#include "DiagramUtility.h"
 
 
 using namespace evc;
 
 
-CPopupDiagrams::CPopupDiagrams(CEvc &sample, CDiagramController &diagramController) :
+CPopupDiagrams::CPopupDiagrams(CEvc &sample, CGenotypeController &diagramController) :
 	m_sample(sample)
 ,	m_diagramController(diagramController)
 {
@@ -29,7 +29,7 @@ CPopupDiagrams::~CPopupDiagrams()
  @brief Popup Diagrams
  @date 2014-02-26
 */
-bool CPopupDiagrams::Popup(CDiagramNode *srcNode)
+bool CPopupDiagrams::Popup(CGenotypeNode *srcNode)
 {
 	if (srcNode)
 	{
@@ -73,7 +73,7 @@ void CPopupDiagrams::Render()
  @brief create link node of argument node
  @date 2014-02-25
 */
-void CPopupDiagrams::CreateCandidateLinkNode(CDiagramNode *srcNode, const bool isShow) //isShow=true
+void CPopupDiagrams::CreateCandidateLinkNode(CGenotypeNode *srcNode, const bool isShow) //isShow=true
 {
 	if (!srcNode)
 	{
@@ -87,9 +87,9 @@ void CPopupDiagrams::CreateCandidateLinkNode(CDiagramNode *srcNode, const bool i
 		PxVec3 material(0,0.75f,0);
 		const float shapeSize = 0.3f;
 
-		CDiagramNode *node1 = CreateBoxDiagram();
-		CDiagramNode *node2 = CreateSphereDiagram();
-		CDiagramNode *node3 = CreateSensorDiagram();
+		CGenotypeNode *node1 = CreateBoxDiagram();
+		CGenotypeNode *node2 = CreateSphereDiagram();
+		CGenotypeNode *node3 = CreateSensorDiagram();
 
 		m_diagrams.push_back(node1);
 		m_diagrams.push_back(node2);
@@ -105,7 +105,7 @@ void CPopupDiagrams::CreateCandidateLinkNode(CDiagramNode *srcNode, const bool i
 			m_diagrams.pop_back();
 		}
 
-		CDiagramNode *newCurrentNode = m_diagramController.CreateDiagramNode(srcNode->m_expr);
+		CGenotypeNode *newCurrentNode = CreateGenotypeNode(m_sample, srcNode->m_expr);
 		m_sample.addRenderObject(newCurrentNode->m_renderNode);
 		m_diagrams.push_back(newCurrentNode);
 	}
@@ -134,13 +134,13 @@ void CPopupDiagrams::CreateCandidateLinkNode(CDiagramNode *srcNode, const bool i
  @brief create box
  @date 2014-02-26
 */
-CDiagramNode* CPopupDiagrams::CreateBoxDiagram()
+CGenotypeNode* CPopupDiagrams::CreateBoxDiagram()
 {
 	using namespace genotype_parser;
 	PxVec3 material(0,0.75f,0);
 	const float shapeSize = 0.3f;
 
-	CDiagramNode *node = new CDiagramNode(m_sample);
+	CGenotypeNode *node = new CGenotypeNode(m_sample);
 	node->m_name = GenerateId("new Box");
 	node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
@@ -163,13 +163,13 @@ CDiagramNode* CPopupDiagrams::CreateBoxDiagram()
  @brief create sphere
  @date 2014-02-26
 */
-CDiagramNode* CPopupDiagrams::CreateSphereDiagram()
+CGenotypeNode* CPopupDiagrams::CreateSphereDiagram()
 {
 	using namespace genotype_parser;
 	PxVec3 material(0,0.75f,0);
 	const float shapeSize = 0.3f;
 
-	CDiagramNode *node = new CDiagramNode(m_sample);
+	CGenotypeNode *node = new CGenotypeNode(m_sample);
 	node->m_name = GenerateId("new Sphere");
 	node->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), shapeSize);
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
@@ -192,13 +192,13 @@ CDiagramNode* CPopupDiagrams::CreateSphereDiagram()
  @brief create sensor
  @date 2014-02-26
 */
-CDiagramNode* CPopupDiagrams::CreateSensorDiagram()
+CGenotypeNode* CPopupDiagrams::CreateSensorDiagram()
 {
 	using namespace genotype_parser;
 	PxVec3 material(0.75f,0,0);
 	const float shapeSize = 0.3f;
 
-	CDiagramNode *node = new CDiagramNode(m_sample);
+	CGenotypeNode *node = new CGenotypeNode(m_sample);
 	node->m_name = GenerateId("new Sensor");
 	node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), PxVec3(shapeSize,shapeSize,shapeSize));
 	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
@@ -235,12 +235,12 @@ void CPopupDiagrams::DisplayCandidateLinkNode(const bool isShow)
  @brief mouse position x,y to check diagram 3d object
  @date 2014-02-25
 */
-CDiagramNode* CPopupDiagrams::PickupDiagram(physx::PxU32 x, physx::PxU32 y, const bool isShowHighLight)
+CGenotypeNode* CPopupDiagrams::PickupDiagram(physx::PxU32 x, physx::PxU32 y, const bool isShowHighLight)
 {
 	PxVec3 orig, dir, pickOrig;
 	m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
 
-	evc::CDiagramNode *mouseOverNode = NULL;
+	evc::CGenotypeNode *mouseOverNode = NULL;
 
 	BOOST_FOREACH(auto node, m_diagrams)
 	{
@@ -263,7 +263,7 @@ CDiagramNode* CPopupDiagrams::PickupDiagram(physx::PxU32 x, physx::PxU32 y, cons
  @brief remove from popup diagrams
  @date 2014-02-26
 */
-void CPopupDiagrams::RemoveDiagram(CDiagramNode *rmNode)
+void CPopupDiagrams::RemoveDiagram(CGenotypeNode *rmNode)
 {
 	for (u_int i=0; i < m_diagrams.size(); ++i)
 	{

@@ -37,15 +37,6 @@
     <ClCompile Include="..\..\renderer\RenderComposition.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\diagram\DiagramController.cpp">
-      <Filter>Diagram</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\creature\PhysNode.cpp">
-      <Filter>Creature</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\diagram\DiagramNode.cpp">
-      <Filter>Diagram</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\renderer\RendererCompositionShape.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
@@ -89,6 +80,18 @@
       <Filter>Diagram</Filter>
     </ClCompile>
     <ClCompile Include="..\..\diagram\OrientationEditController.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\DiagramUtility.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\PhenotypeNode.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\GenotypeNode.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\GenotypeController.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
   </ItemGroup>
@@ -139,15 +142,6 @@
     <ClInclude Include="..\..\renderer\RenderComposition.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\diagram\DiagramController.h">
-      <Filter>Diagram</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\creature\PhysNode.h">
-      <Filter>Creature</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\diagram\DiagramNode.h">
-      <Filter>Diagram</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\renderer\RendererCompositionShape.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -194,6 +188,18 @@
       <Filter>Diagram</Filter>
     </ClInclude>
     <ClInclude Include="..\..\diagram\OrientationEditController.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\DiagramUtility.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\PhenotypeNode.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\GenotypeNode.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\GenotypeController.h">
       <Filter>Diagram</Filter>
     </ClInclude>
   </ItemGroup>

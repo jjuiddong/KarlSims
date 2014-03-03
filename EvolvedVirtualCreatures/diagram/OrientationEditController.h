@@ -8,19 +8,19 @@
 class CEvc;
 namespace evc
 {
-	class CDiagramController;
-	class CDiagramNode;
+	class CGenotypeController;
+	class CGenotypeNode;
 
 	DECLARE_TYPE_NAME_SCOPE(evc, COrientationEditController)
 	class COrientationEditController: public SampleFramework::InputEventListener,
 														public memmonitor::Monitor<COrientationEditController, TYPE_NAME(COrientationEditController)>
 	{
 	public:
-		COrientationEditController(CEvc &sample, CDiagramController &diagramController);
+		COrientationEditController(CEvc &sample, CGenotypeController &diagramController);
 		virtual ~COrientationEditController();
 
 		void ControllerSceneInit();
-		void SetControlDiagram(CDiagramNode *node);
+		void SetControlDiagram(CGenotypeNode *node);
 
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override {}
@@ -36,17 +36,17 @@ namespace evc
 
 
 	protected:
-		CDiagramNode* CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
-			map<const genotype_parser::SExpr*, CDiagramNode*> &symbols);
+		CGenotypeNode* CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
+			map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
 
 
 	private:
 		CEvc &m_sample;
-		CDiagramController &m_diagramController;
+		CGenotypeController &m_genotypeController;
 		DefaultCameraController *m_camera;
 
-		CDiagramNode *m_rootDiagram;
-		vector<CDiagramNode*> m_diagrams; // reference
-		CDiagramNode *m_selectNode; // reference
+		CGenotypeNode *m_rootDiagram;
+		vector<CGenotypeNode*> m_diagrams; // reference
+		CGenotypeNode *m_selectNode; // reference
 	};
 }

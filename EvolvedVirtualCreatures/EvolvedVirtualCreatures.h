@@ -5,13 +5,13 @@
 */
 #pragma once
 
+
 #include "PhysXSample.h"
 
 namespace evc 
 { 
 	class CCreature;
-	class CDiagramController;
-
+	class CGenotypeController;
 }
 
 // Evc, Evolved Virtual Creatures
@@ -24,7 +24,7 @@ public:
 	CEvc(PhysXSampleApplication& app);
 	virtual ~CEvc();
 
-	evc::CDiagramController* GetDiagramController();
+	evc::CGenotypeController* GetGenotypeController();
 	RenderMaterial* GetMaterial(const PxVec3 &rgb, bool applyVertexColor=true);
 	const list<evc::CCreature*>& GetAllCreature();
 	const list<evc::CCreature*>& GetAllObstacle();
@@ -70,7 +70,7 @@ private:
 	list<evc::CCreature*> m_Creatures;
 	list<evc::CCreature*> m_Obstacles;
 	vector<PxRigidActor*> m_Planet; // composite ground physx actor
-	evc::CDiagramController *m_DiagramController;
+	evc::CGenotypeController *m_genotypeController;
 	map<int, RenderMaterial*> m_Materials; // key=r*100,g*10,b, value = material
 
 	double m_ElapsTime; // for gentic algorithm epoch
@@ -87,4 +87,4 @@ inline PxU32 CEvc::getDebugObjectTypes() const {
 inline const list<evc::CCreature*>& CEvc::GetAllCreature() { return m_Creatures; }
 inline const list<evc::CCreature*>& CEvc::GetAllObstacle() { return m_Obstacles; }
 inline Picking* CEvc::GetPicking() { return mPicking; }
-inline evc::CDiagramController* CEvc::GetDiagramController() { return m_DiagramController; }
+inline evc::CGenotypeController* CEvc::GetGenotypeController() { return m_genotypeController; }

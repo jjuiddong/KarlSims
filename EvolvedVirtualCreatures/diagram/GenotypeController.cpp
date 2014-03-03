@@ -1,17 +1,18 @@
 #include "stdafx.h"
-#include "DiagramController.h"
-#include "DiagramNode.h"
+#include "GenotypeController.h"
+#include "GenotypeNode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "../genoype/GenotypeParser.h"
 #include "SimpleCamera.h"
 #include "PopupDiagrams.h"
 #include "../creature/Creature.h"
 #include "OrientationEditController.h"
+#include "DiagramUtility.h"
 
 
 using namespace evc;
 
-CDiagramController::CDiagramController(CEvc &sample) :
+CGenotypeController::CGenotypeController(CEvc &sample) :
 	m_sample(sample)
 ,	m_rootDiagram(NULL)
 ,	m_camera(NULL)
@@ -27,10 +28,10 @@ CDiagramController::CDiagramController(CEvc &sample) :
 
 }
 
-CDiagramController::~CDiagramController()
+CGenotypeController::~CGenotypeController()
 {
-	set<CDiagramNode*> diags;
-	RemoveDiagramTree(m_rootDiagram, diags);
+	set<CGenotypeNode*> diags;
+	RemoveGenotypeTree(m_sample, m_rootDiagram);
 	m_rootDiagram = NULL;
 
 	SAFE_DELETE(m_OrientationEditController);
@@ -43,7 +44,7 @@ CDiagramController::~CDiagramController()
  @brief Init Diagram Controller Scene
  @date 2014-02-24
 */
-void CDiagramController::ControllerSceneInit()
+void CGenotypeController::ControllerSceneInit()
 {
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(CSimpleCamera)();
@@ -66,16 +67,15 @@ void CDiagramController::ControllerSceneInit()
  @brief SetControlCreature
  @date 2014-02-12
 */
-void CDiagramController::SetControlCreature(CCreature *creature)//const genotype_parser::SExpr *expr)
+void CGenotypeController::SetControlCreature(CCreature *creature)//const genotype_parser::SExpr *expr)
 {
 	m_creature = creature;
 
-	set<CDiagramNode*> diags;
-	RemoveDiagramTree(m_rootDiagram, diags);
+	RemoveGenotypeTree(m_sample, m_rootDiagram);
 	m_rootDiagram = NULL;
 
 	m_diagrams.clear();
-	map<const genotype_parser::SExpr*, CDiagramNode*> diagrams;
+	map<const genotype_parser::SExpr*, CGenotypeNode*> diagrams;
 	m_rootDiagram = CreateGenotypeDiagramTree(PxVec3(0,0,0), creature->GetGenotype(), diagrams);
 
 	Layout();
@@ -86,7 +86,7 @@ void CDiagramController::SetControlCreature(CCreature *creature)//const genotype
  @brief Render
  @date 2014-02-26
 */
-void CDiagramController::Render()
+void CGenotypeController::Render()
 {
 	BOOST_FOREACH (auto node, m_diagrams)
 		node->Render();
@@ -107,7 +107,7 @@ void CDiagramController::Render()
  @brief 
  @date 2014-02-12
 */
-void CDiagramController::Move(float dtime)
+void CGenotypeController::Move(float dtime)
 {
 	BOOST_FOREACH (auto node, m_diagrams)
 		node->Move(dtime);
@@ -120,7 +120,7 @@ void CDiagramController::Move(float dtime)
  @brief Transition Arrow Animation
  @date 2014-02-26
 */
-void CDiagramController::TransitionAnimation(const float dtime)
+void CGenotypeController::TransitionAnimation(const float dtime)
 {
 	RET(!m_isLayoutAnimation);
 
@@ -130,7 +130,7 @@ void CDiagramController::TransitionAnimation(const float dtime)
 
 	BOOST_FOREACH (auto node, m_diagrams)
 	{
-		map<CDiagramNode*,u_int> orders;
+		map<CGenotypeNode*,u_int> orders;
 		BOOST_FOREACH  (auto conNode, node->m_connectDiagrams)
 			orders[ conNode.connectNode] = 0; // init
 
@@ -147,9 +147,9 @@ void CDiagramController::TransitionAnimation(const float dtime)
  @brief calcuate Layout
  @date 2014-02-27
 */
-void CDiagramController::Layout(const PxVec3 &pos) // pos=PxVec3(0,0,0)
+void CGenotypeController::Layout(const PxVec3 &pos) // pos=PxVec3(0,0,0)
 {
-	set<CDiagramNode*> symbols;
+	set<CGenotypeNode*> symbols;
 	LayoutRec(m_rootDiagram, symbols, pos);
 
 	m_isLayoutAnimation = true;
@@ -161,7 +161,7 @@ void CDiagramController::Layout(const PxVec3 &pos) // pos=PxVec3(0,0,0)
  @brief caculate diagram poisitioning
  @date 2014-02-12
 */
-PxVec3 CDiagramController::LayoutRec(CDiagramNode *node, set<CDiagramNode*> &symbols, const PxVec3 &pos)
+PxVec3 CGenotypeController::LayoutRec(CGenotypeNode *node, set<CGenotypeNode*> &symbols, const PxVec3 &pos)
 {
 	RETV(!node, PxVec3(0,0,0));
 
@@ -175,14 +175,14 @@ PxVec3 CDiagramController::LayoutRec(CDiagramNode *node, set<CDiagramNode*> &sym
 	const PxVec3 dimension = utility::Vec3toPxVec3(node->m_expr->dimension);
 	const float radius = max(dimension.x*2.f+1, 2);
 
-	map<CDiagramNode*,u_int> orders;
+	map<CGenotypeNode*,u_int> orders;
 	BOOST_FOREACH (auto child, node->m_connectDiagrams)
 		orders[ child.connectNode] = 0;
 
 	PxVec3 offset(radius,0,0);
 	BOOST_FOREACH (auto child, node->m_connectDiagrams)
 	{
-		CDiagramNode *childNode = child.connectNode;
+		CGenotypeNode *childNode = child.connectNode;
 		const PxVec3 childOffset = LayoutRec(childNode, symbols, pos+offset);
 		offset.y += childOffset.y;
 
@@ -205,8 +205,8 @@ PxVec3 CDiagramController::LayoutRec(CDiagramNode *node, set<CDiagramNode*> &sym
  @brief create diagram node
  @date 2014-02-12
 */
-CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
-	map<const genotype_parser::SExpr*, CDiagramNode*> &symbols)
+CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos, const genotype_parser::SExpr *expr, 
+	map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols)
 {
 	using namespace genotype_parser;
 
@@ -216,7 +216,7 @@ CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, c
 		return it->second;
 	}
 
-	CDiagramNode *diagNode = CreateDiagramNode(expr);
+	CGenotypeNode *diagNode = CreateGenotypeNode(m_sample, expr);
 	RETV(!diagNode, NULL);
 
 	diagNode->m_renderNode->setTransform(PxTransform(pos));
@@ -235,7 +235,7 @@ CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, c
 		u_int order=0;
 		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
-		CDiagramNode *newDiagNode = CreateGenotypeDiagramTree(newNodePos, node_con->expr, symbols);
+		CGenotypeNode *newDiagNode = CreateGenotypeDiagramTree(newNodePos, node_con->expr, symbols);
 
 		childIndex++;
 		//--------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, c
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);
 
@@ -274,7 +274,7 @@ CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, c
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);	
 
@@ -288,153 +288,13 @@ CDiagramNode* CDiagramController::CreateGenotypeDiagramTree(const PxVec3 &pos, c
 }
 
 
-/**
- @brief calcuate transition bezier curve position
- @date 2014-02-26
-*/
-void CDiagramController::CalcuateTransitionPositions(CDiagramNode *from, CDiagramNode *to, const u_int order, OUT vector<PxVec3> &out)
-{
-	PxVec3 pos = from->m_renderNode->getTransform().p;
-
-	if (from == to)
-	{
-		const float dimensionY = to->m_expr? to->m_expr->dimension.y : 1.f;
-		PxVec3 arrowPos = pos + PxVec3(-0.f,dimensionY+0.1f,0);
-
-		const float offset = 0.7f;
-		out.push_back( arrowPos );
-		out.push_back( arrowPos + PxVec3(-offset,offset,0) );
-		out.push_back( arrowPos + PxVec3(offset,offset,0) );
-		out.push_back( arrowPos );
-	}
-	else
-	{
-		PxVec3 newNodePos = to->m_renderNode->getTransform().p;
-
-		PxVec3 dir = newNodePos - pos;
-		float len = dir.magnitude();
-		dir.normalize();
-
-		PxVec3 interSectPos;
-		if (to->m_renderNode->IntersectTri(pos, dir, interSectPos))
-		{
-			dir = interSectPos - pos;
-			len = dir.magnitude();
-			dir.normalize();
-			newNodePos = pos + dir*len;
-		}
-
-		PxVec3 c = dir.cross(PxVec3(0,0,((order % 2)? -1 : 1)));
-		const float curveH = 0.4f + ((float)order/2.f) * 0.5f;
-
-		out.push_back( pos );
-		out.push_back( pos + (dir*len*0.5f) - c*curveH );
-		out.push_back( out[1] );
-		out.push_back( newNodePos );
-	}
-}
-
-
-/**
- @brief Create Transition
- @date 2014-02-25
-*/
-RenderBezierActor* CDiagramController::CreateTransition(CDiagramNode *from, CDiagramNode *to, const u_int order)//order=0
-{
-	vector<PxVec3> points;
-	CalcuateTransitionPositions(from, to, order, points);
-	RenderBezierActor *arrow = new RenderBezierActor(*m_sample.getRenderer(), points);
-	return arrow;
-}
-
-
-/**
- @brief Move Transition Arrow
- @date 2014-02-26
-*/
-void CDiagramController::MoveTransition(RenderBezierActor *transition, CDiagramNode *from, CDiagramNode *to, const u_int order)
-{
-	RET(!transition);
-	vector<PxVec3> points;
-	CalcuateTransitionPositions(from, to, order, points);
-	transition->SetBezierCurve(points);
-}
-
-
-/**
- @brief create CDiagramNode
- @date 2014-02-25
-*/
-CDiagramNode* CDiagramController::CreateDiagramNode(const genotype_parser::SExpr *expr)
-{
-	const bool IsSensorNode = !expr;
-	CDiagramNode *node = new CDiagramNode(m_sample);
-	node->m_name = expr? expr->id : "sensor";
-	if (expr)
-	{
-		node->m_expr = new genotype_parser::SExpr();
-		*node->m_expr = *expr;
-	}
-	else
-	{ // sensor
-		node->m_expr = new genotype_parser::SExpr();
-		node->m_expr->id = "sensor";
-		node->m_expr->dimension = genotype_parser::SVec3(0.4f,0.4f,0.4f);
-		node->m_expr->material = genotype_parser::SVec3(0,0.75f,0);
-		node->m_expr->isSensor = true;
-	}
-
-	PxVec3 dimension = expr? utility::Vec3toPxVec3(expr->dimension) : PxVec3(0.4f,0.4f,0.4f);
-
-	if (IsSensorNode)
-	{ // Sensor
-		node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
-	}
-	else if (boost::iequals(expr->shape, "sphere"))
-	{
-		node->m_renderNode = SAMPLE_NEW(RenderSphereActor)(*m_sample.getRenderer(), dimension.x);
-	}
-	else
-	{
-		node->m_renderNode = SAMPLE_NEW2(RenderBoxActor)(*m_sample.getRenderer(), dimension);
-	}
-
-	PxVec3 material = expr? utility::Vec3toPxVec3(expr->material) : PxVec3(0,0.75f,0);
-	node->m_renderNode->setRenderMaterial( m_sample.GetMaterial(material, false) );
-	node->m_material = material;
-
-	return node;
-}
-
-
-/**
- @brief remove diagram
- @date 2014-02-12
-*/
-void CDiagramController::RemoveDiagramTree(CDiagramNode *node, set<CDiagramNode*> &diagrams)
-{
-	RET(!node);
-	if (diagrams.end() != diagrams.find(node))
-		return; // already removed
-
-	diagrams.insert(node);
-
-	BOOST_FOREACH (auto conNode, node->m_connectDiagrams)
-	{
-		m_sample.removeRenderObject(conNode.transitionArrow);
-		RemoveDiagramTree(conNode.connectNode, diagrams);
-	}
-	node->m_connectDiagrams.clear();
-
-	SAFE_DELETE(node);
-}
 
 
 /**
  @brief Mouse Event
  @date 2014-02-24
 */
-void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&ie, 
+void CGenotypeController::onPointerInputEvent(const SampleFramework::InputEvent&ie, 
 	physx::PxU32 x, physx::PxU32 y, physx::PxReal dx, physx::PxReal dy, bool val)
 {
 	const bool isLeftBtnDown = ((GetKeyState(VK_LBUTTON) & 0x80) != 0);
@@ -499,7 +359,7 @@ void CDiagramController::onPointerInputEvent(const SampleFramework::InputEvent&i
  @brief Digital Input Event Handler
  @date 2014-02-27
 */
-void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
+void CGenotypeController::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 {
 	switch (ie.m_Id)
 	{
@@ -523,13 +383,13 @@ void CDiagramController::onDigitalInputEvent(const SampleFramework::InputEvent &
  @brief mouse position x,y to check diagram 3d object
  @date 2014-02-25
 */
-CDiagramNode* CDiagramController::PickupDiagram(physx::PxU32 x, physx::PxU32 y, 
+CGenotypeNode* CGenotypeController::PickupDiagram(physx::PxU32 x, physx::PxU32 y, 
 	const bool isCheckLinkDiagram, const bool isShowHighLight)
 {
 	PxVec3 orig, dir, pickOrig;
 	m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
 
-	evc::CDiagramNode *mouseOverNode = NULL;
+	evc::CGenotypeNode *mouseOverNode = NULL;
 
 	// Check Diagrams
 	BOOST_FOREACH(auto node, m_diagrams)
@@ -560,7 +420,7 @@ CDiagramNode* CDiagramController::PickupDiagram(physx::PxU32 x, physx::PxU32 y,
  @brief Insert Diagram
  @date 2014-02-25
 */
-bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertNode)
+bool CGenotypeController::InsertDiagram(CGenotypeNode *node, CGenotypeNode *insertNode)
 {
 	RETV(!node, false);
 	RETV(!insertNode, false);
@@ -605,7 +465,7 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 	insertNode->m_isRenderText = true;
 
 	SDiagramConnection diagConnection;
-	diagConnection.transitionArrow = CreateTransition(node, insertNode, order);
+	diagConnection.transitionArrow = CreateTransition(m_sample, node, insertNode, order);
 	diagConnection.connectNode = insertNode;
 	m_sample.addRenderObject(diagConnection.transitionArrow);
 	node->m_connectDiagrams.push_back(diagConnection);
@@ -626,7 +486,7 @@ bool CDiagramController::InsertDiagram(CDiagramNode *node, CDiagramNode *insertN
 			remove SExpr Node
  @date 2014-02-27
 */
-bool CDiagramController::RemoveDiagram(CDiagramNode *rmNode)
+bool CGenotypeController::RemoveDiagram(CGenotypeNode *rmNode)
 {
 	RETV(!rmNode, false);
 
@@ -651,9 +511,9 @@ bool CDiagramController::RemoveDiagram(CDiagramNode *rmNode)
  @brief remove non pointing node
  @date 2014-02-28
 */
-void CDiagramController::RemoveUnlinkDiagram()
+void CGenotypeController::RemoveUnlinkDiagram()
 {
-	map<CDiagramNode*, int> nodesPointing;
+	map<CGenotypeNode*, int> nodesPointing;
 	BOOST_FOREACH (auto node, m_diagrams)
 		nodesPointing[ node] = 0;
 
@@ -672,7 +532,7 @@ void CDiagramController::RemoveUnlinkDiagram()
 	{
 		if (kv.second > 0)
 			continue;
-		CDiagramNode *nonPointingNode = kv.first;
+		CGenotypeNode *nonPointingNode = kv.first;
 		if (boost::iequals(nonPointingNode->m_name, "main"))
 			continue; // except main diagram
 
@@ -686,151 +546,12 @@ void CDiagramController::RemoveUnlinkDiagram()
 
 
 /**
- @brief calcuate diagram poisition
- @date 2014-02-25
-*/
-PxVec3 CDiagramController::GetDiagramPosition(CDiagramNode *parent, CDiagramNode *dispNode, OUT u_int &order)
-{
-	RETV(!parent, PxVec3(0,0,0));
-	RETV(!dispNode, PxVec3(0,0,0));
-
-	const PxVec3 dimension = utility::Vec3toPxVec3(parent->m_expr->dimension);
-	const float radius = max(dimension.x*2.f +1, 2);
-
-	set<string> symbols;
-	PxVec3 val(radius,0,0);
-	BOOST_FOREACH (auto child, parent->m_connectDiagrams)
-	{
-		CDiagramNode *childNode = child.connectNode;
-		if (boost::iequals(parent->m_name, child.connectNode->m_name))
-			continue;
-		if (symbols.end() != symbols.find(childNode->m_name))
-			continue; // already exist
-		if (child.connectNode == dispNode)
-			break;
-
-		symbols.insert(childNode->m_name);
-		const PxVec3 childDimension = utility::Vec3toPxVec3(childNode->m_expr->dimension);
-		const float height = max(childDimension.y*2.f +1, 2);
-		val += PxVec3(0,height,0);
-	}
-
-	// find order
-	order = 0;
-	BOOST_FOREACH (auto child, parent->m_connectDiagrams)
-	{
-		if (child.connectNode == dispNode)
-			++order;
-	}
-
-	return val + parent->m_renderNode->getTransform().p;
-}
-
-
-/**
-@brief calcuate diagram poisition
- @date 2014-02-25
-*/
-PxVec3 CDiagramController::GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr, const PxVec3 &parentPos, 
-	const u_int index, OUT u_int &order)
-{
-	RETV(!parent_expr, PxVec3(0,0,0));
-
-	using namespace genotype_parser;
-	const PxVec3 dimension = utility::Vec3toPxVec3(parent_expr->dimension);
-	const float radius = max(dimension.x*2.f +1, 2);
-
-	order = 0;
-	set<string> symbols;
-	PxVec3 val(radius,0,0);
-
-	int i=-1;
-	SConnectionList *conList = parent_expr->connection;
-	while (conList)
-	{
-		++i;
-		
-		SConnection *con = conList->connect;
-		if (!con->expr) {
-			conList = conList->next; // next node
-			continue;
-		}
-		if (boost::iequals(parent_expr->id, con->expr->id)) {
-			conList = conList->next; // next node
-			continue;
-		}
-		if (symbols.end() != symbols.find(con->expr->id))
-		{
-			++order;
-			if (i >= (int)index)
-			{
-				break;
-			}
-			else
-			{
-				conList = conList->next; // next node
-				continue; // already exist
-			}
-		}
-		else
-		{
-			order = 0;
-		}
-
-		if (i >= (int)index)
-			break;
-		symbols.insert(con->expr->id);
-
-		const PxVec3 childDimension = utility::Vec3toPxVec3(con->expr->dimension);
-		const float height = max(childDimension.y*2.f +1, 2);
-		val += PxVec3(0,height,0);
-
-		conList = conList->next; // next node
-	}
-
-
-	//for (u_int i=0; i < parent->m_connectDiagrams.size(); ++i)
-	//{
-	//	CDiagramNode *childNode = parent->m_connectDiagrams[ i].connectNode;
-	//	if (boost::iequals(parent->m_name, childNode->m_name))
-	//		continue;
-	//	if (symbols.end() != symbols.find(childNode->m_name))
-	//	{
-	//		++order;
-	//		if (i >= index)
-	//		{
-	//			break;
-	//		}
-	//		else
-	//		{
-	//			continue; // already exist
-	//		}
-	//	}
-	//	else
-	//	{
-	//		order = 0;
-	//	}
-
-	//	if (i >= index)
-	//		break;
-	//	symbols.insert(childNode->m_name);
-
-	//	const PxVec3 childDimension = utility::Vec3toPxVec3(childNode->m_expr->dimension);
-	//	const float height = max(childDimension.y*2.f +1, 2);
-	//	val += PxVec3(0,height,0);
-	//}
-
-	return val + parentPos;
-}
-
-
-/**
  @brief MouseLButtonDown
  @date 2014-02-25
 */
-void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
+void CGenotypeController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
-	CDiagramNode *mouseOverNode = PickupDiagram(x, y, false, true);
+	CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
 
 	SelectNode(mouseOverNode);
 
@@ -855,11 +576,11 @@ void CDiagramController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
  @brief Mouse Left Button Up Event
  @date 2014-02-25
 */
-void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
+void CGenotypeController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
 	if ((MODE_LINK==m_controlMode) && m_selectNode)
 	{
-		CDiagramNode *mouseOverNode = PickupDiagram(x, y, true, true);
+		CGenotypeNode *mouseOverNode = PickupDiagram(x, y, true, true);
 		if (mouseOverNode)
 		{
 			if (m_selectNode == mouseOverNode)
@@ -892,9 +613,9 @@ void CDiagramController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
  @brief Mouse Right Button Down
  @date 2014-02-25
 */
-void CDiagramController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
+void CGenotypeController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
-	CDiagramNode *mouseOverNode = PickupDiagram(x, y, false, true);
+	CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
 
 	SelectNode(mouseOverNode, false);
 
@@ -920,7 +641,7 @@ void CDiagramController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
  @brief 
  @date 2014-02-25
 */
-void CDiagramController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
+void CGenotypeController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
 
 }
@@ -930,7 +651,7 @@ void CDiagramController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
  @brief 
  @date 2014-02-25
 */
-void CDiagramController::MouseMove(physx::PxU32 x, physx::PxU32 y)
+void CGenotypeController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 {
 	PickupDiagram(x, y, (MODE_LINK==m_controlMode), true);
 
@@ -948,7 +669,7 @@ void CDiagramController::MouseMove(physx::PxU32 x, physx::PxU32 y)
  @brief select node
  @date 2014-02-24
 */
-void CDiagramController::SelectNode(CDiagramNode *node, const bool isShowPopupDiagrams) //isShowPopupDiagrams=true
+void CGenotypeController::SelectNode(CGenotypeNode *node, const bool isShowPopupDiagrams) //isShowPopupDiagrams=true
 {
 	m_selectNode = node;
 
@@ -965,7 +686,7 @@ void CDiagramController::SelectNode(CDiagramNode *node, const bool isShowPopupDi
  @brief creature genotype update
  @date 2014-02-27
 */
-void CDiagramController::UpdateCreature()
+void CGenotypeController::UpdateCreature()
 {
 	RET(!m_creature);
 	m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
@@ -981,7 +702,7 @@ void CDiagramController::UpdateCreature()
  @brief Change ControllerScene
  @date 2014-03-02
 */
-void CDiagramController::ChangeControllerMode(const MODE mode)
+void CGenotypeController::ChangeControllerMode(const MODE mode)
 {
 	switch (mode)
 	{
@@ -1008,7 +729,7 @@ void CDiagramController::ChangeControllerMode(const MODE mode)
  @brief get diagrams pointing to DiagramNode*
  @date 2014-03-02
 */
-bool CDiagramController::GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagramNode*> &out)
+bool CGenotypeController::GetDiagramsLinkto(CGenotypeNode *to, OUT vector<CGenotypeNode*> &out)
 {
 	RETV(!m_rootDiagram, false);
 
@@ -1034,7 +755,7 @@ bool CDiagramController::GetDiagramsLinkto(CDiagramNode *to, OUT vector<CDiagram
  @brief get from diagram child node
  @date 2014-03-02
 */
-bool CDiagramController::GetDiagramsLinkfrom(CDiagramNode *from, OUT vector<CDiagramNode*> &out)
+bool CGenotypeController::GetDiagramsLinkfrom(CGenotypeNode *from, OUT vector<CGenotypeNode*> &out)
 {
 	RETV(!from, false);
 

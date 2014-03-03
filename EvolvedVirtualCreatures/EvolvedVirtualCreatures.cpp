@@ -19,10 +19,9 @@
 #include <SampleUserInputIds.h>
 #include <SampleUserInputDefines.h>
 
-//#include "Picking.h"
 #include "Creature/Creature.h"
 #include "genetic/GeneticAlgorithm.h"
-#include "diagram/DiagramController.h"
+#include "diagram/GenotypeController.h"
 
 
 
@@ -40,7 +39,7 @@ CEvc::CEvc(PhysXSampleApplication& app) :
 ,	m_ElapsTime(NULL)
 ,	m_Age(0)
 ,	m_Gap(10.f)
-,	m_DiagramController(NULL)
+,	m_genotypeController(NULL)
 ,	m_IsApplyCustomGravity(false)
 {
 	mCreateGroundPlane = true;
@@ -55,7 +54,7 @@ void CEvc::onShutdown()
 {
 	RemoveAllCreatures();
 	evc::CGeneticAlgorithm::Release();
-	SAFE_DELETE(m_DiagramController);
+	SAFE_DELETE(m_genotypeController);
 
 	BOOST_FOREACH (auto kv, m_Materials)
 		kv.second->release();
@@ -155,7 +154,7 @@ void CEvc::onInit()
 			m_Planet.push_back(actor);
 	}
 
-	m_DiagramController = new evc::CDiagramController(*this);
+	m_genotypeController = new evc::CGenotypeController(*this);
 
 	//registerInputEvents(m_DiagramController);
 	//getPlatform().
@@ -173,8 +172,8 @@ void CEvc::customizeRender()
 	//d3dDevice->SetVertexDeclaration(g_decl);
 	//d3dDevice->SetStreamSource( 0, g_pVB, 0, sizeof( CUSTOMVERTEX ) );
 	//d3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 1 );
-	if (m_DiagramController)
-		m_DiagramController->Render();
+	if (m_genotypeController)
+		m_genotypeController->Render();
 }
 
 
@@ -184,8 +183,8 @@ void	CEvc::onTickPreRender(float dtime)
 
 	PxSceneWriteLock scopedLock(*mScene);
 
-	if (m_DiagramController)
-		m_DiagramController->Move(dtime);
+	if (m_genotypeController)
+		m_genotypeController->Move(dtime);
 
 	BOOST_FOREACH (auto &creature, m_Creatures)
 		creature->Move(dtime);
@@ -359,8 +358,8 @@ void CEvc::spawnNode( const int key )
 				pnode->GenerateProgressive(fileNames[ idx], pos, ((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL), g_pDbgConfig->displaySkinning); 
 			}
 
-			m_DiagramController->ControllerSceneInit();
-			m_DiagramController->SetControlCreature(pnode);
+			m_genotypeController->ControllerSceneInit();
+			m_genotypeController->SetControlCreature(pnode);
 		}
 		break;
 
@@ -476,8 +475,8 @@ void CEvc::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 		}
 	}
 
-	if (m_DiagramController)
-		m_DiagramController->onDigitalInputEvent(ie,val);
+	if (m_genotypeController)
+		m_genotypeController->onDigitalInputEvent(ie,val);
 }
 
 
@@ -490,8 +489,8 @@ void CEvc::onPointerInputEvent(const SampleFramework::InputEvent& ie,
 {
 	PhysXSample::onPointerInputEvent(ie, x, y, dx, dy, val);
 
-	if (m_DiagramController)
-		m_DiagramController->onPointerInputEvent(ie,x,y,dx,dy,val);
+	if (m_genotypeController)
+		m_genotypeController->onPointerInputEvent(ie,x,y,dx,dy,val);
 }
 
 

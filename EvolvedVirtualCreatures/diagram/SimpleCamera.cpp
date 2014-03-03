@@ -1,8 +1,8 @@
 
 #include "stdafx.h"
 #include "SimpleCamera.h"
-#include "DiagramController.h"
-#include "DiagramNode.h"
+#include "GenotypeController.h"
+#include "GenotypeNode.h"
 #include "../EvolvedVirtualCreatures.h"
 #include "SampleUserInputIds.h"
 

@@ -9,15 +9,15 @@ class CEvc;
 class RenderBezierActor;
 namespace evc
 {
-	class CDiagramNode;
+	class CGenotypeNode;
 
 	// SDiagramConnection struct
 	struct SDiagramConnection
 	{
 		RenderBezierActor *transitionArrow;
-		CDiagramNode *connectNode; // reference
+		CGenotypeNode *connectNode; // reference
 		SDiagramConnection() : transitionArrow(NULL), connectNode(NULL) {}
-		SDiagramConnection(CDiagramNode *node) : connectNode(node), transitionArrow(NULL) {}
+		SDiagramConnection(CGenotypeNode *node) : connectNode(node), transitionArrow(NULL) {}
 
 		bool operator==(const SDiagramConnection &rhs) {
 			return connectNode == rhs.connectNode;
@@ -25,17 +25,17 @@ namespace evc
 	};
 
 
-	// CDiagramNode class
-	class CDiagramNode
+	// CGenotypeNode class
+	class CGenotypeNode
 	{
 	public:
-		CDiagramNode(CEvc &sample);
-		virtual ~CDiagramNode();
+		CGenotypeNode(CEvc &sample);
+		virtual ~CGenotypeNode();
 		void Move(float dtime);
 		void	Render();
 		void SetHighLight(const bool highLight);
 		void AnimateLayout(const PxVec3 &target);
-		void RemoveConnectNode(const CDiagramNode *rmNode);
+		void RemoveConnectNode(const CGenotypeNode *rmNode);
 
 
 	public:
