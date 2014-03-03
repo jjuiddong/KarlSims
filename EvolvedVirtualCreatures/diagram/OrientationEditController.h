@@ -16,7 +16,7 @@ namespace evc
 														public memmonitor::Monitor<COrientationEditController, TYPE_NAME(COrientationEditController)>
 	{
 	public:
-		COrientationEditController(CEvc &sample, CGenotypeController &diagramController);
+		COrientationEditController(CEvc &sample, CGenotypeController &genotypeController);
 		virtual ~COrientationEditController();
 
 		void ControllerSceneInit();
@@ -36,7 +36,8 @@ namespace evc
 
 
 	protected:
-		CGenotypeNode* CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
+		CGenotypeNode* CreatePhenotypeDiagram(const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1,
+			const PxVec3 &pos, genotype_parser::SExpr *expr, 
 			map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
 
 

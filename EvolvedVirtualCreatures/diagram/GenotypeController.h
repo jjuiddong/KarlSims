@@ -39,6 +39,7 @@ namespace evc
 		vector<CGenotypeNode*>& GetDiagrams();
 		bool GetDiagramsLinkto(CGenotypeNode *to, OUT vector<CGenotypeNode*> &out);
 		bool GetDiagramsLinkfrom(CGenotypeNode *from, OUT vector<CGenotypeNode*> &out);
+		void Show(const bool isShow);
 
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override;

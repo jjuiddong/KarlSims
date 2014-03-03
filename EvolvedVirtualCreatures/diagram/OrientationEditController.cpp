@@ -9,19 +9,22 @@
 
 using namespace evc;
 
-COrientationEditController::COrientationEditController(CEvc &sample, CGenotypeController &diagramController) :
+COrientationEditController::COrientationEditController(CEvc &sample, CGenotypeController &genotypeController) :
 	m_sample(sample)
-,	m_genotypeController(diagramController)
+,	m_genotypeController(genotypeController)
 ,	m_camera(NULL)
 ,	m_selectNode(NULL)
+,	m_rootDiagram(NULL)
 {
 
 }
 
 COrientationEditController::~COrientationEditController()
 {
-	SAFE_DELETE(m_camera);
+	RemoveGenotypeTree(m_sample, m_rootDiagram);
+	m_rootDiagram = NULL;
 
+	SAFE_DELETE(m_camera);
 }
 
 
@@ -34,8 +37,8 @@ void COrientationEditController::ControllerSceneInit()
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(DefaultCameraController)();
 
-	m_sample.getApplication().setMouseCursorHiding(true);
-	m_sample.getApplication().setMouseCursorRecentering(true);
+	m_sample.getApplication().setMouseCursorHiding(false);
+	m_sample.getApplication().setMouseCursorRecentering(false);
 
 	m_camera->init(PxVec3(0.0f, 3.0f, 10.0f), PxVec3(0.f, 0, 0.0f));
 	m_camera->setMouseSensitivity(0.5f);
@@ -52,6 +55,8 @@ void COrientationEditController::ControllerSceneInit()
 void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 {
 	m_selectNode = node;
+	RemoveGenotypeTree(m_sample, m_rootDiagram);
+	m_rootDiagram = NULL;
 
 	// setting camera
 	vector<CGenotypeNode*> nodes;
@@ -75,8 +80,11 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 	const PxTransform viewTm = m_sample.getCamera().getViewMatrix();
 	m_camera->init(viewTm);
 
+
 	map<const genotype_parser::SExpr*, CGenotypeNode*> symbols;
-	m_rootDiagram = CreatePhenotypeDiagram( PxVec3(0,0,0), parentNode->m_expr, symbols);
+	m_rootDiagram = CreatePhenotypeDiagram(
+		PxTransform::createIdentity(), PxTransform::createIdentity(), PxTransform::createIdentity(), 
+		PxVec3(0,0,0), parentNode->m_expr, symbols);
 }
 
 
@@ -118,8 +126,9 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
  @brief create phenotype diagram
  @date 2014-03-03
 */
-CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &pos, genotype_parser::SExpr *expr,
-	map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols)
+CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
+	const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1, 
+	const PxVec3 &pos, genotype_parser::SExpr *expr, map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols)
 {
 	using namespace genotype_parser;
 
@@ -132,7 +141,10 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &
 	CGenotypeNode *diagNode = CreateGenotypeNode(m_sample, expr);
 	RETV(!diagNode, NULL);
 
-	diagNode->m_renderNode->setTransform(PxTransform(pos));
+	//diagNode->m_renderNode->setTransform(PxTransform(pos));
+
+	PxTransform curTm = parentTm * tm0.getInverse() * tm1;
+	diagNode->m_renderNode->setTransform(curTm);
 	m_diagrams.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
@@ -144,9 +156,13 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(const PxVec3 &
 	while (connection)
 	{
 		u_int order=0;
-		PxVec3 newNodePos ;//= GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
+		//PxVec3 newNodePos;//= GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
-		CGenotypeNode *newDiagNode = CreatePhenotypeDiagram(newNodePos, node_con->expr, symbols);
+		PxTransform newTm0, newTm1;
+		GetJointTransform(NULL, node_con, newTm0, newTm1);
+		newTm0 = newTm0.getInverse(); // genotype script return inverse transform to use joint parameter
+		newTm1 = newTm1.getInverse();
+		CGenotypeNode *newDiagNode = CreatePhenotypeDiagram(curTm, newTm0, newTm1, PxVec3(0,0,0), node_con->expr, symbols);
 
 		childIndex++;
 		//--------------------------------------------------------------------------------

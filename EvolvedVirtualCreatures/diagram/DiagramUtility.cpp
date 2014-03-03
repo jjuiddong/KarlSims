@@ -265,37 +265,75 @@ PxVec3 evc::GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr,
 		conList = conList->next; // next node
 	}
 
-
-	//for (u_int i=0; i < parent->m_connectDiagrams.size(); ++i)
-	//{
-	//	CDiagramNode *childNode = parent->m_connectDiagrams[ i].connectNode;
-	//	if (boost::iequals(parent->m_name, childNode->m_name))
-	//		continue;
-	//	if (symbols.end() != symbols.find(childNode->m_name))
-	//	{
-	//		++order;
-	//		if (i >= index)
-	//		{
-	//			break;
-	//		}
-	//		else
-	//		{
-	//			continue; // already exist
-	//		}
-	//	}
-	//	else
-	//	{
-	//		order = 0;
-	//	}
-
-	//	if (i >= index)
-	//		break;
-	//	symbols.insert(childNode->m_name);
-
-	//	const PxVec3 childDimension = utility::Vec3toPxVec3(childNode->m_expr->dimension);
-	//	const float height = max(childDimension.y*2.f +1, 2);
-	//	val += PxVec3(0,height,0);
-	//}
-
 	return val + parentPos;
+}
+
+
+/**
+ @brief Cal Joint Transfrom
+ @date 2014-03-03
+*/
+void evc::GetJointTransform(const PxVec3 *pos, genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1, 
+	const bool applyRandom)// applyRandom = false
+{
+	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+
+	PxVec3 conPos = (pos? *pos : utility::Vec3toPxVec3(joint->pos));
+
+	if (applyRandom)
+	{
+		// random position
+		PxVec3 randPos(joint->randPos.x, joint->randPos.y, joint->randPos.z);
+		conPos += RandVec3(randPos, 1.f);
+
+		// random orientation
+		PxVec3 randOrient(joint->randOrient.x, joint->randOrient.y, joint->randOrient.z);
+		if (!dir1.isZero())
+		{
+			dir1 += RandVec3(randOrient, 1.f);
+			dir1.normalize();
+		}
+	}
+
+	tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
+	tm1 = (dir1.isZero())? PxTransform(PxVec3(conPos)) : 
+		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(conPos)));
+
+	tm0 = tm0.getInverse();
+	tm1 = tm1.getInverse();
+}
+
+
+/**
+ @brief random vector from vector value and rate
+ @date 2014-01-13
+*/
+PxVec3 evc::RandVec3( const PxVec3 &vec, const float rate )
+{
+	if (rate <= 0.f)
+		return vec;
+	if (vec.isZero())
+		return vec;
+
+	PxVec3 dimRand1 = vec * rate;
+	PxVec3 dimRand(RandFloat()*dimRand1.x, RandFloat()*dimRand1.y, RandFloat()*dimRand1.z);
+	if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
+	if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
+	if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
+	return dimRand;
+}
+
+
+/**
+ @brief return maximum value
+ @date 2014-01-13
+*/
+PxVec3 evc::MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 )
+{
+	PxVec3 val;
+	val.x = max(vec0.x, vec1.x);
+	val.y = max(vec0.y, vec1.y);
+	val.z = max(vec0.z, vec1.z);
+	return val;
 }

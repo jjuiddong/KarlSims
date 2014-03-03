@@ -74,7 +74,8 @@ extern SDbgConfig *g_pDbgConfig;
 #include "utility/FileLoader.h"
 #include "renderer/RenderModelActor.h"
 #include "renderer/RenderBezierActor.h"
+#include "renderer/RenderComposition.h"
+#include "renderer/RendererCompositionShape.h"
 
 
 #include "global.h"
-

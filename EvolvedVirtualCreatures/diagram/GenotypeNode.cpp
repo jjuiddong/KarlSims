@@ -94,7 +94,6 @@ void CGenotypeNode::Move(float dtime)
 		PxVec3 mov = (m_moveVelocity*m_elapseTime) + m_initialPos;
 		m_renderNode->setTransform(PxTransform(mov));
 	}
-
 }
 
 
@@ -211,5 +210,21 @@ void CGenotypeNode::RemoveConnectNode(const CGenotypeNode *rmNode)
 		}
 
 		m_expr->connection = headConList;
+	}
+}
+
+
+/**
+ @brief Show
+ @date 2014-03-03
+*/
+void CGenotypeNode::Show(const bool isShow)
+{
+	RET(!m_renderNode);
+
+	m_renderNode->setRendering(isShow);
+	BOOST_FOREACH (auto &con, m_connectDiagrams)
+	{
+		con.transitionArrow->setRendering(isShow);
 	}
 }

@@ -36,6 +36,7 @@ namespace evc
 		const CNeuralNet* GetBrain() const;
 		void SetGravity(const PxVec3 &centerOfGravity);
 		genotype_parser::SExpr* GetGenotype();
+		void SetMaxGrowCount(const int maxGrowCount);
 
 
 	protected:
@@ -55,11 +56,10 @@ namespace evc
 
 		void GenerateSkinningMesh();
 		void GenerateRenderComposition( CPhenotypeNode *node );
-		PxVec3 RandVec3( const PxVec3 &vec, const float rate );
-		PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );
+		//PxVec3 RandVec3( const PxVec3 &vec, const float rate );
+		//PxVec3 MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 );
 		const genotype_parser::SExpr* FindExpr( const string &name );
 		void MakeExprSymbol( const genotype_parser::SExpr *expr, OUT map<string, const genotype_parser::SExpr*> &symbols );
-		//MaterialIndex GetMaterialType(const string &materialStr);
 		bool HasTerminalNode(const genotype_parser::SExpr *expr) const;
 
 
@@ -72,6 +72,7 @@ namespace evc
 		vector<PxTransform> m_tmPalette;
 
 		int m_GrowCount;
+		int m_maxGrowcount;
 		float m_IncreaseTime;
 		genotype_parser::SExpr *m_pGenotypeExpr;
 		map<string, const genotype_parser::SExpr*> m_GenotypeSymbols;
@@ -81,4 +82,5 @@ namespace evc
 
 	inline const SGenome& CCreature::GetGenome() const { return m_genome; }
 	inline genotype_parser::SExpr* CCreature::GetGenotype() { return m_pGenotypeExpr; }
+	inline void CCreature::SetMaxGrowCount(const int maxGrowCount) { m_maxGrowcount = maxGrowCount; }
 }

@@ -30,7 +30,6 @@ CGenotypeController::CGenotypeController(CEvc &sample) :
 
 CGenotypeController::~CGenotypeController()
 {
-	set<CGenotypeNode*> diags;
 	RemoveGenotypeTree(m_sample, m_rootDiagram);
 	m_rootDiagram = NULL;
 
@@ -49,7 +48,14 @@ void CGenotypeController::ControllerSceneInit()
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(CSimpleCamera)();
 
-	m_OrientationEditController = new evc::COrientationEditController(m_sample, *this);
+	if (m_OrientationEditController)
+	{
+		m_OrientationEditController->SetControlDiagram(NULL);//initialize
+	}
+	else
+	{
+		m_OrientationEditController = new COrientationEditController(m_sample, *this);
+	}
 
 	m_sample.getApplication().setMouseCursorHiding(false);
 	m_sample.getApplication().setMouseCursorRecentering(false);
@@ -689,6 +695,8 @@ void CGenotypeController::SelectNode(CGenotypeNode *node, const bool isShowPopup
 void CGenotypeController::UpdateCreature()
 {
 	RET(!m_creature);
+
+	m_creature->SetMaxGrowCount(g_pDbgConfig->generationRecursiveCount);
 	m_creature->GenerateProgressive(CopyGenotype(m_rootDiagram->m_expr), m_creature->GetPos()+PxVec3(0,5,0), NULL);
 
 	//m_creature = new evc::CCreature(m_sample); 
@@ -716,6 +724,7 @@ void CGenotypeController::ChangeControllerMode(const MODE mode)
 
 	case MODE_ORIENT: 
 		{
+			Show(false);
 			m_OrientationEditController->ControllerSceneInit();
 		}
 		break;
@@ -768,4 +777,15 @@ bool CGenotypeController::GetDiagramsLinkfrom(CGenotypeNode *from, OUT vector<CG
 	std::sort(out.begin(), out.end());
 	out.erase(std::unique(out.begin(), out.end()), out.end());
 	return true;
+}
+
+
+/**
+ @brief show/hide diagrams
+ @date 2014-03-03
+*/
+void CGenotypeController::Show(const bool isShow)
+{
+	BOOST_FOREACH (auto &node, m_diagrams)
+		node->Show(isShow);
 }

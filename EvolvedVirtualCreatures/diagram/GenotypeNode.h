@@ -36,6 +36,7 @@ namespace evc
 		void SetHighLight(const bool highLight);
 		void AnimateLayout(const PxVec3 &target);
 		void RemoveConnectNode(const CGenotypeNode *rmNode);
+		void Show(const bool isShow);
 
 
 	public:

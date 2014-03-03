@@ -10,8 +10,7 @@
 #include "PhotoSensor.h"
 #include "VisionSensor.h"
 #include "MuscleEffector.h"
-#include "../renderer/RenderComposition.h"
-#include "../renderer/RendererCompositionShape.h"
+#include "../diagram/DiagramUtility.h"
 
 
 using namespace evc;
@@ -23,6 +22,7 @@ CCreature::CCreature(CEvc &sample) :
 ,	m_IncreaseTime(0)
 ,	m_GrowCount(0)
 ,	m_IsDispSkinning(true)
+,	m_maxGrowcount(3)
 {
 
 }
@@ -132,19 +132,12 @@ void CCreature::GenerateProgressive(const string &genotypeScriptFileName, const 
 	const bool isDispSkinning) 
 	//isDispSkinning=true
 {
-	//if (m_pRoot)
-	//{
-	//	GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-	//}
-	//else
-	{
-		genotype_parser::CGenotypeParser parser;
-		genotype_parser::SExpr *expr = parser.Parse(genotypeScriptFileName);
+	genotype_parser::CGenotypeParser parser;
+	genotype_parser::SExpr *expr = parser.Parse(genotypeScriptFileName);
 
-		m_GenotypeSymbols.clear();
-		MakeExprSymbol(expr, m_GenotypeSymbols);
-		FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
-	}
+	m_GenotypeSymbols.clear();
+	MakeExprSymbol(expr, m_GenotypeSymbols);
+	FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
 }
 
 
@@ -156,18 +149,11 @@ void CCreature::GenerateProgressive(genotype_parser::SExpr *expr, const PxVec3 &
 	const bool isDispSkinning) 
 	//isDispSkinning=true
 {
-	//if (m_pRoot)
-	//{
-	//	GenerateProgressive(m_pRoot, m_pGenotypeExpr);
-	//}
-	//else
-	{
-		m_GenotypeSymbols.clear();
-		MakeExprSymbol(expr, m_GenotypeSymbols);
-		FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
+	m_GenotypeSymbols.clear();
+	MakeExprSymbol(expr, m_GenotypeSymbols);
+	FirstStepToGenerateByGenotype(expr, initialPos, linVel, 1, isDispSkinning);
 
-		m_GrowCount = 0;
-	}
+	m_GrowCount = 0;
 }
 
 
@@ -249,8 +235,8 @@ CPhenotypeNode* CCreature::GenerateByGenotype( CPhenotypeNode* parentNode, const
 
 		if (boost::iequals(connection->conType, "joint"))
 		{
-			const PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
-			const PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
+			const PxVec3 conPos = utility::Vec3toPxVec3(connection->pos);
+			const PxVec3 randPos = utility::Vec3toPxVec3(connection->randPos);
 			const PxVec3 nodePos = pos - conPos;
 
 			CPhenotypeNode *pChildNode = GenerateByGenotype( pNode, connection->expr, recursiveCnt-1, nodePos, linVel, true, randPos, 
@@ -297,7 +283,7 @@ CPhenotypeNode* CCreature::CreateBody(const genotype_parser::SExpr *expr, const 
 		const float childVolume = dimension.x * dimension.y * dimension.z;
 		if ((childVolume*1.3f) >= parentVolume)
 		{
-			dimension /= ((childVolume*1.3f) / parentVolume);
+			//dimension /= ((childVolume*1.3f) / parentVolume);
 		}
 	}
 
@@ -421,7 +407,8 @@ CPhenotypeNode* CCreature::GenerateTerminalNode( CPhenotypeNode *parentNode, con
  @brief 
  @date 2013-12-19
 */
-void CCreature::CreateJoint( CPhenotypeNode *parentNode, CPhenotypeNode *childNode, genotype_parser::SConnection *connect, const PxVec3 &conPos )
+void CCreature::CreateJoint( CPhenotypeNode *parentNode, CPhenotypeNode *childNode, genotype_parser::SConnection *connect, 
+	const PxVec3 &conPos )
 {
 	RET(!childNode);
 	RET(!parentNode);
@@ -429,30 +416,32 @@ void CCreature::CreateJoint( CPhenotypeNode *parentNode, CPhenotypeNode *childNo
 	PxRigidDynamic* body = parentNode->m_pBody;
 	PxRigidDynamic *child = childNode->m_pBody;
 	genotype_parser::SConnection *joint = connect;
-	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
-	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+	//PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+	//PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
 
-	PxVec3 pos = conPos;
+	//PxVec3 pos = conPos;
 
-	// random position
-	PxVec3 randPos(connect->randPos.x, connect->randPos.y, connect->randPos.z);
-	pos += RandVec3(randPos, 1.f);
+	//// random position
+	//PxVec3 randPos(connect->randPos.x, connect->randPos.y, connect->randPos.z);
+	//pos += RandVec3(randPos, 1.f);
 
-	// random orientation
-	PxVec3 randOrient(connect->randOrient.x, connect->randOrient.y, connect->randOrient.z);
-	if (!dir1.isZero())
-	{
-		dir1 += RandVec3(randOrient, 1.f);
-		dir1.normalize();
-	}
+	//// random orientation
+	//PxVec3 randOrient(connect->randOrient.x, connect->randOrient.y, connect->randOrient.z);
+	//if (!dir1.isZero())
+	//{
+	//	dir1 += RandVec3(randOrient, 1.f);
+	//	dir1.normalize();
+	//}
 
-	PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
-	PxVec3 velocity(joint->velocity.x, joint->velocity.y, joint->velocity.z);
+	//PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
+	//PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
+	//	(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
-	PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
-	PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
-		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
+	PxTransform tm0, tm1;
+	GetJointTransform(&conPos, joint, tm0, tm1);
 
+	PxVec3 limit = utility::Vec3toPxVec3(joint->limit);
+	PxVec3 velocity = utility::Vec3toPxVec3(joint->velocity);
 
 	 //apply gravity direction only have root genotype
 	if (boost::iequals(parentNode->m_ShapeName, "root"))
@@ -559,16 +548,19 @@ CPhenotypeNode* CCreature::CreateSensor(CPhenotypeNode *parentNode, genotype_par
 	PxRigidDynamic* body = parentNode->m_pBody;
 	PxRigidDynamic *child = childNode->m_pBody;
 	genotype_parser::SConnection *joint = connect;
-	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
-	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
-	PxVec3 pos(joint->pos.x, joint->pos.y, joint->pos.z);
-	PxVec3 limit(joint->limit.x, joint->limit.y, joint->limit.z);
-	PxVec3 velocity(joint->velocity.x, joint->velocity.y, joint->velocity.z);
+	//PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+	//PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
+	//PxVec3 pos = utility::Vec3toPxVec3(joint->pos);
+	const PxVec3 limit = utility::Vec3toPxVec3(joint->limit);
+	const PxVec3 velocity = utility::Vec3toPxVec3(joint->velocity);
 
-	PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
-	PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
-		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
+	//PxTransform tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
+	//PxTransform tm1 = (dir1.isZero())? PxTransform(PxVec3(pos)) : 
+	//	(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(pos)));
 
+	PxTransform tm0, tm1;
+	GetJointTransform(NULL, joint, tm0, tm1);
+	
 	PxJoint* pxJoint = NULL;
 	if (PxFixedJoint *j = PxFixedJointCreate(m_sample.getPhysics(), body, tm0, child, tm1 ))
 	{
@@ -619,7 +611,7 @@ CPhenotypeNode* CCreature::CreateSensor(CPhenotypeNode *parentNode, genotype_par
 
 
 /**
- @brief 
+ @brief Move
  @date 2013-12-09
 */
 void CCreature::Move(float dtime)
@@ -627,7 +619,7 @@ void CCreature::Move(float dtime)
 	m_IncreaseTime += dtime;
 
 	// grow creature
-	if (m_GrowCount < 3)
+	if (m_GrowCount < m_maxGrowcount)
 	{
 		if (m_IncreaseTime > 1.f)
 		{
@@ -640,6 +632,7 @@ void CCreature::Move(float dtime)
 
 			GenerateProgressive(m_pRoot, m_pGenotypeExpr);
 			m_tmPalette.resize(m_nodes.size());
+			m_pRoot->InitBrain();
 			GenerateSkinningMesh();
 		}
 	}
@@ -833,40 +826,6 @@ void CCreature::GenerateRenderComposition( CPhenotypeNode *node )
 		//child->m_pRenderComposition = NULL;
 	}
 
-}
-
-
-/**
- @brief random vector from vector value and rate
- @date 2014-01-13
-*/
-PxVec3 CCreature::RandVec3( const PxVec3 &vec, const float rate )
-{
-	if (rate <= 0.f)
-		return vec;
-	if (vec.isZero())
-		return vec;
-
-	PxVec3 dimRand1 = vec * rate;
-	PxVec3 dimRand(RandFloat()*dimRand1.x, RandFloat()*dimRand1.y, RandFloat()*dimRand1.z);
-	if (RandFloat() > 0.5f) dimRand.x = -dimRand.x;
-	if (RandFloat() > 0.5f) dimRand.y = -dimRand.y;
-	if (RandFloat() > 0.5f) dimRand.z = -dimRand.z;
-	return dimRand;
-}
-
-
-/**
- @brief return maximum value
- @date 2014-01-13
-*/
-PxVec3 CCreature::MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 )
-{
-	PxVec3 val;
-	val.x = max(vec0.x, vec1.x);
-	val.y = max(vec0.y, vec1.y);
-	val.z = max(vec0.z, vec1.z);
-	return val;
 }
 
 

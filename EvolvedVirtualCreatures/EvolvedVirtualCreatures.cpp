@@ -310,7 +310,7 @@ void CEvc::spawnNode( const int key )
 	}
 
 
-	evc::CCreature *pnode = NULL;
+	evc::CCreature *creature = NULL;
 	bool IsCreature = true;
 	switch (key)
 	{
@@ -345,29 +345,30 @@ void CEvc::spawnNode( const int key )
 				pos += PxVec3(0,5,0);
 			}
 
-			pnode = new evc::CCreature(*this); 
-			m_Creatures.push_back( pnode );
+			creature = new evc::CCreature(*this); 
+			creature->SetMaxGrowCount(g_pDbgConfig->generationRecursiveCount);
+			m_Creatures.push_back( creature );
 
 			if (SPAWN_DEBUG_OBJECT6 == key)
 			{
 				//pnode->GenerateImmediate(fileNames[ idx], pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
-				pnode->GenerateProgressive(fileNames[ idx], pos, NULL, g_pDbgConfig->displaySkinning); 
+				creature->GenerateProgressive(fileNames[ idx], pos, NULL, g_pDbgConfig->displaySkinning); 
 			}
 			else
 			{
-				pnode->GenerateProgressive(fileNames[ idx], pos, ((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL), g_pDbgConfig->displaySkinning); 
+				creature->GenerateProgressive(fileNames[ idx], pos, ((SPAWN_DEBUG_OBJECT2 == key)? &vel : NULL), g_pDbgConfig->displaySkinning); 
 			}
 
 			m_genotypeController->ControllerSceneInit();
-			m_genotypeController->SetControlCreature(pnode);
+			m_genotypeController->SetControlCreature(creature);
 		}
 		break;
 
 	case SPAWN_DEBUG_OBJECT9: 
 		{
-			pnode = new evc::CCreature(*this); 
-			pnode->GenerateImmediate("genotype_flower.txt", pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
-			m_Creatures.push_back( pnode );
+			creature = new evc::CCreature(*this); 
+			creature->GenerateImmediate("genotype_flower.txt", pos, NULL, g_pDbgConfig->generationRecursiveCount, g_pDbgConfig->displaySkinning); 
+			m_Creatures.push_back( creature );
 			//PxVec3 initialPos(-50,10,0);
 			//for (int i=0; i < 30; ++i)
 			//{
@@ -389,7 +390,7 @@ void CEvc::spawnNode( const int key )
 	//case SPAWN_DEBUG_OBJECT0: pnode->GenerateByGenotype("genotype.txt"); break;
 	}
 
-	RET(!pnode);
+	RET(!creature);
 	
 }
 
