@@ -6,6 +6,7 @@
 
 
 class CEvc;
+class CSimpleCamera;
 namespace evc
 {
 	class CGenotypeController;
@@ -18,6 +19,8 @@ namespace evc
 		enum EDIT_MODE {
 			MODE_NONE, 
 			MODE_POSITION,
+			MODE_ROTATION,
+			MODE_PICKUP,
 		};
 
 	public:
@@ -30,7 +33,7 @@ namespace evc
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override {}
 		virtual void onAnalogInputEvent(const SampleFramework::InputEvent& , float val) override {}
-		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override {}
+		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override;
 
 		// Mouse Event from CDiagramController
 		void MouseLButtonDown(physx::PxU32 x, physx::PxU32 y);
@@ -44,16 +47,19 @@ namespace evc
 		CGenotypeNode* CreatePhenotypeDiagram(const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1,
 			genotype_parser::SExpr *expr, map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
 		void ChangeEditMode(EDIT_MODE mode);
+		bool SelectNode(CGenotypeNode *node, const EDIT_MODE mode=MODE_POSITION);
+
 
 	private:
 		CEvc &m_sample;
 		CGenotypeController &m_genotypeController;
-		DefaultCameraController *m_camera;
+		CSimpleCamera  *m_camera;
 
 		CGenotypeNode *m_rootNode;
 		vector<CGenotypeNode*> m_nodes; // reference
 		CGenotypeNode *m_selectNode; // reference
 
 		EDIT_MODE m_editMode;
+		Int2 m_ptOrig;
 	};
 }

@@ -391,3 +391,39 @@ PxTransform evc::GetJointTransformAccumulate(CGenotypeNode *from, CGenotypeNode 
 	GetJointTransformAccumulateRec(PxTransform::createIdentity(), from, to, symbols, val);
 	return val;
 }
+
+
+/**
+ @brief mouse position x,y to check node 3d object
+ @date 2014-03-06
+*/
+CGenotypeNode* evc::PickupNodes(CEvc &sample, vector<CGenotypeNode*> &nodes, physx::PxU32 x, physx::PxU32 y, 
+	const bool isShowHighLight)
+{
+	PxVec3 orig, dir, pickOrig;
+	sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
+
+	float minLength = FLT_MAX;
+	evc::CGenotypeNode *pickNode = NULL;
+	BOOST_FOREACH(auto node, nodes)
+	{
+		PxVec3 out;
+		const bool isHighLight = node->m_renderNode->IntersectTri(pickOrig, dir, out);
+		if (isShowHighLight)
+			node->SetHighLight(false);
+		if (isHighLight)
+		{
+			const float len = (out - pickOrig).magnitude();
+			if (len < minLength)
+			{
+				pickNode = node;
+				minLength = len;
+			}
+		}
+	}
+
+	if (pickNode)
+		pickNode->SetHighLight(true);
+
+	return pickNode;
+}

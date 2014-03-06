@@ -228,7 +228,8 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 	CGenotypeNode *diagNode = CreateGenotypeNode(m_sample, expr);
 	RETV(!diagNode, NULL);
 
-	diagNode->m_renderNode->setTransform(PxTransform(pos));
+	//diagNode->m_renderNode->setTransform(PxTransform(pos));
+	diagNode->SetWorldTransform(PxTransform(pos));
 	m_diagrams.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
@@ -242,7 +243,7 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 	while (connection)
 	{
 		u_int order=0;
-		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->m_renderNode->getTransform().p, childIndex, order);
+		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->GetWorldTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
 		CGenotypeNode *newDiagNode = CreateGenotypeDiagramTree(newNodePos, node_con->expr, symbols);
 
@@ -369,19 +370,29 @@ void CGenotypeController::onPointerInputEvent(const SampleFramework::InputEvent&
 */
 void CGenotypeController::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
 {
-	switch (ie.m_Id)
+	switch (m_controlMode)
 	{
-	case REMOVE_OBJECT: 
-		if (m_selectNode)
+	case MODE_LINK:
+		switch (ie.m_Id)
 		{
-			if (RemoveDiagram(m_selectNode))
+		case REMOVE_OBJECT: 
+			if (m_selectNode)
 			{
-				RemoveUnlinkDiagram();
-				m_selectNode = NULL;
-				Layout();
-				UpdateCreature();
+				if (RemoveDiagram(m_selectNode))
+				{
+					RemoveUnlinkDiagram();
+					m_selectNode = NULL;
+					Layout();
+					UpdateCreature();
+				}
 			}
+			break;
 		}
+		break;
+
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->onDigitalInputEvent(ie, val);
 		break;
 	}
 }
@@ -394,25 +405,24 @@ void CGenotypeController::onDigitalInputEvent(const SampleFramework::InputEvent 
 CGenotypeNode* CGenotypeController::PickupDiagram(physx::PxU32 x, physx::PxU32 y, 
 	const bool isCheckLinkDiagram, const bool isShowHighLight)
 {
-	PxVec3 orig, dir, pickOrig;
-	m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
+	//PxVec3 orig, dir, pickOrig;
+	//m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
+	//evc::CGenotypeNode *mouseOverNode = NULL;
 
-	evc::CGenotypeNode *mouseOverNode = NULL;
+	//// Check Diagrams
+	//BOOST_FOREACH(auto node, m_diagrams)
+	//{
+	//	PxVec3 out;
+	//	const bool isHighLight = node->m_renderNode->IntersectTri(pickOrig, dir, out);
+	//	if (isShowHighLight)
+	//		node->SetHighLight(isHighLight);
+	//	if (isHighLight)
+	//		mouseOverNode = node;
+	//}
 
-	// Check Diagrams
-	BOOST_FOREACH(auto node, m_diagrams)
-	{
-		PxVec3 out;
-		const bool isHighLight = node->m_renderNode->IntersectTri(pickOrig, dir, out);
-		if (isShowHighLight)
-			node->SetHighLight(isHighLight);
-		if (isHighLight)
-			mouseOverNode = node;
-	}
-
+	evc::CGenotypeNode *mouseOverNode = evc::PickupNodes(m_sample, m_diagrams, x, y, isShowHighLight);
 	if (mouseOverNode)
 		return mouseOverNode;
-
 
 	// Check Link Diagrams
 	if (isCheckLinkDiagram && m_popupDiagrams)
@@ -469,7 +479,8 @@ bool CGenotypeController::InsertDiagram(CGenotypeNode *node, CGenotypeNode *inse
 	u_int order = 0;
 	PxVec3 pos = GetDiagramPosition(node, insertNode, order);
 	if (isNewDiagramNode)
-		insertNode->m_renderNode->setTransform(PxTransform(pos));
+		insertNode->SetWorldTransform(PxTransform(pos));
+		//insertNode->m_renderNode->setTransform(PxTransform(pos));
 	insertNode->m_isRenderText = true;
 
 	SDiagramConnection diagConnection;

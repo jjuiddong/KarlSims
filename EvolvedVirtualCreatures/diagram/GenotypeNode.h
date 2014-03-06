@@ -37,6 +37,11 @@ namespace evc
 		void AnimateLayout(const PxVec3 &target);
 		void RemoveConnectNode(const CGenotypeNode *rmNode);
 		void Show(const bool isShow);
+		void SetWorldTransform(const PxTransform &tm);
+		const PxTransform& GetWorldTransform() const;
+		void SetLocalTransform(const PxTransform &tm);
+		const PxTransform& GetLocalTransform() const;
+		void UpdateTransform();
 		genotype_parser::SConnection* GetJoint(CGenotypeNode *conNode);
 		CGenotypeNode* GetConnectNode(const string &nodeName);
 		PxVec3 GetPos() const;
@@ -51,11 +56,18 @@ namespace evc
 		genotype_parser::SExpr *m_expr;
 		bool m_highLight;
 		bool m_isRenderText;
+		PxTransform m_worldTM;
+		PxTransform m_localTM;
 
 		bool m_isAnimationMove;
 		PxVec3 m_targetPos;
 		PxVec3 m_initialPos;
 		PxVec3 m_moveVelocity;
-		float m_elapseTime;		
+		float m_elapseTime;
 	};
+
+	
+	inline const PxTransform& CGenotypeNode::GetWorldTransform() const { return m_worldTM; }
+	inline void CGenotypeNode::SetLocalTransform(const PxTransform &tm) { m_localTM = tm; }
+	inline const PxTransform& CGenotypeNode::GetLocalTransform() const { return m_localTM; }
 }

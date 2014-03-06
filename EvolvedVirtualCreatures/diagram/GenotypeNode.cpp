@@ -14,6 +14,8 @@ CGenotypeNode::CGenotypeNode(CEvc &sample) :
 ,	m_expr(NULL)
 ,	m_isAnimationMove(false)
 ,	m_isRenderText(true)
+,	m_localTM(PxTransform::createIdentity())
+,	m_worldTM(PxTransform::createIdentity())
 {
 
 }
@@ -98,7 +100,7 @@ void CGenotypeNode::Move(float dtime)
 
 
 /**
- @brief 
+ @brief SetHighLight
  @date 2014-02-24
 */
 void CGenotypeNode::SetHighLight(const bool highLight)
@@ -275,4 +277,24 @@ CGenotypeNode* CGenotypeNode::GetConnectNode(const string &nodeName)
 PxVec3 CGenotypeNode::GetPos() const
 {
 	return m_renderNode->getTransform().p;
+}
+
+/**
+ @brief set world tm
+ @date 2014-03-06
+*/
+void CGenotypeNode::SetWorldTransform(const PxTransform &tm) 
+{ 
+	m_worldTM = tm; 
+	UpdateTransform();
+}
+
+
+/**
+ @brief update worldTM * localTM
+ @date 2014-03-06
+*/
+void CGenotypeNode::UpdateTransform()
+{
+	m_renderNode->setTransform(m_worldTM * m_localTM);
 }

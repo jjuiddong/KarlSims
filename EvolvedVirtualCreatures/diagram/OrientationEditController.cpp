@@ -6,6 +6,7 @@
 #include "GenotypeNode.h"
 #include "DiagramUtility.h"
 #include "../creature/Creature.h"
+#include "SimpleCamera.h"
 
 
 using namespace evc;
@@ -24,6 +25,7 @@ COrientationEditController::COrientationEditController(CEvc &sample, CGenotypeCo
 COrientationEditController::~COrientationEditController()
 {
 	RemoveGenotypeTree(m_sample, m_rootNode);
+	m_nodes.clear();
 	m_rootNode = NULL;
 
 	SAFE_DELETE(m_camera);
@@ -37,7 +39,7 @@ COrientationEditController::~COrientationEditController()
 void COrientationEditController::ControllerSceneInit()
 {
 	if (!m_camera)
-		m_camera = SAMPLE_NEW(DefaultCameraController)();
+		m_camera = SAMPLE_NEW(CSimpleCamera)();
 
 	m_sample.getApplication().setMouseCursorHiding(false);
 	m_sample.getApplication().setMouseCursorRecentering(false);
@@ -57,22 +59,28 @@ void COrientationEditController::ControllerSceneInit()
 void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 {
 	RemoveGenotypeTree(m_sample, m_rootNode);
+	m_nodes.clear();
 	m_rootNode = NULL;
 
-	// setting camera
 	vector<CGenotypeNode*> nodes;
 	m_genotypeController.GetDiagramsLinkto(node, nodes);
 	if (nodes.empty())
 		return;
 
+	// Create Phenotype Node
 	CGenotypeNode *parentNode = nodes[ 0];
-	const PxVec3 parentPos = parentNode->m_renderNode->getTransform().p;
-	PxVec3 dir = parentPos - node->m_renderNode->getTransform().p;
+	map<const genotype_parser::SExpr*, CGenotypeNode*> symbols;
+	const PxTransform identTm = PxTransform::createIdentity();
+	m_rootNode = CreatePhenotypeDiagram(identTm,identTm,identTm, parentNode->m_expr, symbols);
+
+	// Camera Setting
+	const PxVec3 parentPos = parentNode->GetWorldTransform().p;
+	PxVec3 dir = parentPos - node->GetWorldTransform().p;
 	dir.normalize();
 
 	PxVec3 left = PxVec3(0,1,0).cross(dir);
 	left.normalize();
-	PxVec3 camPos = node->m_renderNode->getTransform().p + (left*3.f) + PxVec3(0,2.5f,0);
+	PxVec3 camPos = node->GetWorldTransform().p + (left*3.f) + PxVec3(0,2.5f,0);
 	PxVec3 camDir = parentPos - camPos;
 	camDir.normalize();
 	camPos -= (camDir * .5f);
@@ -81,14 +89,8 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 	const PxTransform viewTm = m_sample.getCamera().getViewMatrix();
 	m_camera->init(viewTm);
 
-
-	map<const genotype_parser::SExpr*, CGenotypeNode*> symbols;
-	const PxTransform tm = PxTransform::createIdentity();
-	m_rootNode = CreatePhenotypeDiagram(tm,tm,tm, parentNode->m_expr, symbols);
-
-	m_selectNode = m_rootNode->GetConnectNode(node->m_name);
-
-	ChangeEditMode(MODE_POSITION);
+	// select Orientation Control node
+	SelectNode(m_rootNode->GetConnectNode(node->m_name));
 }
 
 
@@ -98,7 +100,19 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 */
 void COrientationEditController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
+	switch (m_editMode)
+	{
+	case MODE_NONE:
+	case MODE_POSITION:
+		break;
 
+	case MODE_PICKUP:
+		if (SelectNode(PickupNodes(m_sample, m_nodes, x, y, true), MODE_ROTATION))
+		{
+			m_ptOrig = Int2(x,y);
+		}
+		break;
+	}
 }
 
 
@@ -108,7 +122,17 @@ void COrientationEditController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y
 */
 void COrientationEditController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
+	switch (m_editMode)
+	{
+	case MODE_NONE:
+	case MODE_POSITION:
+	case MODE_PICKUP:
+		break;
 
+	case MODE_ROTATION:
+		SelectNode(NULL);
+		break;
+	}
 }
 
 
@@ -118,7 +142,16 @@ void COrientationEditController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 */
 void COrientationEditController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
+	switch (m_editMode)
+	{
+	case MODE_NONE:
+	case MODE_POSITION:
+		break;
 
+	case MODE_PICKUP:
+		SelectNode(PickupNodes(m_sample, m_nodes, x, y, true));
+		break;
+	}
 }
 
 
@@ -152,7 +185,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 			}
 			else
 			{
-				q = m_rootNode->m_renderNode->getTransform().q;
+				q = m_rootNode->GetWorldTransform().q;
 			}
 
 			{
@@ -166,7 +199,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 			{
 				PxVec3 pos;
 				PxTransform rotTm;
-				const PxTransform tm = m_selectNode->m_renderNode->getTransform();
+				const PxTransform tm = m_selectNode->GetWorldTransform();
 				if (boost::iequals(joint->type, "revolute"))
 				{
 					rotTm = PxTransform(q) * PxTransform(tm.q);
@@ -186,7 +219,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 				joint->pos = utility::PxVec3toVec3(pos);
 			}
 
-			ChangeEditMode(MODE_NONE);
+			SelectNode(NULL);
 		}
 		break;
 	}
@@ -209,13 +242,13 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 			RET(!m_selectNode);
 
 			using namespace genotype_parser;
-			const PxTransform tm = GetJointTransformAccumulate(m_rootNode, m_selectNode);
+			//const PxTransform tm = GetJointTransformAccumulate(m_rootNode, m_selectNode);
 			const SConnection *joint = m_rootNode->GetJoint(m_selectNode);
-			RET(!joint);
-
-			PxTransform tm0, tm1;
-			GetJointTransform(NULL, joint, tm0, tm1);
-			const PxTransform rootTm = tm * tm1;
+			BRK(!joint);
+			//RET(!joint);
+			//PxTransform tm0, tm1;
+			//GetJointTransform(NULL, joint, tm0, tm1);
+			//const PxTransform rootTm = tm * tm1;
 	
 			const PxVec3 initialPos = utility::Vec3toPxVec3(joint->pos);
 			const float len = initialPos.magnitude();
@@ -231,7 +264,47 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 				pos = m_rootNode->GetPos() + (v*len);
 			}
 
-			m_selectNode->m_renderNode->setTransform(PxTransform(pos));
+			m_selectNode->SetWorldTransform(PxTransform(pos));
+			//m_selectNode->m_renderNode->setTransform(PxTransform(pos));
+		}
+		break;
+
+	case MODE_PICKUP:
+		PickupNodes(m_sample, m_nodes, x, y, true);
+		break;
+
+	case MODE_ROTATION:
+		{
+			PxVec3 v0;
+			const Int2 pos(x,y);
+			if (pos == m_ptOrig)
+				break;
+
+			//const Int2 diff = pos - m_ptOrig;
+			{
+				PxVec3 orig0, dir0, pickOrig0;
+				m_sample.GetPicking()->computeCameraRay(orig0, dir0, pickOrig0, x, y);
+				PxVec3 orig1, dir1, pickOrig1;
+				m_sample.GetPicking()->computeCameraRay(orig1, dir1, pickOrig1, m_ptOrig.x, m_ptOrig.y);
+
+				PxVec3 v1 = pickOrig0 - pickOrig1;
+				v1.normalize();
+
+				v0 = dir0.cross(v1);
+				v0.normalize();
+			}
+			m_ptOrig = pos;
+
+
+			PxTransform tm = m_selectNode->GetLocalTransform();
+			PxTransform m = PxTransform(PxQuat(-0.1f, v0)) * tm;
+			m_selectNode->SetLocalTransform(m);
+			m_selectNode->UpdateTransform();
+
+			//PxQuat q0(diff.x*0.05f, PxVec3(0,1,0));
+			//PxQuat q1(-diff.y*0.05f, PxVec3(1,0,0));
+			//PxTransform m = tm * PxTransform(q1) * PxTransform(q0);
+			//m_selectNode->m_renderNode->setTransform(m);
 		}
 		break;
 	}
@@ -258,7 +331,8 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 	RETV(!diagNode, NULL);
 
 	PxTransform curTm = parentTm * tm0.getInverse() * tm1;
-	diagNode->m_renderNode->setTransform(curTm);
+	diagNode->SetWorldTransform(curTm);
+	//diagNode->m_renderNode->setTransform(curTm);
 	m_nodes.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
@@ -353,7 +427,44 @@ void COrientationEditController::ChangeEditMode(EDIT_MODE mode)
 		}
 		break;
 
+	case MODE_PICKUP:
+		break;
+
 	case MODE_POSITION:
 		break;
 	}
 }
+
+
+/**
+ @brief Select Node
+ @date 2014-03-06
+*/
+bool COrientationEditController::SelectNode(CGenotypeNode *node, const EDIT_MODE mode)
+	// mode = MODE_POSITION
+{
+	m_selectNode = node;
+
+	if (node)
+		ChangeEditMode(mode);
+	else
+		ChangeEditMode(MODE_PICKUP);
+
+	return (node? true : false);
+}
+
+
+/**
+ @brief Digital Input Event Handler
+ @date 2014-02-27
+*/
+void COrientationEditController::onDigitalInputEvent(const SampleFramework::InputEvent &ie, bool val)
+{
+	switch (ie.m_Id)
+	{
+	case GOTO_GENOTYPE_CONTROLLER:
+		ChangeEditMode(MODE_NONE);
+		break;
+	}
+}
+

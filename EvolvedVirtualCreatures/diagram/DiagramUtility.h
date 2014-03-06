@@ -22,6 +22,8 @@ namespace evc
 		const bool applyRandom=true);
 	PxTransform GetJointTransformAccumulate(CGenotypeNode *from, CGenotypeNode *to);
 
+	CGenotypeNode* PickupNodes(CEvc &sample, vector<CGenotypeNode*> &nodes, physx::PxU32 x, physx::PxU32 y, const bool isShowHighLight);
+
 
 	// transition
 	RenderBezierActor* CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const u_int order=0);

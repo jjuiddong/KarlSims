@@ -85,6 +85,7 @@ typedef unsigned short u_short;
 #define RETV(exp,val)	{if((exp)) return val; }
 #define ASSERT_RET(exp)		{assert(exp); RET(!(exp) ); }
 #define ASSERT_RETV(exp,val)		{assert(exp); RETV(!(exp),val ); }
+#define BRK(exp)		{if((exp)) break; }			// exp가 break
 
 
 // WinDef.h 에 정의 되어 있다.
