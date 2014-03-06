@@ -20,6 +20,7 @@ namespace evc
 			MODE_NONE, 
 			MODE_POSITION,
 			MODE_ROTATION,
+			MODE_SCALE,
 			MODE_PICKUP,
 		};
 

@@ -90,7 +90,11 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 	m_camera->init(viewTm);
 
 	// select Orientation Control node
-	SelectNode(m_rootNode->GetConnectNode(node->m_name));
+	if (CGenotypeNode *selectNode = m_rootNode->GetConnectNode(node->m_name))
+	{
+		selectNode->SetHighLight(true);
+		SelectNode(selectNode);
+	}
 }
 
 
@@ -130,9 +134,26 @@ void COrientationEditController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 		break;
 
 	case MODE_ROTATION:
-		SelectNode(NULL);
+		{
+			RET(!m_selectNode);
+
+			using namespace genotype_parser;
+			SConnection *joint = m_rootNode->GetJoint(m_selectNode);
+			RET(!joint);
+
+			PxTransform tm = m_selectNode->GetWorldTransform() * m_selectNode->GetLocalTransform();
+			PxReal angle;
+			PxVec3 axis;
+			tm.q.toRadiansAndUnitAxis(angle, axis);
+
+			joint->orient.angle = angle;
+			joint->orient.dir = utility::PxVec3toVec3(axis);
+
+			SelectNode(NULL);
+		}
 		break;
 	}
+
 }
 
 
@@ -245,13 +266,10 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 			//const PxTransform tm = GetJointTransformAccumulate(m_rootNode, m_selectNode);
 			const SConnection *joint = m_rootNode->GetJoint(m_selectNode);
 			BRK(!joint);
-			//RET(!joint);
-			//PxTransform tm0, tm1;
-			//GetJointTransform(NULL, joint, tm0, tm1);
-			//const PxTransform rootTm = tm * tm1;
 	
 			const PxVec3 initialPos = utility::Vec3toPxVec3(joint->pos);
-			const float len = initialPos.magnitude();
+			const PxVec3 dimension = utility::Vec3toPxVec3(m_selectNode->m_expr->dimension);
+			const float len = initialPos.magnitude() + dimension.magnitude();
 
 			PxVec3 orig, dir, pickOrig;
 			m_sample.GetPicking()->computeCameraRay(orig, dir, pickOrig, x, y);
@@ -427,6 +445,12 @@ void COrientationEditController::ChangeEditMode(EDIT_MODE mode)
 		}
 		break;
 
+	case MODE_SCALE:
+		{
+
+		}
+		break;
+
 	case MODE_PICKUP:
 		break;
 
@@ -465,6 +489,12 @@ void COrientationEditController::onDigitalInputEvent(const SampleFramework::Inpu
 	case GOTO_GENOTYPE_CONTROLLER:
 		ChangeEditMode(MODE_NONE);
 		break;
+		
+	case SCALE_EDIT_MODE:
+		ChangeEditMode(MODE_SCALE);
+		break;
+
+	case NEXT_OBJECT:
+		break;
 	}
 }
-

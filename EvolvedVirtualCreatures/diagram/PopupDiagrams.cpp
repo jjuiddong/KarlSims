@@ -113,7 +113,7 @@ void CPopupDiagrams::CreateCandidateLinkNode(CGenotypeNode *srcNode, const bool 
 	// layout
 	const PxVec3 dimension = utility::Vec3toPxVec3(srcNode->m_expr->dimension);
 	//const float radius = max(dimension.x*2.f +0.5f, 1.4f);
-	const float radius = 2;
+	const float radius = 1.4f;
 	const PxVec3 pos = srcNode->m_renderNode->getTransform().p;
 	float radian = 0;
 	BOOST_FOREACH (auto node, m_diagrams)
