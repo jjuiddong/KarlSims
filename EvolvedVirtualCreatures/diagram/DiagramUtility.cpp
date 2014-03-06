@@ -270,15 +270,14 @@ PxVec3 evc::GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr,
 
 
 /**
- @brief Cal Joint Transfrom
+ @brief Calculate Joint Transfrom
  @date 2014-03-03
 */
-void evc::GetJointTransform(const PxVec3 *pos, genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1, 
+void evc::GetJointTransform(const PxVec3 *pos, const genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1, 
 	const bool applyRandom)// applyRandom = false
 {
-	PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+	const PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
 	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
-
 	PxVec3 conPos = (pos? *pos : utility::Vec3toPxVec3(joint->pos));
 
 	if (applyRandom)
@@ -298,7 +297,8 @@ void evc::GetJointTransform(const PxVec3 *pos, genotype_parser::SConnection *joi
 
 	tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
 	tm1 = (dir1.isZero())? PxTransform(PxVec3(conPos)) : 
-		(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(conPos)));
+		PxTransform(PxVec3(conPos)) * PxTransform(PxQuat(joint->orient.angle, dir1));
+	//(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(conPos)));
 
 	tm0 = tm0.getInverse();
 	tm1 = tm1.getInverse();
@@ -335,5 +335,59 @@ PxVec3 evc::MaximumVec3( const PxVec3 &vec0, const PxVec3 &vec1 )
 	val.x = max(vec0.x, vec1.x);
 	val.y = max(vec0.y, vec1.y);
 	val.z = max(vec0.z, vec1.z);
+	return val;
+}
+
+
+/**
+ @brief recursive find joint transform from to to node
+ @date 2014-03-04
+*/
+bool GetJointTransformAccumulateRec(const PxTransform &tm, CGenotypeNode *from, CGenotypeNode *to, 
+	set<CGenotypeNode*> &symbols, OUT PxTransform &out)
+{
+	using namespace genotype_parser;
+
+	RETV(!from, false);
+	RETV(!to, false);
+	if (from == to)
+	{
+		out = tm;
+		return true;
+	}
+
+	if (symbols.end() != symbols.find(from))
+		return false;
+
+	symbols.insert(from);
+
+	BOOST_FOREACH (auto &con, from->m_connectDiagrams)
+	{
+		const SConnection *joint = from->GetJoint(con.connectNode);
+		if (!joint)
+			continue;
+
+		PxTransform tm0, tm1;
+		GetJointTransform(NULL, joint, tm0, tm1);
+		tm0 = tm0.getInverse(); // genotype script return inverse transform to use joint parameter
+		tm1 = tm1.getInverse();
+
+		if (GetJointTransformAccumulateRec(tm * tm0.getInverse() * tm1, con.connectNode, to, symbols, out))
+			return true;
+	}
+
+	return false;
+}
+
+
+/**
+ @brief GetJointTransformAccumulate
+ @date 2014-03-04
+*/
+PxTransform evc::GetJointTransformAccumulate(CGenotypeNode *from, CGenotypeNode *to)
+{
+	set<CGenotypeNode*> symbols;
+	PxTransform val = PxTransform::createIdentity();
+	GetJointTransformAccumulateRec(PxTransform::createIdentity(), from, to, symbols, val);
 	return val;
 }

@@ -66,6 +66,9 @@ void CGenotypeController::ControllerSceneInit()
 	m_sample.getApplication().setCameraController(m_camera);
 	m_sample.setCameraController(m_camera);
 
+	Show(true);
+	
+	ChangeControllerMode(MODE_NONE);
 }
 
 
@@ -350,14 +353,13 @@ void CGenotypeController::onPointerInputEvent(const SampleFramework::InputEvent&
 	// else mouse move event
 	MouseMove(x,y);
 
-
-	switch (m_controlMode)
-	{
-	case MODE_ORIENT:
-		if (m_OrientationEditController)
-			m_OrientationEditController->onPointerInputEvent(ie,x,y,dx,dy,val);
-		break;
-	}
+	//switch (m_controlMode)
+	//{
+	//case MODE_ORIENT:
+	//	if (m_OrientationEditController)
+	//		m_OrientationEditController->onPointerInputEvent(ie,x,y,dx,dy,val);
+	//	break;
+	//}
 }
 
 
@@ -557,23 +559,33 @@ void CGenotypeController::RemoveUnlinkDiagram()
 */
 void CGenotypeController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
-	CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
-
-	SelectNode(mouseOverNode);
-
-	if (mouseOverNode)
+	switch (m_controlMode)
 	{
-		m_dragPos[ 0].x = (float)x/800.f;
-		m_dragPos[ 0].y = (600.f - (float)y)/600.f;
-	}
+	case MODE_NONE:
+	case MODE_LINK:
+		{
+			CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
+			SelectNode(mouseOverNode);
+			if (mouseOverNode)
+			{
+				m_dragPos[ 0].x = (float)x/800.f;
+				m_dragPos[ 0].y = (600.f - (float)y)/600.f;
+			}
+			if (mouseOverNode && mouseOverNode->m_expr->isSensor)
+			{
+				ChangeControllerMode(MODE_NONE);
+			}
+			else
+			{
+				ChangeControllerMode(mouseOverNode? MODE_LINK : MODE_NONE);
+			}
+		}
+		break;
 
-	if (mouseOverNode && mouseOverNode->m_expr->isSensor)
-	{
-		ChangeControllerMode(MODE_NONE);
-	}
-	else
-	{
-		ChangeControllerMode(mouseOverNode? MODE_LINK : MODE_NONE);
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->MouseLButtonDown(x,y);
+		break;
 	}
 }
 
@@ -584,34 +596,46 @@ void CGenotypeController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y)
 */
 void CGenotypeController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
-	if ((MODE_LINK==m_controlMode) && m_selectNode)
+	switch (m_controlMode)
 	{
-		CGenotypeNode *mouseOverNode = PickupDiagram(x, y, true, true);
-		if (mouseOverNode)
+	case MODE_NONE:
+		break;
+
+	case MODE_LINK:
 		{
-			if (m_selectNode == mouseOverNode)
+			if (m_selectNode)
 			{
-				ChangeControllerMode(MODE_NONE);
+				CGenotypeNode *mouseOverNode = PickupDiagram(x, y, true, true);
+				if (mouseOverNode)
+				{
+					if (m_selectNode == mouseOverNode)
+					{
+						ChangeControllerMode(MODE_NONE);
+						if (m_popupDiagrams)
+							m_popupDiagrams->Close();
+						return;
+					}
+
+					PxSceneWriteLock scopedLock(m_sample.getActiveScene());
+					InsertDiagram(m_selectNode, mouseOverNode);
+					Layout();
+					UpdateCreature();
+					//printf( "link node = %s\n", mouseOverNode->m_name.c_str() );
+				}
+
 				if (m_popupDiagrams)
 					m_popupDiagrams->Close();
-				return;
 			}
 
-			{
-				PxSceneWriteLock scopedLock(m_sample.getActiveScene());
-				InsertDiagram(m_selectNode, mouseOverNode);
-				Layout();
-				UpdateCreature();
-			}
-
-			//printf( "link node = %s\n", mouseOverNode->m_name.c_str() );
+			ChangeControllerMode(MODE_NONE);
 		}
+		break;
 
-		if (m_popupDiagrams)
-			m_popupDiagrams->Close();
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->MouseLButtonUp(x,y);
+		break;
 	}
-
-	ChangeControllerMode(MODE_NONE);
 }
 
 
@@ -621,35 +645,51 @@ void CGenotypeController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 */
 void CGenotypeController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y)
 {
-	CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
-
-	SelectNode(mouseOverNode, false);
-
-	if (mouseOverNode)
+	switch (m_controlMode)
 	{
-		m_dragPos[ 0].x = (float)x/800.f;
-		m_dragPos[ 0].y = (600.f - (float)y)/600.f;
-	}
+	case MODE_NONE:
+	case MODE_LINK:
+		{
+			CGenotypeNode *mouseOverNode = PickupDiagram(x, y, false, true);
+			SelectNode(mouseOverNode, false);
+			if (mouseOverNode)
+			{
+				m_dragPos[ 0].x = (float)x/800.f;
+				m_dragPos[ 0].y = (600.f - (float)y)/600.f;
+			}
+			if (mouseOverNode)
+			{
+				ChangeControllerMode(MODE_ORIENT);
+				m_OrientationEditController->SetControlDiagram(mouseOverNode);
+			}
+			else
+			{
+				ChangeControllerMode(MODE_NONE);
+			}
+		}
+		break;
 
-	if (mouseOverNode)
-	{
-		ChangeControllerMode(MODE_ORIENT);
-		m_OrientationEditController->SetControlDiagram(mouseOverNode);
-	}
-	else
-	{
-		ChangeControllerMode(MODE_NONE);
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->MouseRButtonDown(x,y);
+		break;
 	}
 }
 
 
 /**
- @brief 
+ @brief Mouse Event
  @date 2014-02-25
 */
 void CGenotypeController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 {
-
+	switch (m_controlMode)
+	{
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->MouseRButtonUp(x,y);
+		break;
+	}
 }
 
 
@@ -659,14 +699,27 @@ void CGenotypeController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 */
 void CGenotypeController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 {
-	PickupDiagram(x, y, (MODE_LINK==m_controlMode), true);
-
-	if (MODE_LINK==m_controlMode)
+	switch (m_controlMode)
 	{
-		m_dragPos[ 1].x = (float)x / 800.f;
-		m_dragPos[ 1].y = (600.f-(float)y) / 600.f;
-		if (m_selectNode)
-			m_selectNode->SetHighLight(true);
+	case MODE_NONE:
+	case MODE_LINK:
+		{
+			PickupDiagram(x, y, (MODE_LINK==m_controlMode), true);
+
+			if (MODE_LINK==m_controlMode)
+			{
+				m_dragPos[ 1].x = (float)x / 800.f;
+				m_dragPos[ 1].y = (600.f-(float)y) / 600.f;
+				if (m_selectNode)
+					m_selectNode->SetHighLight(true);
+			}
+		}
+		break;
+
+	case MODE_ORIENT:
+		if (m_OrientationEditController)
+			m_OrientationEditController->MouseMove(x,y);
+		break;
 	}
 }
 

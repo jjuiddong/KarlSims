@@ -15,6 +15,11 @@ namespace evc
 	class COrientationEditController: public SampleFramework::InputEventListener,
 														public memmonitor::Monitor<COrientationEditController, TYPE_NAME(COrientationEditController)>
 	{
+		enum EDIT_MODE {
+			MODE_NONE, 
+			MODE_POSITION,
+		};
+
 	public:
 		COrientationEditController(CEvc &sample, CGenotypeController &genotypeController);
 		virtual ~COrientationEditController();
@@ -37,17 +42,18 @@ namespace evc
 
 	protected:
 		CGenotypeNode* CreatePhenotypeDiagram(const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1,
-			const PxVec3 &pos, genotype_parser::SExpr *expr, 
-			map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
-
+			genotype_parser::SExpr *expr, map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
+		void ChangeEditMode(EDIT_MODE mode);
 
 	private:
 		CEvc &m_sample;
 		CGenotypeController &m_genotypeController;
 		DefaultCameraController *m_camera;
 
-		CGenotypeNode *m_rootDiagram;
-		vector<CGenotypeNode*> m_diagrams; // reference
+		CGenotypeNode *m_rootNode;
+		vector<CGenotypeNode*> m_nodes; // reference
 		CGenotypeNode *m_selectNode; // reference
+
+		EDIT_MODE m_editMode;
 	};
 }

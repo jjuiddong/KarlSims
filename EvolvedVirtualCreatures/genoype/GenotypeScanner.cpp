@@ -743,3 +743,84 @@ SExpr* genotype_parser::CopyGenotype(const SExpr *expr)
 	return CopyGenotypeRec(expr, symbols);
 }
 
+
+/**
+ @brief 
+ @date 2014-03-05
+*/
+void AssignGenotypeRec(SExpr *dest, const SExpr *src, set<string> &symbols)
+{
+	RET(!dest || !src);
+
+	auto it = symbols.find(dest->id);
+	if (symbols.end() != it)
+	{ // already exist
+		return;
+	}
+
+	*dest = *src;
+	symbols.insert(dest->id);
+
+	SConnectionList *srcConList = src->connection;
+	SConnectionList *destConList = dest->connection;
+	while (srcConList && destConList)
+	{
+		*destConList->connect = *srcConList->connect;
+		AssignGenotypeRec(destConList->connect->expr, srcConList->connect->expr, symbols);
+
+		srcConList = srcConList->next;
+		destConList = destConList->next;
+	}
+}
+
+
+/**
+ @brief assign deep genotype
+ @date 2014-03-05
+*/
+void genotype_parser::AssignGenotype(SExpr *dest, const SExpr *src)
+{
+	set<string> symbols;
+	AssignGenotypeRec(dest, src, symbols);
+}
+
+
+/**
+ @brief FindGenotype
+ @date 2014-03-05
+*/
+SExpr* FindGenotypeRec(SExpr *expr, const string &id, set<string> &symbols)
+{
+	RETV(!expr, NULL);
+
+	auto it = symbols.find(expr->id);
+	if (symbols.end() != it)
+	{ // already exist
+		return NULL;
+	}
+
+	if (boost::iequals(expr->id, id))
+		return expr;
+
+	symbols.insert(expr->id);
+
+	SConnectionList *conList = expr->connection;
+	while (conList)
+	{
+		if (SExpr *ret = FindGenotypeRec(conList->connect->expr, id, symbols))
+			return ret;
+		conList = conList->next;
+	}
+	return NULL;
+}
+
+
+/**
+ @brief 
+ @date 2014-03-05
+*/
+SExpr* genotype_parser::FindGenotype(SExpr *expr, const string &id)
+{
+	set<string> symbols;
+	return FindGenotypeRec(expr, id, symbols);
+}

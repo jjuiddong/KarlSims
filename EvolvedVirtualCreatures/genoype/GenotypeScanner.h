@@ -85,7 +85,7 @@ namespace evc { namespace genotype_parser {
 				randOrient = rhs.randOrient;
 				terminalOnly = rhs.terminalOnly;
 				period = rhs.period;
-				expr = NULL;
+				//expr = NULL;
 			}
 			return *this;
 		}
@@ -128,7 +128,7 @@ namespace evc { namespace genotype_parser {
 				randShape = rhs.randShape;
 				material = rhs.material;
 				mass = rhs.mass;
-				connection = NULL;
+				//connection = NULL;
 				isSensor = rhs.isSensor;
 			}
 			return *this;
@@ -145,6 +145,9 @@ namespace evc { namespace genotype_parser {
 	void RemoveExpression(SExpr *expr);
 	void RemoveExpressoin_OnlyExpr(SExpr *expr);
 	SExpr* CopyGenotype(const SExpr *expr);
+	void AssignGenotype(SExpr *dest, const SExpr *src);
+	SExpr* FindGenotype(SExpr *expr, const string &id);
+
 
 
 	class CGenotypeScanner

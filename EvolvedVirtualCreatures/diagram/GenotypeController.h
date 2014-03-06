@@ -40,6 +40,8 @@ namespace evc
 		bool GetDiagramsLinkto(CGenotypeNode *to, OUT vector<CGenotypeNode*> &out);
 		bool GetDiagramsLinkfrom(CGenotypeNode *from, OUT vector<CGenotypeNode*> &out);
 		void Show(const bool isShow);
+		CCreature* GetCreature();
+		void UpdateCreature();
 
 		// InputEvent from CEvc
 		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override;
@@ -61,7 +63,6 @@ namespace evc
 		bool RemoveDiagram(CGenotypeNode *rmNode);
 		void RemoveUnlinkDiagram();
 
-		void UpdateCreature();
 		void ChangeControllerMode(const MODE scene);
 
 		// Event Handler
@@ -96,4 +97,5 @@ namespace evc
 
 	inline CGenotypeNode *CGenotypeController::GetRootDiagram() { return m_rootDiagram; }
 	inline vector<CGenotypeNode*>& CGenotypeController::GetDiagrams() { return m_diagrams; }
+	inline CCreature* CGenotypeController::GetCreature() { return m_creature; }
 }

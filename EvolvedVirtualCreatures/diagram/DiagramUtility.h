@@ -18,8 +18,10 @@ namespace evc
 
 	PxVec3 GetDiagramPosition(CGenotypeNode *parent, CGenotypeNode *dispNode, OUT u_int &order);
 	PxVec3 GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr, const PxVec3 &parentPos, const u_int index, OUT u_int &order);
-	void GetJointTransform(const PxVec3 *pos, genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1,
+	void GetJointTransform(const PxVec3 *pos, const genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1,
 		const bool applyRandom=true);
+	PxTransform GetJointTransformAccumulate(CGenotypeNode *from, CGenotypeNode *to);
+
 
 	// transition
 	RenderBezierActor* CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const u_int order=0);

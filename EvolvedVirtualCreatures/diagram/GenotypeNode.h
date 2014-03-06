@@ -37,6 +37,9 @@ namespace evc
 		void AnimateLayout(const PxVec3 &target);
 		void RemoveConnectNode(const CGenotypeNode *rmNode);
 		void Show(const bool isShow);
+		genotype_parser::SConnection* GetJoint(CGenotypeNode *conNode);
+		CGenotypeNode* GetConnectNode(const string &nodeName);
+		PxVec3 GetPos() const;
 
 
 	public:

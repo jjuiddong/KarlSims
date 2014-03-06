@@ -228,3 +228,51 @@ void CGenotypeNode::Show(const bool isShow)
 		con.transitionArrow->setRendering(isShow);
 	}
 }
+
+
+/**
+ @brief return correspond node joint
+ @date 2014-03-04
+*/
+genotype_parser::SConnection* CGenotypeNode::GetJoint(CGenotypeNode *conNode)
+{
+	RETV(!conNode, NULL);
+	RETV(!m_expr, NULL);
+
+	using namespace  genotype_parser;
+	SConnectionList *conList = m_expr->connection;
+	BOOST_FOREACH (auto &con, m_connectDiagrams)
+	{
+		if (con.connectNode == conNode)
+		{
+			return conList->connect;
+		}
+		conList = conList->next;
+	}
+	return NULL;
+}
+
+
+/**
+ @brief return connect node
+ @date 2014-03-04
+*/
+CGenotypeNode* CGenotypeNode::GetConnectNode(const string &nodeName)
+{
+	BOOST_FOREACH (auto &con, m_connectDiagrams)
+	{
+		if (boost::iequals(con.connectNode->m_name, nodeName))
+			return con.connectNode;
+	}
+	return NULL;
+}
+
+
+/**
+ @brief return position
+ @date 2014-03-04
+*/
+PxVec3 CGenotypeNode::GetPos() const
+{
+	return m_renderNode->getTransform().p;
+}
