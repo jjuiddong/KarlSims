@@ -14,9 +14,9 @@ namespace SampleRenderer
 	class RendererBezierShape : public RendererShape
 	{
 	public:
-		RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points);
+		RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points, const PxVec3 &color=PxVec3(0,0,0));
 		virtual ~RendererBezierShape();
-		void SetBezierCurve(const vector<PxVec3> &points);
+		void SetBezierCurve(const vector<PxVec3> &points, const PxVec3 &color=PxVec3(0,0,0));
 
 
 	private:

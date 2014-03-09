@@ -7,6 +7,7 @@
 #include "DiagramUtility.h"
 #include "../creature/Creature.h"
 #include "SimpleCamera.h"
+#include "ScaleCursor.h"
 
 
 using namespace evc;
@@ -18,6 +19,7 @@ COrientationEditController::COrientationEditController(CEvc &sample, CGenotypeCo
 ,	m_selectNode(NULL)
 ,	m_rootNode(NULL)
 ,	m_editMode(MODE_NONE)
+,	m_cursor(NULL)
 {
 	
 }
@@ -29,6 +31,10 @@ COrientationEditController::~COrientationEditController()
 	m_rootNode = NULL;
 
 	SAFE_DELETE(m_camera);
+
+	BOOST_FOREACH (auto cursor, m_allCursor)
+		delete cursor;
+	m_allCursor.clear();
 }
 
 
@@ -40,6 +46,11 @@ void COrientationEditController::ControllerSceneInit()
 {
 	if (!m_camera)
 		m_camera = SAMPLE_NEW(CSimpleCamera)();
+
+	if (m_allCursor.empty())
+	{
+		m_allCursor.push_back( new CScaleCursor(m_sample) );
+	}
 
 	m_sample.getApplication().setMouseCursorHiding(false);
 	m_sample.getApplication().setMouseCursorRecentering(false);
@@ -116,7 +127,17 @@ void COrientationEditController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y
 			m_ptOrig = Int2(x,y);
 		}
 		break;
+
+	case MODE_SCALE:
+		if (SelectNode(PickupNodes(m_sample, m_nodes, x, y, true), MODE_SCALE))
+		{
+			m_ptOrig = Int2(x,y);
+		}
+		break;
 	}
+
+	if (m_cursor)
+		m_cursor->MouseLButtonDown(x,y);
 }
 
 
@@ -154,6 +175,8 @@ void COrientationEditController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 		break;
 	}
 
+	if (m_cursor)
+		m_cursor->MouseLButtonUp(x,y);
 }
 
 
@@ -173,6 +196,9 @@ void COrientationEditController::MouseRButtonDown(physx::PxU32 x, physx::PxU32 y
 		SelectNode(PickupNodes(m_sample, m_nodes, x, y, true));
 		break;
 	}
+
+	if (m_cursor)
+		m_cursor->MouseRButtonDown(x,y);
 }
 
 
@@ -244,6 +270,9 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 		}
 		break;
 	}
+
+	if (m_cursor)
+		m_cursor->MouseRButtonUp(x,y);
 }
 
 
@@ -315,7 +344,7 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 
 
 			PxTransform tm = m_selectNode->GetLocalTransform();
-			PxTransform m = PxTransform(PxQuat(-0.1f, v0)) * tm;
+			PxTransform m = PxTransform(PxQuat(-0.03f, v0)) * tm;
 			m_selectNode->SetLocalTransform(m);
 			m_selectNode->UpdateTransform();
 
@@ -326,6 +355,9 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 		}
 		break;
 	}
+
+	if (m_cursor)
+		m_cursor->MouseMove(x,y);
 }
 
 
@@ -395,7 +427,7 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);
 
@@ -406,7 +438,7 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);	
 
@@ -442,19 +474,22 @@ void COrientationEditController::ChangeEditMode(EDIT_MODE mode)
 			}
 
 			m_genotypeController.ControllerSceneInit();
+			if (m_cursor)
+				m_cursor->SelectNode(NULL);
+			m_cursor = NULL;
 		}
 		break;
 
 	case MODE_SCALE:
 		{
-
+			m_cursor = m_allCursor[ CURSOR_SCALE];
+			m_cursor->SelectNode(NULL);
 		}
 		break;
 
 	case MODE_PICKUP:
-		break;
-
 	case MODE_POSITION:
+		m_cursor = NULL;
 		break;
 	}
 }
@@ -474,6 +509,10 @@ bool COrientationEditController::SelectNode(CGenotypeNode *node, const EDIT_MODE
 	else
 		ChangeEditMode(MODE_PICKUP);
 
+	// call after changeEditMode 
+	if (m_cursor)
+		m_cursor->SelectNode(node);
+
 	return (node? true : false);
 }
 
@@ -489,7 +528,7 @@ void COrientationEditController::onDigitalInputEvent(const SampleFramework::Inpu
 	case GOTO_GENOTYPE_CONTROLLER:
 		ChangeEditMode(MODE_NONE);
 		break;
-		
+	
 	case SCALE_EDIT_MODE:
 		ChangeEditMode(MODE_SCALE);
 		break;
@@ -497,4 +536,7 @@ void COrientationEditController::onDigitalInputEvent(const SampleFramework::Inpu
 	case NEXT_OBJECT:
 		break;
 	}
+
+	if (m_cursor)
+		m_cursor->onDigitalInputEvent(ie,val);
 }

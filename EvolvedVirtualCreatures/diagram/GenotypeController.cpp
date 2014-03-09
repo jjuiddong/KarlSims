@@ -273,7 +273,7 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);
 
@@ -284,7 +284,7 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, order);
+			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
 			diagramConnection.transitionArrow = arrow;
 			m_sample.addRenderObject(arrow);	
 
@@ -484,7 +484,7 @@ bool CGenotypeController::InsertDiagram(CGenotypeNode *node, CGenotypeNode *inse
 	insertNode->m_isRenderText = true;
 
 	SDiagramConnection diagConnection;
-	diagConnection.transitionArrow = CreateTransition(m_sample, node, insertNode, order);
+	diagConnection.transitionArrow = CreateTransition(m_sample, node, insertNode, PxVec3(0,0,0), order);
 	diagConnection.connectNode = insertNode;
 	m_sample.addRenderObject(diagConnection.transitionArrow);
 	node->m_connectDiagrams.push_back(diagConnection);

@@ -159,6 +159,14 @@ void CEvc::onInit()
 	//registerInputEvents(m_DiagramController);
 	//getPlatform().
 	//getPlatform()->getSampleUserInput()->
+
+	
+	vector<PxVec3> points;
+	points.push_back( PxVec3(0,0,0) );
+	points.push_back( PxVec3(0,0,0) );
+	points.push_back( PxVec3(4,0,0) );
+	points.push_back( PxVec3(4,0,0) );
+
 }
 
 

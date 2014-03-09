@@ -10,7 +10,8 @@ const int NODE_COUNT = 30;
 const int CONER_COUNT = 5;
 
 
-RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points) :
+// color = PxVec3(0,0,0)
+RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3> &points, const PxVec3 &color) :
 	RendererShape(renderer)
 {
 	const PxU32 numVerts = (NODE_COUNT-1)*CONER_COUNT + 1; // +1 is head vertex point
@@ -18,11 +19,13 @@ RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3
 	RendererVertexBufferDesc vbdesc;
 	vbdesc.hint = RendererVertexBuffer::HINT_STATIC;
 	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_POSITION]  = RendererVertexBuffer::FORMAT_FLOAT3;
+	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_COLOR]  = RendererVertexBuffer::FORMAT_COLOR_BGRA;
+	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_NORMAL]  = RendererVertexBuffer::FORMAT_FLOAT3;
 	vbdesc.maxVertices = numVerts;
 	m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
 	RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
 	
-	SetBezierCurve(points);
+	SetBezierCurve(points, color);
 
 
 	// make index buffer
@@ -112,15 +115,19 @@ RendererBezierShape::~RendererBezierShape()
  @brief update vertex position
  @date 2014-02-26
 */
-void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points)
+void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points, const PxVec3 &color)//color=PxVec(0,0,0)
 {
 	const PxU32 numVerts = (NODE_COUNT-1)*CONER_COUNT + 1; // +1 is head vertex point
+	const PxVec3 diffuse = color * 255;
+	const PxU32 diffuseColor = m_renderer.convertColor(RendererColor(diffuse.x, diffuse.y, diffuse.z));
 
 	RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
 	if (m_vertexBuffer)
 	{
 		PxU32 stride = 0;
 		void* vertPositions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
+		void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
+		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
 
 		PxVec3 oldPos;
 		int vtxOffset = 0;
@@ -136,7 +143,6 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points)
 				curve.normalize();
 				utility::quatRotationArc(q, curve, PxVec3(1,0,0));
 			}
-			oldPos = pos;
 
 			float DEPTH = .03f;
 			if (i == NODE_COUNT-2)
@@ -149,6 +155,9 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points)
 				if (i > 0)
 					dir = q.rotate(dir);
 				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos + dir*DEPTH;
+				*(PxVec3*)(((PxU8*)normals) + vtxOffset) = PxVec3(0,1,0);
+				*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
+
 				vtxOffset += stride;
 			}
 
@@ -157,10 +166,26 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points)
 			if (i == NODE_COUNT-2)
 			{
 				utility::bezier(pos, points, 1);
+				if ((pos-oldPos).magnitude() < 0.2f)
+				{
+					PxVec3 v0 = pos-oldPos;
+					if (!v0.isZero())
+					{
+						v0.normalize();
+						pos = oldPos + v0*0.2f;
+					}
+				}
+
 				PxVec3 dir = q.rotate(PxVec3(1,0,0));
 				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos;
+				*(PxVec3*)(((PxU8*)normals) + vtxOffset) = PxVec3(0,1,0);
+				*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
 			}
+
+			oldPos = pos;
 		}
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	}
 }

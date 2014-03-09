@@ -26,7 +26,7 @@ namespace evc
 
 
 	// transition
-	RenderBezierActor* CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const u_int order=0);
+	RenderBezierActor* CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const PxVec3 &color, const u_int order=0);
 	void MoveTransition(RenderBezierActor *transition, CGenotypeNode *from, CGenotypeNode *to, const u_int order=0);
 	void CalcuateTransitionPositions(CGenotypeNode *from, CGenotypeNode *to, const u_int order, OUT vector<PxVec3> &out);
 

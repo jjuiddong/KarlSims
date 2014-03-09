@@ -11,6 +11,7 @@ namespace evc
 {
 	class CGenotypeController;
 	class CGenotypeNode;
+	class CEditCursor;
 
 	DECLARE_TYPE_NAME_SCOPE(evc, COrientationEditController)
 	class COrientationEditController: public SampleFramework::InputEventListener,
@@ -23,6 +24,12 @@ namespace evc
 			MODE_SCALE,
 			MODE_PICKUP,
 		};
+		enum CURSOR_TYPE {
+			CURSOR_SCALE,
+			CURSOR_ROTATION,
+			CURSOR_POSITION,
+		};
+
 
 	public:
 		COrientationEditController(CEvc &sample, CGenotypeController &genotypeController);
@@ -61,6 +68,8 @@ namespace evc
 		CGenotypeNode *m_selectNode; // reference
 
 		EDIT_MODE m_editMode;
+		vector<CEditCursor*> m_allCursor;
+		CEditCursor *m_cursor;
 		Int2 m_ptOrig;
 	};
 }

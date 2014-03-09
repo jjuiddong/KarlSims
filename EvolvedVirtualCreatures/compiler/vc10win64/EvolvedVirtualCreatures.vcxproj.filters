@@ -94,6 +94,12 @@
     <ClCompile Include="..\..\diagram\GenotypeController.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\diagram\ScaleCursor.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\EditCursor.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\stdafx.h" />
@@ -202,6 +208,15 @@
     <ClInclude Include="..\..\diagram\GenotypeController.h">
       <Filter>Diagram</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\diagram\ScaleCursor.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\EditCursor.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\event\InputEvent.h">
+      <Filter>Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Genotype">
@@ -221,6 +236,9 @@
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{0b73a7de-a1e9-46d7-921e-266d91f4003d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{75fb8031-d78e-4f9a-8b13-d7b4228d08b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

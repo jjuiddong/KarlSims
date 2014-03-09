@@ -106,11 +106,12 @@ void evc::CalcuateTransitionPositions(CGenotypeNode *from, CGenotypeNode *to, co
  @brief Create Transition
  @date 2014-02-25
 */
-RenderBezierActor* evc::CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const u_int order)//order=0
+RenderBezierActor* evc::CreateTransition(CEvc &sample, CGenotypeNode *from, CGenotypeNode *to, const PxVec3 &color, const u_int order)//order=0
 {
 	vector<PxVec3> points;
 	CalcuateTransitionPositions(from, to, order, points);
-	RenderBezierActor *arrow = new RenderBezierActor(*sample.getRenderer(), points);
+	RenderBezierActor *arrow = new RenderBezierActor(*sample.getRenderer(), points, color);
+	arrow->setRenderMaterial(sample.GetMaterial(color));
 	return arrow;
 }
 
