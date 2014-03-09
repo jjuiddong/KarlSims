@@ -11,6 +11,7 @@ RenderBezierActor::RenderBezierActor(SampleRenderer::Renderer& renderer, const v
 {
 	RendererShape *rs = new RendererBezierShape(renderer, points, color);
 	setRenderShape(rs);
+	m_color = color;
 }
 
 RenderBezierActor::~RenderBezierActor()
@@ -20,6 +21,5 @@ RenderBezierActor::~RenderBezierActor()
 
 void RenderBezierActor::SetBezierCurve(const vector<PxVec3> &points, const PxVec3 &color)
 {
-	((RendererBezierShape*)getRenderShape())->SetBezierCurve(points, color);
+	((RendererBezierShape*)getRenderShape())->SetBezierCurve(points, (color.isZero()? m_color : color));
 }
-

@@ -19,16 +19,17 @@ namespace evc
 		virtual ~CScaleCursor();
 
 		// Mouse Event
-		virtual void MouseLButtonDown(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseLButtonUp(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseRButtonDown(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseRButtonUp(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseMove(physx::PxU32 x, physx::PxU32 y) override {}
+		virtual bool MouseLButtonDown(physx::PxU32 x, physx::PxU32 y) override;
+		virtual bool MouseLButtonUp(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseRButtonDown(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseRButtonUp(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseMove(physx::PxU32 x, physx::PxU32 y) override {return false;}
 
 
 	protected:
 		// Event
 		virtual void onSelectNode(CGenotypeNode *node);
+		RenderBezierActor* PickScaleAxis();
 
 
 	private:

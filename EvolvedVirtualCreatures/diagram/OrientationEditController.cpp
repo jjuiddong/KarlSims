@@ -129,15 +129,16 @@ void COrientationEditController::MouseLButtonDown(physx::PxU32 x, physx::PxU32 y
 		break;
 
 	case MODE_SCALE:
-		if (SelectNode(PickupNodes(m_sample, m_nodes, x, y, true), MODE_SCALE))
+		if (!m_cursor->MouseLButtonDown(x,y))
 		{
-			m_ptOrig = Int2(x,y);
+			if (SelectNode(PickupNodes(m_sample, m_nodes, x, y, true), MODE_SCALE))
+			{
+				m_ptOrig = Int2(x,y);
+			}
 		}
 		break;
 	}
 
-	if (m_cursor)
-		m_cursor->MouseLButtonDown(x,y);
 }
 
 

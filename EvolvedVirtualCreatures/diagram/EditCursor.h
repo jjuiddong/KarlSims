@@ -20,16 +20,16 @@ namespace evc
 		void SelectNode(CGenotypeNode *node);
 
 		// Key Event
-		virtual void onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override {}
-		virtual void onAnalogInputEvent(const SampleFramework::InputEvent& , float val) override {}
-		virtual void onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override {}
+		virtual bool onPointerInputEvent(const SampleFramework::InputEvent&, physx::PxU32, physx::PxU32, physx::PxReal, physx::PxReal, bool val) override {return false;}
+		virtual bool onAnalogInputEvent(const SampleFramework::InputEvent& , float val) override {return false;}
+		virtual bool onDigitalInputEvent(const SampleFramework::InputEvent& , bool val) override {return false;}
 
 		// Mouse Event
-		virtual void MouseLButtonDown(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseLButtonUp(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseRButtonDown(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseRButtonUp(physx::PxU32 x, physx::PxU32 y) override {}
-		virtual void MouseMove(physx::PxU32 x, physx::PxU32 y) override {}
+		virtual bool MouseLButtonDown(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseLButtonUp(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseRButtonDown(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseRButtonUp(physx::PxU32 x, physx::PxU32 y) override {return false;}
+		virtual bool MouseMove(physx::PxU32 x, physx::PxU32 y) override {return false;}
 
 
 	protected:
@@ -37,7 +37,7 @@ namespace evc
 		virtual void onSelectNode(CGenotypeNode *node) {}
 
 
-	private:
+	protected:
 		CGenotypeNode *m_selectNode;
 	};
 
