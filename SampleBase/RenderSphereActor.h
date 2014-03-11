@@ -42,6 +42,7 @@
 					RenderSphereActor(SampleRenderer::Renderer& renderer, PxReal radius);
 					RenderSphereActor(const RenderSphereActor&);
 		virtual		~RenderSphereActor();
+		void setDimensions(PxF32 halfHeight, PxF32 radius0, PxF32 radius1);
 	};
 
 #endif

@@ -46,3 +46,11 @@ RenderBoxActor::RenderBoxActor(const RenderBoxActor& src) : RenderBaseActor(src)
 RenderBoxActor::~RenderBoxActor()
 {
 }
+
+void RenderBoxActor::SetBoxShape(const PxVec3 &extents, const PxReal* userUVs)
+{
+	if (!getRenderShape())
+		return;
+
+	((RendererBoxShape*)getRenderShape())->SetBoxShape(extents, userUVs);
+}

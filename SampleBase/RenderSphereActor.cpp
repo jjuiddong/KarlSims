@@ -46,3 +46,10 @@ RenderSphereActor::RenderSphereActor(const RenderSphereActor& src) : RenderBaseA
 RenderSphereActor::~RenderSphereActor()
 {
 }
+
+void RenderSphereActor::setDimensions(PxF32 halfHeight, PxF32 radius0, PxF32 radius1)
+{
+	if (!getRenderShape())
+		return;
+	((RendererCapsuleShape*)getRenderShape())->setDimensions(halfHeight, radius0, radius1);
+}

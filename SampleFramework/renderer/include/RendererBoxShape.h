@@ -44,6 +44,7 @@ namespace SampleRenderer
 	public:
 		RendererBoxShape(Renderer &renderer, const PxVec3 &extents, const PxReal* uvs=NULL);
 		virtual ~RendererBoxShape(void);
+		void SetBoxShape(const PxVec3 &extents, const PxReal* userUVs);
 
 	private:
 		RendererVertexBuffer *m_vertexBuffer;

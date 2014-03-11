@@ -44,6 +44,7 @@ namespace SampleRenderer
 						RenderBoxActor(SampleRenderer::Renderer& renderer, const PxVec3& extents, const PxReal* uvs=NULL);
 						RenderBoxActor(const RenderBoxActor&);
 		virtual			~RenderBoxActor();
+		void SetBoxShape(const PxVec3 &extents, const PxReal* userUVs);
 	};
 
 #endif

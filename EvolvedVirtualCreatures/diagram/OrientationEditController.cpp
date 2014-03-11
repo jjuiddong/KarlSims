@@ -224,33 +224,35 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 			const float len = dir.magnitude();
 			dir.normalize();
 
-			PxQuat q;
+			PxQuat rotateToXAxis;
 			if (boost::iequals(joint->type, "revolute"))
 			{
 				PxVec3 jointAxis = PxVec3(0,0,1).cross(dir);
 				jointAxis.normalize();
-				utility::quatRotationArc(q, jointAxis, PxVec3(1,0,0));
+				utility::quatRotationArc(rotateToXAxis, jointAxis, PxVec3(1,0,0));
 			}
 			else
 			{
-				q = m_rootNode->GetWorldTransform().q;
+				rotateToXAxis = m_rootNode->GetWorldTransform().q;
 			}
 
-			{
+			{ // setting parent orientation
 				PxReal angle;
 				PxVec3 axis;
-				q.toRadiansAndUnitAxis(angle, axis);
+				rotateToXAxis.toRadiansAndUnitAxis(angle, axis);
 				joint->parentOrient.angle = angle;
 				joint->parentOrient.dir = utility::PxVec3toVec3(axis);
+
+				printf( "parent angle = %f, dir= %f %f %f\n", angle, axis.x, axis.y, axis.z);
 			}
 			
-			{
+			{ // setting select orientation
 				PxVec3 pos;
 				PxTransform rotTm;
 				const PxTransform tm = m_selectNode->GetWorldTransform();
 				if (boost::iequals(joint->type, "revolute"))
 				{
-					rotTm = PxTransform(q) * PxTransform(tm.q);
+					rotTm = PxTransform(rotateToXAxis) * PxTransform(tm.q);
 					pos = PxVec3(0,len,0);
 				}
 				else
@@ -265,6 +267,8 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 				joint->orient.angle = angle;
 				joint->orient.dir = utility::PxVec3toVec3(axis);
 				joint->pos = utility::PxVec3toVec3(pos);
+
+				printf( "connect angle = %f, dir= %f %f %f\n", angle, axis.x, axis.y, axis.z);
 			}
 
 			SelectNode(NULL);
@@ -504,6 +508,9 @@ bool COrientationEditController::SelectNode(CGenotypeNode *node, const EDIT_MODE
 	// mode = MODE_POSITION
 {
 	m_selectNode = node;
+
+	if (!node && m_cursor)
+		m_cursor->SelectNode(NULL);
 
 	if (node)
 		ChangeEditMode(mode);

@@ -106,43 +106,45 @@ RendererShape(renderer)
 	vbdesc.maxVertices = numVerts;
 	m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
 	RENDERER_ASSERT(m_vertexBuffer, "Failed to create Vertex Buffer.");
-	if(m_vertexBuffer)
-	{
-		PxU32 positionStride = 0;
-		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
-		PxU32 normalStride = 0;
-		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
-		PxU32 uvStride = 0;
-		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
-		if(positions && normals && uvs)
-		{
-			for(PxU32 i=0; i<6; i++)
-			{
-				const BoxFace &bf = g_BoxFaces[i];
-				for(PxU32 j=0; j<4; j++)
-				{
-					PxVec3 &p  = *(PxVec3*)positions; positions = ((PxU8*)positions) + positionStride;
-					PxVec3 &n  = *(PxVec3*)normals;   normals   = ((PxU8*)normals)   + normalStride;
-					PxF32 *uv  =  (PxF32*)uvs;        uvs       = ((PxU8*)uvs)       + uvStride;
-					n = bf.normal;
-					p = bf.positions[j] * extents;
-					if(userUVs)
-					{
-						uv[0] = *userUVs++;
-						uv[1] = *userUVs++;
-					}
-					else
-					{
-						uv[0] = g_BoxUVs[j].x;
-						uv[1] = g_BoxUVs[j].y;
-					}
-				}
-			}
-		}
-		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
-		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
-		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
-	}
+	SetBoxShape(extents, userUVs);
+
+	//if(m_vertexBuffer)
+	//{
+	//	PxU32 positionStride = 0;
+	//	void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
+	//	PxU32 normalStride = 0;
+	//	void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
+	//	PxU32 uvStride = 0;
+	//	void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
+	//	if(positions && normals && uvs)
+	//	{
+	//		for(PxU32 i=0; i<6; i++)
+	//		{
+	//			const BoxFace &bf = g_BoxFaces[i];
+	//			for(PxU32 j=0; j<4; j++)
+	//			{
+	//				PxVec3 &p  = *(PxVec3*)positions; positions = ((PxU8*)positions) + positionStride;
+	//				PxVec3 &n  = *(PxVec3*)normals;   normals   = ((PxU8*)normals)   + normalStride;
+	//				PxF32 *uv  =  (PxF32*)uvs;        uvs       = ((PxU8*)uvs)       + uvStride;
+	//				n = bf.normal;
+	//				p = bf.positions[j] * extents;
+	//				if(userUVs)
+	//				{
+	//					uv[0] = *userUVs++;
+	//					uv[1] = *userUVs++;
+	//				}
+	//				else
+	//				{
+	//					uv[0] = g_BoxUVs[j].x;
+	//					uv[1] = g_BoxUVs[j].y;
+	//				}
+	//			}
+	//		}
+	//	}
+	//	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
+	//	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
+	//	m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+	//}
 
 	RendererIndexBufferDesc ibdesc;
 	ibdesc.hint       = RendererIndexBuffer::HINT_STATIC;
@@ -190,4 +192,50 @@ RendererBoxShape::~RendererBoxShape(void)
 	SAFE_RELEASE(m_vertexBuffer);
 	SAFE_RELEASE(m_indexBuffer);
 	SAFE_RELEASE(m_mesh);
+}
+
+
+/**
+ @brief 
+ @date 2014-03-10
+*/
+void RendererBoxShape::SetBoxShape(const PxVec3 &extents, const PxReal* userUVs)
+{
+	if(m_vertexBuffer)
+	{
+		PxU32 positionStride = 0;
+		void *positions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, positionStride);
+		PxU32 normalStride = 0;
+		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, normalStride);
+		PxU32 uvStride = 0;
+		void *uvs = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0, uvStride);
+		if(positions && normals && uvs)
+		{
+			for(PxU32 i=0; i<6; i++)
+			{
+				const BoxFace &bf = g_BoxFaces[i];
+				for(PxU32 j=0; j<4; j++)
+				{
+					PxVec3 &p  = *(PxVec3*)positions; positions = ((PxU8*)positions) + positionStride;
+					PxVec3 &n  = *(PxVec3*)normals;   normals   = ((PxU8*)normals)   + normalStride;
+					PxF32 *uv  =  (PxF32*)uvs;        uvs       = ((PxU8*)uvs)       + uvStride;
+					n = bf.normal;
+					p = bf.positions[j] * extents;
+					if(userUVs)
+					{
+						uv[0] = *userUVs++;
+						uv[1] = *userUVs++;
+					}
+					else
+					{
+						uv[0] = g_BoxUVs[j].x;
+						uv[1] = g_BoxUVs[j].y;
+					}
+				}
+			}
+		}
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_TEXCOORD0);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
+		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
+	}
 }

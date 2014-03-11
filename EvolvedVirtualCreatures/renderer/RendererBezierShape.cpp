@@ -19,7 +19,7 @@ RendererBezierShape::RendererBezierShape(Renderer& renderer, const vector<PxVec3
 	RendererVertexBufferDesc vbdesc;
 	vbdesc.hint = RendererVertexBuffer::HINT_STATIC;
 	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_POSITION]  = RendererVertexBuffer::FORMAT_FLOAT3;
-	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_COLOR]  = RendererVertexBuffer::FORMAT_COLOR_BGRA;
+	//vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_COLOR]  = RendererVertexBuffer::FORMAT_COLOR_BGRA;
 	vbdesc.semanticFormats[RendererVertexBuffer::SEMANTIC_NORMAL]  = RendererVertexBuffer::FORMAT_FLOAT3;
 	vbdesc.maxVertices = numVerts;
 	m_vertexBuffer = m_renderer.createVertexBuffer(vbdesc);
@@ -126,7 +126,7 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points, const PxV
 	{
 		PxU32 stride = 0;
 		void* vertPositions = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_POSITION, stride);
-		void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
+		//void *colors = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_COLOR, stride);
 		void *normals = m_vertexBuffer->lockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL, stride);
 
 		PxVec3 oldPos;
@@ -156,7 +156,7 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points, const PxV
 					dir = q.rotate(dir);
 				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos + dir*DEPTH;
 				*(PxVec3*)(((PxU8*)normals) + vtxOffset) = PxVec3(0,1,0);
-				*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
+				//*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
 
 				vtxOffset += stride;
 			}
@@ -179,13 +179,13 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points, const PxV
 				PxVec3 dir = q.rotate(PxVec3(1,0,0));
 				*(PxVec3*)(((PxU8*)vertPositions) + vtxOffset) = pos;
 				*(PxVec3*)(((PxU8*)normals) + vtxOffset) = PxVec3(0,1,0);
-				*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
+				//*(PxU32*)(((PxU8*)colors) + vtxOffset) = diffuseColor;
 			}
 
 			oldPos = pos;
 		}
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_POSITION);
-		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
+		//m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_COLOR);
 		m_vertexBuffer->unlockSemantic(RendererVertexBuffer::SEMANTIC_NORMAL);
 	}
 }
