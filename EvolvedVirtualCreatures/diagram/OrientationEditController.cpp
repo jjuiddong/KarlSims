@@ -229,7 +229,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 			{
 				PxVec3 jointAxis = PxVec3(0,0,1).cross(dir);
 				jointAxis.normalize();
-				utility::quatRotationArc(rotateToXAxis, jointAxis, PxVec3(1,0,0));
+				utility::quatRotationArc(rotateToXAxis, PxVec3(1,0,0), jointAxis);
 			}
 			else
 			{
@@ -242,7 +242,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 				rotateToXAxis.toRadiansAndUnitAxis(angle, axis);
 				joint->parentOrient.angle = angle;
 				joint->parentOrient.dir = utility::PxVec3toVec3(axis);
-
+				 
 				printf( "parent angle = %f, dir= %f %f %f\n", angle, axis.x, axis.y, axis.z);
 			}
 			
@@ -253,7 +253,7 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 				if (boost::iequals(joint->type, "revolute"))
 				{
 					rotTm = PxTransform(rotateToXAxis) * PxTransform(tm.q);
-					pos = PxVec3(0,len,0);
+					pos = rotTm.rotate(dir*len);
 				}
 				else
 				{

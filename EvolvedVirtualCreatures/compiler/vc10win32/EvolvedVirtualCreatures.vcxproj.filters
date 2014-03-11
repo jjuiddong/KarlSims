@@ -37,15 +37,6 @@
     <ClCompile Include="..\..\renderer\RenderComposition.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\creature\PhysNode.cpp">
-      <Filter>Creature</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\diagram\DiagramController.cpp">
-      <Filter>Diagram</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\diagram\DiagramNode.cpp">
-      <Filter>Diagram</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\utility\FileLoader.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -89,6 +80,24 @@
       <Filter>Diagram</Filter>
     </ClCompile>
     <ClCompile Include="..\..\diagram\OrientationEditController.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\GenotypeController.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\GenotypeNode.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\creature\PhenotypeNode.cpp">
+      <Filter>Creature</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\DiagramUtility.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\ScaleCursor.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\diagram\EditCursor.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,15 +150,6 @@
     <ClInclude Include="..\..\utility\Utility.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\creature\PhysNode.h">
-      <Filter>Creature</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\diagram\DiagramController.h">
-      <Filter>Diagram</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\diagram\DiagramNode.h">
-      <Filter>Diagram</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\utility\structdef.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -199,6 +199,27 @@
     <ClInclude Include="..\..\diagram\DiagramGlobal.h">
       <Filter>Diagram</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\diagram\GenotypeController.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\GenotypeNode.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\creature\PhenotypeNode.h">
+      <Filter>Creature</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\DiagramUtility.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\event\InputEvent.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\ScaleCursor.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\diagram\EditCursor.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Creature">
@@ -218,6 +239,9 @@
     </Filter>
     <Filter Include="Diagram">
       <UniqueIdentifier>{1210f029-2088-44bb-ad95-00d34a3618d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{707d9ff9-71d0-4b4a-9385-a332d0bad29e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
