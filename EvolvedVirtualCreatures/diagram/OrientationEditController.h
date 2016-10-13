@@ -52,7 +52,7 @@ namespace evc
 
 
 	protected:
-		CGenotypeNode* CreatePhenotypeDiagram(const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1,
+		CGenotypeNode* CreatePhenotypeDiagram(const PxVec3 &localPos, const PxQuat &localRotate,
 			genotype_parser::SExpr *expr, map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols);
 		void ChangeEditMode(EDIT_MODE mode);
 		bool SelectNode(CGenotypeNode *node, const EDIT_MODE mode=MODE_POSITION);

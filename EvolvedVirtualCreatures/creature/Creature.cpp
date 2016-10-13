@@ -235,7 +235,7 @@ CPhenotypeNode* CCreature::GenerateByGenotype( CPhenotypeNode* parentNode, const
 
 		if (boost::iequals(connection->conType, "joint"))
 		{
-			const PxVec3 conPos = utility::Vec3toPxVec3(connection->pos);
+			const PxVec3 conPos = utility::Vec3toPxVec3(connection->orient);
 			const PxVec3 randPos = utility::Vec3toPxVec3(connection->randPos);
 			const PxVec3 nodePos = pos - conPos;
 
@@ -375,7 +375,7 @@ CPhenotypeNode* CCreature::GenerateTerminalNode( CPhenotypeNode *parentNode, con
 		{
 			if (boost::iequals(connection->conType, "joint"))
 			{
-				PxVec3 conPos(connection->pos.x, connection->pos.y, connection->pos.z);
+				PxVec3 conPos = utility::Vec3toPxVec3(connection->orient);
 				PxVec3 randPos(connection->randPos.x, connection->randPos.y, connection->randPos.z);
 				PxVec3 nodePos = pos - conPos;
 

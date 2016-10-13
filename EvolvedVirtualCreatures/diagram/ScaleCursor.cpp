@@ -48,7 +48,7 @@ void CScaleCursor::onSelectNode(CGenotypeNode *node)
 		const float offset = 0.1f;
 		const PxVec3 dim = utility::Vec3toPxVec3(node->m_expr->dimension) + PxVec3(1,1,1)*offset;
 		
-		PxQuat q = m_selectNode->GetLocalTransform().q;
+		PxQuat q = m_selectNode->GetTransform().q;
 		const PxVec3 xAxis = q.rotate(m_axises[0]);
 		const PxVec3 yAxis = q.rotate(m_axises[1]);
 		const PxVec3 zAxis = q.rotate(m_axises[2]);
@@ -157,7 +157,7 @@ void CScaleCursor::EditScale(CGenotypeNode *node, const Int2 initialPos, const I
 	pickOrig0 += dir0 * dist;
 	pickOrig1 += dir1 * dist;
 
-	const PxQuat q = node->GetLocalTransform().q;
+	const PxQuat q = node->GetTransform().q;
 	const PxVec3 vAxis = q.rotate(m_axises[axis]);
 	const float deltaLen = (pickOrig1 - pickOrig0).dot(vAxis);
 

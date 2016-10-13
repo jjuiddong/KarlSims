@@ -277,28 +277,38 @@ PxVec3 evc::GetDiagramPositionByIndex(const genotype_parser::SExpr *parent_expr,
 void evc::GetJointTransform(const PxVec3 *pos, const genotype_parser::SConnection *joint, OUT PxTransform &tm0, OUT PxTransform &tm1, 
 	const bool applyRandom)// applyRandom = false
 {
-	const PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
-	PxVec3 dir1(joint->orient.dir.x, joint->orient.dir.y, joint->orient.dir.z);
-	PxVec3 conPos = (pos? *pos : utility::Vec3toPxVec3(joint->pos));
+	//const PxVec3 dir0(joint->parentOrient.dir.x, joint->parentOrient.dir.y, joint->parentOrient.dir.z);
+	PxQuat moveToJointAxis;
+	PxVec3 jointAxis = utility::Vec3toPxVec3(joint->jointAxis);
+	utility::quatRotationArc(moveToJointAxis, jointAxis, PxVec3(1,0,0));
+
+	//PxVec3 dir1 = utility::Vec3toPxVec3(joint->orient.dir);
+	//PxVec3 localPos = utility::Vec3toPxVec3(joint->orient);
+	//dir1 = moveToJointAxis.rotate(dir1);
+	PxQuat rotate(joint->rotate.angle, utility::Vec3toPxVec3(joint->rotate.dir));
+	PxVec3 conPos = (pos? *pos : utility::Vec3toPxVec3(joint->orient));
 
 	if (applyRandom)
 	{
 		// random position
-		PxVec3 randPos(joint->randPos.x, joint->randPos.y, joint->randPos.z);
+		PxVec3 randPos = utility::Vec3toPxVec3(joint->randPos);
 		conPos += RandVec3(randPos, 1.f);
 
 		// random orientation
-		PxVec3 randOrient(joint->randOrient.x, joint->randOrient.y, joint->randOrient.z);
-		if (!dir1.isZero())
-		{
-			dir1 += RandVec3(randOrient, 1.f);
-			dir1.normalize();
-		}
+		PxVec3 randOrient = utility::Vec3toPxVec3(joint->randOrient);
+		//if (!localPos.isZero())
+		//{
+		//	localPos += RandVec3(randOrient, 1.f);
+		//	localPos.normalize();
+		//}
 	}
 
-	tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
-	tm1 = (dir1.isZero())? PxTransform(PxVec3(conPos)) : 
-		PxTransform(PxVec3(conPos)) * PxTransform(PxQuat(joint->orient.angle, dir1));
+	//tm0 = (dir0.isZero())? PxTransform::createIdentity() : PxTransform(PxQuat(joint->parentOrient.angle, dir0));
+	tm0 = PxTransform(moveToJointAxis);
+	tm1 = PxTransform(moveToJointAxis) * PxTransform(conPos) * PxTransform(rotate);
+		//PxTransform(dir1);
+		//PxTransform(PxQuat(joint->orient.angle, dir1));
+
 	//(PxTransform(PxQuat(joint->orient.angle, dir1)) * PxTransform(PxVec3(conPos)));
 
 	tm0 = tm0.getInverse();

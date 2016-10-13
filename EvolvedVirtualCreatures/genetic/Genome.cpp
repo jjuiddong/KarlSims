@@ -189,21 +189,30 @@ bool evc::GetChromo_Sub(const genotype_parser::SExpr *pexpr, OUT vector<double> 
 			chromo.push_back( (double)GetSensorTypeIndex(pJoint->type) );
 		}
 
+		// jointAxis
+		chromo.push_back( pJoint->jointAxis.x );
+		chromo.push_back( pJoint->jointAxis.y );
+		chromo.push_back( pJoint->jointAxis.z );
+
 		// orient
-		chromo.push_back( pJoint->parentOrient.angle );
-		chromo.push_back( pJoint->parentOrient.dir.x );
-		chromo.push_back( pJoint->parentOrient.dir.y );
-		chromo.push_back( pJoint->parentOrient.dir.z );
+		//chromo.push_back( pJoint->parentOrient.angle );
+		//chromo.push_back( pJoint->parentOrient.dir.x );
+		//chromo.push_back( pJoint->parentOrient.dir.y );
+		//chromo.push_back( pJoint->parentOrient.dir.z );
 
-		chromo.push_back( pJoint->orient.angle );
-		chromo.push_back( pJoint->orient.dir.x );
-		chromo.push_back( pJoint->orient.dir.y );
-		chromo.push_back( pJoint->orient.dir.z );
+		//chromo.push_back( pJoint->orient.angle );
+		//chromo.push_back( pJoint->orient.dir.x );
+		//chromo.push_back( pJoint->orient.dir.y );
+		//chromo.push_back( pJoint->orient.dir.z );
 
-		// pos
-		chromo.push_back( pJoint->pos.x );
-		chromo.push_back( pJoint->pos.y );
-		chromo.push_back( pJoint->pos.z );
+		chromo.push_back( pJoint->rotate.angle );
+		chromo.push_back( pJoint->rotate.dir.x );
+		chromo.push_back( pJoint->rotate.dir.y );
+		chromo.push_back( pJoint->rotate.dir.z );
+
+		chromo.push_back( pJoint->orient.x );
+		chromo.push_back( pJoint->orient.y );
+		chromo.push_back( pJoint->orient.z );
 
 		// limit
 		chromo.push_back( pJoint->limit.x );
@@ -315,21 +324,31 @@ genotype_parser::SExpr* evc::BuildChromo_Sub(const vector<double> &chromo, const
 		else
 			pJoint->type = GetSensorType(chromo[ index++]);
 
-		// orient
-		pJoint->parentOrient.angle = chromo[ index++];
-		pJoint->parentOrient.dir.x = chromo[ index++];
-		pJoint->parentOrient.dir.y = chromo[ index++];
-		pJoint->parentOrient.dir.z = chromo[ index++];
+		// jointAxis
+		pJoint->jointAxis.x = chromo[ index++];
+		pJoint->jointAxis.y = chromo[ index++];
+		pJoint->jointAxis.z = chromo[ index++];
 
-		pJoint->orient.angle = chromo[ index++];
-		pJoint->orient.dir.x = chromo[ index++];
-		pJoint->orient.dir.y = chromo[ index++];
-		pJoint->orient.dir.z = chromo[ index++];
+		// orient
+		//pJoint->parentOrient.angle = chromo[ index++];
+		//pJoint->parentOrient.dir.x = chromo[ index++];
+		//pJoint->parentOrient.dir.y = chromo[ index++];
+		//pJoint->parentOrient.dir.z = chromo[ index++];
+
+		//pJoint->orient.angle = chromo[ index++];
+		//pJoint->orient.dir.x = chromo[ index++];
+		//pJoint->orient.dir.y = chromo[ index++];
+		//pJoint->orient.dir.z = chromo[ index++];
+
+		pJoint->rotate.angle = chromo[ index++];
+		pJoint->rotate.dir.x = chromo[ index++];
+		pJoint->rotate.dir.y = chromo[ index++];
+		pJoint->rotate.dir.z = chromo[ index++];
 
 		// pos
-		pJoint->pos.x  = chromo[ index++];
-		pJoint->pos.y  = chromo[ index++];
-		pJoint->pos.z  = chromo[ index++];
+		pJoint->orient.x  = chromo[ index++];
+		pJoint->orient.y  = chromo[ index++];
+		pJoint->orient.z  = chromo[ index++];
 
 		// limit
 		pJoint->limit.x  = chromo[ index++];

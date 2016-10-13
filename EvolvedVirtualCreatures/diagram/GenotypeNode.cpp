@@ -14,8 +14,6 @@ CGenotypeNode::CGenotypeNode(CEvc &sample) :
 ,	m_expr(NULL)
 ,	m_isAnimationMove(false)
 ,	m_isRenderText(true)
-,	m_localTM(PxTransform::createIdentity())
-,	m_worldTM(PxTransform::createIdentity())
 {
 
 }
@@ -279,14 +277,14 @@ PxVec3 CGenotypeNode::GetPos() const
 	return m_renderNode->getTransform().p;
 }
 
-/**
- @brief set world tm
- @date 2014-03-06
-*/
-void CGenotypeNode::SetWorldTransform(const PxTransform &tm) 
-{ 
-	m_worldTM = tm; 
-	UpdateTransform();
+PxTransform CGenotypeNode::GetTransform() const
+{
+	return m_renderNode->getTransform();
+}
+
+void CGenotypeNode::SetTransform(const PxTransform &tm)
+{
+	m_renderNode->setTransform(tm);
 }
 
 
@@ -294,7 +292,58 @@ void CGenotypeNode::SetWorldTransform(const PxTransform &tm)
  @brief update worldTM * localTM
  @date 2014-03-06
 */
-void CGenotypeNode::UpdateTransform()
+//void CGenotypeNode::UpdateTransform()
+//{
+//	//m_renderNode->setTransform(m_worldTM * m_localTM);
+//}
+
+
+/**
+ @brief 
+ @date 2014-03-12
+*/
+void CGenotypeNode::SetLocalPosition(const PxVec3 &pos)
 {
-	m_renderNode->setTransform(m_worldTM * m_localTM);
+	m_localPos = pos;
+}
+
+
+/**
+ @brief 
+ @date 2014-03-12
+*/
+void CGenotypeNode::SetLocalRotate(const PxQuat &q)
+{
+	m_localRotate = q;
+}
+
+
+/**
+ @brief 
+ @date 2014-03-12
+*/
+void CGenotypeNode::UpdateTransformRec(const PxTransform &parentTm, set<CGenotypeNode*> &symbols)
+{
+	if (symbols.end() != symbols.find(this))
+		return; // already process
+
+	PxTransform tm = parentTm * PxTransform(m_localPos) * PxTransform(m_localRotate);
+	m_renderNode->setTransform(tm);
+	symbols.insert(this);
+
+	BOOST_FOREACH(auto con, m_connectDiagrams)
+	{
+		con.connectNode->UpdateTransformRec(tm, symbols);
+	}
+}
+
+
+/**
+ @brief update all node transform
+ @date 2014-03-12
+*/
+void CGenotypeNode::UpdateTransform(const PxTransform &parentTm)
+{
+	set<CGenotypeNode*> symbols;
+	UpdateTransformRec(parentTm, symbols);
 }

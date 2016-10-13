@@ -18,7 +18,7 @@ namespace utility
 	*/
 	inline void quatRotationArc(PxQuat &q, const PxVec3& v0, const PxVec3& v1)
 	{
-		PxVec3 c = v1.cross(v0);
+		PxVec3 c = v0.cross(v1);
 		if (c.isZero())
 		{
 			q = PxQuat(0,PxVec3(1,0,0));

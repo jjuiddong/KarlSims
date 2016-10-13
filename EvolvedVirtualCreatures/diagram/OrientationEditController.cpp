@@ -81,17 +81,17 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 	// Create Phenotype Node
 	CGenotypeNode *parentNode = nodes[ 0];
 	map<const genotype_parser::SExpr*, CGenotypeNode*> symbols;
-	const PxTransform identTm = PxTransform::createIdentity();
-	m_rootNode = CreatePhenotypeDiagram(identTm,identTm,identTm, parentNode->m_expr, symbols);
+	m_rootNode = CreatePhenotypeDiagram(PxVec3(0,0,0), PxQuat(0,PxVec3(1,0,0)), parentNode->m_expr, symbols);
+	m_rootNode->UpdateTransform();
 
 	// Camera Setting
-	const PxVec3 parentPos = parentNode->GetWorldTransform().p;
-	PxVec3 dir = parentPos - node->GetWorldTransform().p;
+	const PxVec3 parentPos = parentNode->GetTransform().p;
+	PxVec3 dir = parentPos - node->GetTransform().p;
 	dir.normalize();
 
 	PxVec3 left = PxVec3(0,1,0).cross(dir);
 	left.normalize();
-	PxVec3 camPos = node->GetWorldTransform().p + (left*3.f) + PxVec3(0,2.5f,0);
+	PxVec3 camPos = node->GetTransform().p + (left*3.f) + PxVec3(0,2.5f,0);
 	PxVec3 camDir = parentPos - camPos;
 	camDir.normalize();
 	camPos -= (camDir * .5f);
@@ -104,7 +104,8 @@ void COrientationEditController::SetControlDiagram(CGenotypeNode *node)
 	if (CGenotypeNode *selectNode = m_rootNode->GetConnectNode(node->m_name))
 	{
 		selectNode->SetHighLight(true);
-		SelectNode(selectNode);
+		//SelectNode(selectNode);
+		SelectNode(NULL);
 	}
 }
 
@@ -163,13 +164,11 @@ void COrientationEditController::MouseLButtonUp(physx::PxU32 x, physx::PxU32 y)
 			SConnection *joint = m_rootNode->GetJoint(m_selectNode);
 			RET(!joint);
 
-			PxTransform tm = m_selectNode->GetWorldTransform() * m_selectNode->GetLocalTransform();
 			PxReal angle;
 			PxVec3 axis;
-			tm.q.toRadiansAndUnitAxis(angle, axis);
-
-			joint->orient.angle = angle;
-			joint->orient.dir = utility::PxVec3toVec3(axis);
+			m_selectNode->GetLocalRotate().toRadiansAndUnitAxis(angle, axis);
+			joint->rotate.angle = angle;
+			joint->rotate.dir = utility::PxVec3toVec3(axis);
 
 			SelectNode(NULL);
 		}
@@ -224,52 +223,13 @@ void COrientationEditController::MouseRButtonUp(physx::PxU32 x, physx::PxU32 y)
 			const float len = dir.magnitude();
 			dir.normalize();
 
-			PxQuat rotateToXAxis;
-			if (boost::iequals(joint->type, "revolute"))
-			{
-				PxVec3 jointAxis = PxVec3(0,0,1).cross(dir);
-				jointAxis.normalize();
-				utility::quatRotationArc(rotateToXAxis, PxVec3(1,0,0), jointAxis);
-			}
-			else
-			{
-				rotateToXAxis = m_rootNode->GetWorldTransform().q;
-			}
+			PxVec3 jointAxis = PxVec3(0,0,1).cross(dir);
+			jointAxis.normalize();
 
-			{ // setting parent orientation
-				PxReal angle;
-				PxVec3 axis;
-				rotateToXAxis.toRadiansAndUnitAxis(angle, axis);
-				joint->parentOrient.angle = angle;
-				joint->parentOrient.dir = utility::PxVec3toVec3(axis);
-				 
-				printf( "parent angle = %f, dir= %f %f %f\n", angle, axis.x, axis.y, axis.z);
-			}
-			
-			{ // setting select orientation
-				PxVec3 pos;
-				PxTransform rotTm;
-				const PxTransform tm = m_selectNode->GetWorldTransform();
-				if (boost::iequals(joint->type, "revolute"))
-				{
-					rotTm = PxTransform(rotateToXAxis) * PxTransform(tm.q);
-					pos = rotTm.rotate(dir*len);
-				}
-				else
-				{
-					rotTm = PxTransform(tm.q);
-					pos = tm.p;
-				}
-
-				PxReal angle;
-				PxVec3 axis;
-				rotTm.q.toRadiansAndUnitAxis(angle, axis);
-				joint->orient.angle = angle;
-				joint->orient.dir = utility::PxVec3toVec3(axis);
-				joint->pos = utility::PxVec3toVec3(pos);
-
-				printf( "connect angle = %f, dir= %f %f %f\n", angle, axis.x, axis.y, axis.z);
-			}
+			joint->jointAxis = utility::PxVec3toVec3(jointAxis);
+			joint->orient = utility::PxVec3toVec3(dir*len);
+			m_selectNode->SetLocalPosition(dir*len);
+			m_rootNode->UpdateTransform();
 
 			SelectNode(NULL);
 		}
@@ -297,11 +257,10 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 			RET(!m_selectNode);
 
 			using namespace genotype_parser;
-			//const PxTransform tm = GetJointTransformAccumulate(m_rootNode, m_selectNode);
 			const SConnection *joint = m_rootNode->GetJoint(m_selectNode);
 			BRK(!joint);
 	
-			const PxVec3 initialPos = utility::Vec3toPxVec3(joint->pos);
+			const PxVec3 initialPos = utility::Vec3toPxVec3(joint->orient);
 			const PxVec3 dimension = utility::Vec3toPxVec3(m_selectNode->m_expr->dimension);
 			const float len = initialPos.magnitude() + dimension.magnitude();
 
@@ -316,8 +275,7 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 				pos = m_rootNode->GetPos() + (v*len);
 			}
 
-			m_selectNode->SetWorldTransform(PxTransform(pos));
-			//m_selectNode->m_renderNode->setTransform(PxTransform(pos));
+			m_selectNode->SetTransform(PxTransform(pos) * PxTransform(m_selectNode->GetLocalRotate()));
 		}
 		break;
 
@@ -332,7 +290,6 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 			if (pos == m_ptOrig)
 				break;
 
-			//const Int2 diff = pos - m_ptOrig;
 			{
 				PxVec3 orig0, dir0, pickOrig0;
 				m_sample.GetPicking()->computeCameraRay(orig0, dir0, pickOrig0, x, y);
@@ -347,16 +304,9 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
 			}
 			m_ptOrig = pos;
 
-
-			PxTransform tm = m_selectNode->GetLocalTransform();
-			PxTransform m = PxTransform(PxQuat(-0.03f, v0)) * tm;
-			m_selectNode->SetLocalTransform(m);
-			m_selectNode->UpdateTransform();
-
-			//PxQuat q0(diff.x*0.05f, PxVec3(0,1,0));
-			//PxQuat q1(-diff.y*0.05f, PxVec3(1,0,0));
-			//PxTransform m = tm * PxTransform(q1) * PxTransform(q0);
-			//m_selectNode->m_renderNode->setTransform(m);
+			const PxQuat rotate = m_selectNode->GetLocalRotate() * PxQuat(-0.03f, v0);
+			m_selectNode->SetLocalRotate(rotate);
+			m_rootNode->UpdateTransform();
 		}
 		break;
 	}
@@ -370,8 +320,7 @@ void COrientationEditController::MouseMove(physx::PxU32 x, physx::PxU32 y)
  @brief create phenotype diagram
  @date 2014-03-03
 */
-CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
-	const PxTransform &parentTm, const PxTransform &tm0, const PxTransform &tm1, 
+CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram( const PxVec3 &localPos, const PxQuat &localRotate,
 	genotype_parser::SExpr *expr, map<const genotype_parser::SExpr*, CGenotypeNode*> &symbols)
 {
 	using namespace genotype_parser;
@@ -385,9 +334,9 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 	CGenotypeNode *diagNode = CreateGenotypeNode(m_sample, expr);
 	RETV(!diagNode, NULL);
 
-	PxTransform curTm = parentTm * tm0.getInverse() * tm1;
-	diagNode->SetWorldTransform(curTm);
-	//diagNode->m_renderNode->setTransform(curTm);
+	diagNode->SetLocalPosition(localPos);
+	diagNode->SetLocalRotate(localRotate);
+
 	m_nodes.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
@@ -400,11 +349,9 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 	{
 		u_int order=0;
 		SConnection *node_con = connection->connect;
-		PxTransform newTm0, newTm1;
-		GetJointTransform(NULL, node_con, newTm0, newTm1);
-		newTm0 = newTm0.getInverse(); // genotype script return inverse transform to use joint parameter
-		newTm1 = newTm1.getInverse();
-		CGenotypeNode *newDiagNode = CreatePhenotypeDiagram(curTm, newTm0, newTm1, node_con->expr, symbols);
+		const PxVec3 nodeLocalPos = utility::Vec3toPxVec3(node_con->orient);
+		const PxQuat nodeLocalRotate = PxQuat(node_con->rotate.angle, utility::Vec3toPxVec3(node_con->rotate.dir));
+		CGenotypeNode *newDiagNode = CreatePhenotypeDiagram(nodeLocalPos, nodeLocalRotate, node_con->expr, symbols);
 
 		childIndex++;
 		//--------------------------------------------------------------------------------
@@ -431,10 +378,9 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 		{
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
-
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
-			diagramConnection.transitionArrow = arrow;
-			m_sample.addRenderObject(arrow);
+			//RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
+			//diagramConnection.transitionArrow = arrow;
+			//m_sample.addRenderObject(arrow);
 
 			diagNode->m_connectDiagrams.push_back(diagramConnection);
 		}
@@ -443,9 +389,9 @@ CGenotypeNode* COrientationEditController::CreatePhenotypeDiagram(
 			SDiagramConnection diagramConnection;
 			diagramConnection.connectNode = newDiagNode;
 
-			RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
-			diagramConnection.transitionArrow = arrow;
-			m_sample.addRenderObject(arrow);	
+			//RenderBezierActor *arrow = CreateTransition(m_sample, diagNode, newDiagNode, PxVec3(0,0,0), order);
+			//diagramConnection.transitionArrow = arrow;
+			//m_sample.addRenderObject(arrow);	
 
 			diagNode->m_connectDiagrams.push_back(diagramConnection);
 		}

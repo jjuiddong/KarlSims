@@ -141,7 +141,7 @@ void RendererBezierShape::SetBezierCurve(const vector<PxVec3> &points, const PxV
 			{
 				PxVec3 curve = pos - oldPos;
 				curve.normalize();
-				utility::quatRotationArc(q, curve, PxVec3(1,0,0));
+				utility::quatRotationArc(q, PxVec3(1,0,0), curve);
 			}
 
 			float DEPTH = .03f;

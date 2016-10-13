@@ -43,9 +43,12 @@ namespace evc { namespace genotype_parser {
 	{
 		string conType;
 		string type;
-		SQuat parentOrient;
-		SQuat orient;
-		SVec3 pos;
+		SVec3 jointAxis;
+		//SQuat parentOrient;
+		//SQuat orient;
+		//SVec3 orient;
+		SQuat rotate;
+		SVec3 orient;
 		SVec3 limit;
 		SVec3 velocity;
 		SVec3 randPos;
@@ -57,11 +60,16 @@ namespace evc { namespace genotype_parser {
 		SConnection() {
 			conType = "joint";
 			type = "fixed";
-			parentOrient.angle = 0;
-			parentOrient.dir = SVec3(0,0,0);
-			orient.angle = 0;
-			orient.dir = SVec3(0,0,0);
-			pos = SVec3(0,0,0);
+			jointAxis = SVec3(0,1,0);
+			//parentOrient.angle = 0;
+			//parentOrient.dir = SVec3(0,0,0);
+			//orient.angle = 0;
+			//orient.dir = SVec3(0,0,0);
+			//rotate = SVec3(1,0,0);
+			rotate.angle = 0;
+			rotate.dir = SVec3(0,0,0);
+			//pos = SVec3(0,0,0);
+			orient = SVec3(0,0,0);
 			limit = SVec3(0,0,0);
 			velocity = SVec3(1,0,0);
 			randPos = SVec3(0,0,0);
@@ -76,9 +84,11 @@ namespace evc { namespace genotype_parser {
 			{
 				conType = rhs.conType;
 				type = rhs.type;
-				parentOrient = rhs.parentOrient;
+				jointAxis = rhs.jointAxis;
+				//parentOrient = rhs.parentOrient;
+				rotate = rhs.rotate;
 				orient = rhs.orient;
-				pos = rhs.pos;
+				//pos = rhs.pos;
 				limit = rhs.limit;
 				velocity = rhs.velocity;
 				randPos = rhs.randPos;

@@ -173,7 +173,7 @@ SExprList* genotype_parser::CGenotypeParser::expression_list()
 
 
 /**
- @brief connection -> connection( id, quat, vec3, limit, velocity, period, [randpos,] [randorient,]  [terminalonly,] expression )
+ @brief connection -> connection( id, vec3, quat, vec3, limit, velocity, period, [randpos,] [randorient,]  [terminalonly,] expression )
  @date 2013-12-07
 */
 SConnection* genotype_parser::CGenotypeParser::connection()
@@ -196,12 +196,16 @@ SConnection* genotype_parser::CGenotypeParser::connection()
 	Match(LPAREN);
 	connct->type = id();
 	Match(COMMA);
-	connct->parentOrient = quat();
+	connct->jointAxis = vec3();
+	//connct->parentOrient = quat();
 	Match(COMMA);
-	connct->orient = quat();
+	connct->rotate = quat();
 	Match(COMMA);
-	connct->pos = vec3();
+	//connct->orient = quat();
+	connct->orient = vec3();
 	Match(COMMA);
+	//connct->pos = vec3();
+	//Match(COMMA);
 	connct->limit = limit();
 	Match(COMMA);
 	connct->velocity = velocity();
@@ -269,11 +273,14 @@ SVec3 genotype_parser::CGenotypeParser::vec3()
 		{
 			Match(ID);
 			Match(LPAREN);
-			v.x = (float)atof(number().c_str());
-			Match(COMMA);
-			v.y = (float)atof(number().c_str());
-			Match(COMMA);
-			v.z = (float)atof(number().c_str());
+			if (RPAREN != m_Token)
+			{
+				v.x = (float)atof(number().c_str());
+				Match(COMMA);
+				v.y = (float)atof(number().c_str());
+				Match(COMMA);
+				v.z = (float)atof(number().c_str());
+			}
 			Match(RPAREN);
 		}
 		else

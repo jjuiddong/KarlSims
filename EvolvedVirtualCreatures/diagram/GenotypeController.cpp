@@ -229,7 +229,7 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 	RETV(!diagNode, NULL);
 
 	//diagNode->m_renderNode->setTransform(PxTransform(pos));
-	diagNode->SetWorldTransform(PxTransform(pos));
+	diagNode->SetTransform(PxTransform(pos));
 	m_diagrams.push_back(diagNode);
 	m_sample.addRenderObject(diagNode->m_renderNode);
 
@@ -243,7 +243,7 @@ CGenotypeNode* CGenotypeController::CreateGenotypeDiagramTree(const PxVec3 &pos,
 	while (connection)
 	{
 		u_int order=0;
-		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->GetWorldTransform().p, childIndex, order);
+		PxVec3 newNodePos = GetDiagramPositionByIndex(expr, diagNode->GetTransform().p, childIndex, order);
 		SConnection *node_con = connection->connect;
 		CGenotypeNode *newDiagNode = CreateGenotypeDiagramTree(newNodePos, node_con->expr, symbols);
 
@@ -372,6 +372,17 @@ void CGenotypeController::onDigitalInputEvent(const SampleFramework::InputEvent 
 {
 	switch (m_controlMode)
 	{
+	case MODE_NONE:
+		switch (ie.m_Id)
+		{
+		case GOTO_ORIENT_EDIT_MODE:
+			//ChangeControllerMode(MODE_ORIENT);
+			//if (m_OrientationEditController)
+			//	m_OrientationEditController->SetControlDiagram(NULL);
+			break;
+		}
+		break;
+
 	case MODE_LINK:
 		switch (ie.m_Id)
 		{
@@ -479,7 +490,7 @@ bool CGenotypeController::InsertDiagram(CGenotypeNode *node, CGenotypeNode *inse
 	u_int order = 0;
 	PxVec3 pos = GetDiagramPosition(node, insertNode, order);
 	if (isNewDiagramNode)
-		insertNode->SetWorldTransform(PxTransform(pos));
+		insertNode->SetTransform(PxTransform(pos));
 		//insertNode->m_renderNode->setTransform(PxTransform(pos));
 	insertNode->m_isRenderText = true;
 
